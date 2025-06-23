@@ -166,9 +166,9 @@ export const Chat: React.FC = () => {
           </div>
           <div>
             <h1 className="text-lg font-semibold text-gray-900">
-              AI Assistant
+              Lucid AI Assistant
             </h1>
-            <p className="text-sm text-gray-500">Powered by Zen AI</p>
+            <p className="text-sm text-gray-500">Powered by Gemini 2.0 Flash</p>
           </div>
         </div>
       </div>
