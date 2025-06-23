@@ -78,7 +78,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             placeholder="Enter image URL..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
           />
           {imageUrl && (
             <div className="mt-2">
@@ -106,7 +106,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             }}
             onKeyDown={handleKeyDown}
             placeholder="Message AI assistant..."
-            className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[48px] max-h-[120px]"
+            className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[48px] max-h-[120px] placeholder-gray-500"
             rows={1}
             disabled={isLoading}
           />
