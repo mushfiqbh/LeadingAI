@@ -19,7 +19,7 @@ export const chatController = async (req: Request, res: Response) => {
 
   try {
     const stream = await openai.chat.completions.create({
-      model: "qwen/qwen2.5-vl-32b-instruct:free",
+      model: process.env.OPENROUTER_MODEL || "google/gemini-2.0-flash-exp:free",
       messages: [{ role: "user", content }],
       stream: true,
     });
