@@ -29,11 +29,16 @@ export const Chat: React.FC = () => {
     scrollToBottom();
   }, [messages, isLoading, isStreaming]);
 
-  const getStreamedResponse = async (prompt: Message[]) => {
+  const getStreamedResponse = async (prompt: Message) => {
+    const formData = new FormData();
+    formData.append("text", prompt.text);
+    if (prompt.image) {
+      formData.append("image", prompt.image);
+    }
+
     const response = await fetch(API_ENDPOINT + "/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(prompt),
+      body: formData,
     });
 
     if (!response.ok) {
@@ -53,7 +58,7 @@ export const Chat: React.FC = () => {
     const aiMessage: ChatMessage = {
       id: messageId,
       role: "assistant",
-      content: [{ type: "text", text: "" }],
+      content: { text: "", image: null },
       timestamp: new Date(),
     };
 
@@ -86,7 +91,7 @@ export const Chat: React.FC = () => {
                 msg.id === messageId
                   ? {
                       ...msg,
-                      content: [{ type: "text", text: result }],
+                      content: { text: result, image: null },
                     }
                   : msg
               )
@@ -103,7 +108,7 @@ export const Chat: React.FC = () => {
     return result;
   };
 
-  const handleSendMessage = async (content: Message[]) => {
+  const handleSendMessage = async (content: Message) => {
     setError(null);
 
     // Add user message
@@ -168,7 +173,9 @@ export const Chat: React.FC = () => {
             <h1 className="text-lg font-semibold text-gray-900">
               Lucid AI Assistant
             </h1>
-            <p className="text-sm text-gray-500">Powered by Gemini 2.0 Flash</p>
+            <p className="text-sm text-gray-500">
+              Powered by OpenRouter Models
+            </p>
           </div>
         </div>
       </div>
