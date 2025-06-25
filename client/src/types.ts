@@ -1,20 +1,11 @@
-interface TextMessage {
-  type: 'text';
+export interface Message {
   text: string;
+  image: File | null;
 }
-
-interface ImageUrlMessage {
-  type: 'image_url';
-  image_url: {
-    url: string;
-  };
-}
-
-export type Message = TextMessage | ImageUrlMessage;
 
 export interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant';
-  content: Message[];
+  role: "user" | "assistant";
+  content: Message;
   timestamp: Date;
 }

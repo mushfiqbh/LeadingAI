@@ -2,11 +2,11 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { Send, ImageIcon, Paperclip } from "lucide-react";
+import { Send, X } from "lucide-react";
 import { Message } from "../types";
 
 interface ChatInputProps {
-  onSendMessage: (messages: Message[]) => void;
+  onSendMessage: (messages: Message) => void;
   isLoading: boolean;
 }
 
@@ -15,37 +15,24 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   isLoading,
 }) => {
   const [input, setInput] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [showImageInput, setShowImageInput] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!input.trim() && !imageUrl.trim()) return;
+    if (!input.trim() && !image) return;
 
-    const messages: Message[] = [];
+    const message: Message = {
+      text: input.trim(),
+      image: image || null,
+    };
 
-    if (input.trim()) {
-      messages.push({
-        type: "text",
-        text: input.trim(),
-      });
-    }
-
-    if (imageUrl.trim()) {
-      messages.push({
-        type: "image_url",
-        image_url: {
-          url: imageUrl.trim(),
-        },
-      });
-    }
-
-    onSendMessage(messages);
+    onSendMessage(message);
     setInput("");
-    setImageUrl("");
-    setShowImageInput(false);
+    setImage(null);
+    setImagePreview(null);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -63,35 +50,38 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const removeImage = () => {
+    setImage(null);
+    setImagePreview(null);
+  };
+
   return (
     <div className="border-t border-gray-200 bg-white p-4">
-      {showImageInput && (
-        <div className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-200 animate-fade-in">
-          <div className="flex items-center gap-2 mb-2">
-            <ImageIcon className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">
-              Add Image URL
-            </span>
-          </div>
-          <input
-            type="url"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="Enter image URL..."
-            className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+      {imagePreview && (
+        <div className="relative mb-3 max-w-xs">
+          <Image
+            width={10}
+            height={10}
+            src={imagePreview}
+            alt="Preview"
+            className="rounded-lg w-full h-auto object-cover border"
           />
-          {imageUrl && (
-            <div className="mt-2">
-              <Image
-                width={100}
-                height={100}
-                src={imageUrl}
-                alt="Preview"
-                className="max-h-20 rounded border"
-                onError={() => setImageUrl("")}
-              />
-            </div>
-          )}
+          <button
+            onClick={removeImage}
+            type="button"
+            className="absolute top-1 right-1 bg-white text-gray-600 rounded-full p-1 shadow hover:text-red-500"
+            title="Remove image"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
@@ -110,19 +100,22 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             rows={1}
             disabled={isLoading}
           />
-          <button
-            type="button"
-            onClick={() => setShowImageInput(!showImageInput)}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 text-gray-400 hover:text-gray-600 transition-colors"
-            title="Add image"
-          >
-            <Paperclip className="w-4 h-4" />
-          </button>
+
+          <label className="block mt-2 text-sm text-blue-600 hover:underline cursor-pointer">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              disabled={isLoading}
+            />
+            Upload Image
+          </label>
         </div>
 
         <button
           type="submit"
-          disabled={isLoading || (!input.trim() && !imageUrl.trim())}
+          disabled={isLoading || (!input.trim() && !image)}
           className="flex-shrink-0 p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
           title="Send message"
         >
