@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { Send, X } from "lucide-react";
+import { Send, X, ImageUp } from "lucide-react";
 import { Message } from "../types";
 
 interface ChatInputProps {
@@ -64,7 +64,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="border-t border-gray-200 bg-white p-4">
+    <div className="fixed bottom-0 border-t w-full max-w-3xl border-gray-200 bg-white p-4">
       {imagePreview && (
         <div className="relative mb-3 max-w-xs">
           <Image
@@ -85,38 +85,39 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="flex items-end gap-3">
-        <div className="flex-1 relative">
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              adjustTextareaHeight();
-            }}
-            onKeyDown={handleKeyDown}
-            placeholder="Message AI assistant..."
-            className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[48px] max-h-[120px] placeholder-gray-500"
-            rows={1}
+      <form
+        onSubmit={handleSubmit}
+        className="flex items-center justify-between gap-3"
+      >
+        <label className="block text-blue-600 p-2 rounded-full hover:bg-slate-200 cursor-pointer">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
             disabled={isLoading}
           />
+          <ImageUp className="w-5 h-5" />
+        </label>
 
-          <label className="block mt-2 text-sm text-blue-600 hover:underline cursor-pointer">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              disabled={isLoading}
-            />
-            Upload Image
-          </label>
-        </div>
+        <textarea
+          ref={textareaRef}
+          value={input}
+          onChange={(e) => {
+            setInput(e.target.value);
+            adjustTextareaHeight();
+          }}
+          onKeyDown={handleKeyDown}
+          placeholder="Prompt here..."
+          className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[48px] max-h-[120px] placeholder-gray-500"
+          rows={1}
+          disabled={isLoading}
+        />
 
         <button
           type="submit"
           disabled={isLoading || (!input.trim() && !image)}
-          className="flex-shrink-0 p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
+          className="flex-shrink-0 p-3 cursor-pointer bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
           title="Send message"
         >
           <Send className="w-5 h-5" />
