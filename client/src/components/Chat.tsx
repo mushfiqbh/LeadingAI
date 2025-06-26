@@ -6,6 +6,7 @@ import { ChatInput } from "./ChatInput";
 import { TypingIndicator } from "./TypingIndicator";
 import { ErrorMessage } from "./ErrorMessage";
 import { ChatMessage, Message } from "../types";
+import { CircleUser } from "lucide-react";
 
 const API_ENDPOINT =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:5000";
@@ -20,6 +21,7 @@ export const Chat: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [showMenu, setShowMenu] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -162,7 +164,7 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col bg-white">
       {/* Header */}
       <div className="flex-shrink-0 border-b border-gray-200 bg-white/80 backdrop-blur-sm p-4">
         <div className="flex items-center gap-3">
@@ -171,11 +173,81 @@ export const Chat: React.FC = () => {
           </div>
           <div>
             <h1 className="text-lg font-semibold text-gray-900">
-              Lucid AI Assistant
+              Leading AI Agent
             </h1>
             <p className="text-sm text-gray-500">
               Powered by OpenRouter Models
             </p>
+          </div>
+          <div className="ml-auto">
+            <CircleUser
+              onClick={() => setShowMenu(!showMenu)}
+              className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700"
+            />
+            {showMenu && (
+              <div className="fixed z-20 top-16 right-4 rounded-lg shadow-lg border border-gray-300">
+                <ul className="text-gray-700 bg-white rounded-lg shadow-lg">
+                  <li>
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        // Handle profile click
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                    >
+                      <strong>Mushfiq R.</strong>
+                      <div className="text-sm text-gray-500">
+                        Remaining Prompt: 20
+                      </div>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        // Handle data click
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                    >
+                      My Data
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        // Handle settings click
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                    >
+                      Settings
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        // Handle report click
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                    >
+                      Report / Feedback
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        // Handle logout click
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -192,12 +264,8 @@ export const Chat: React.FC = () => {
                 <span className="text-white font-bold text-xl">AI</span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Hello! I`m your AI assistant
+                Hello! I`m your AI Agent
               </h2>
-              <p className="text-gray-600 mb-6">
-                I can help you with questions, creative tasks, analysis, and
-                more. You can also share images by URL for me to analyze.
-              </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 <div className="bg-gray-50 rounded-lg p-3 text-left">
                   <p className="font-medium text-gray-900">
@@ -209,7 +277,7 @@ export const Chat: React.FC = () => {
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3 text-left">
                   <p className="font-medium text-gray-900">🖼️ Analyze images</p>
-                  <p className="text-gray-600">Share image URLs for analysis</p>
+                  <p className="text-gray-600">Upload image for explanation</p>
                 </div>
               </div>
             </div>
