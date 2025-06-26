@@ -64,7 +64,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="border-t border-gray-200 bg-white p-4">
+    <div className="fixed bottom-0 border-t w-full max-w-3xl border-gray-200 bg-white p-4">
       {imagePreview && (
         <div className="relative mb-3 max-w-xs">
           <Image
@@ -87,7 +87,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-3xl mx-auto flex items-center justify-between gap-3"
+        className="flex items-center justify-between gap-3"
       >
         <label className="block text-blue-600 p-2 rounded-full hover:bg-slate-200 cursor-pointer">
           <input

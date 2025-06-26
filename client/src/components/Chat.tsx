@@ -6,7 +6,6 @@ import { ChatInput } from "./ChatInput";
 import { TypingIndicator } from "./TypingIndicator";
 import { ErrorMessage } from "./ErrorMessage";
 import { ChatMessage, Message } from "../types";
-import { CircleUser } from "lucide-react";
 
 const API_ENDPOINT =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:5000";
@@ -21,7 +20,6 @@ export const Chat: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [showMenu, setShowMenu] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -164,95 +162,7 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col bg-white">
-      {/* Header */}
-      <div className="flex-shrink-0 border-b border-gray-200 bg-white/80 backdrop-blur-sm p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">AI</span>
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">
-              Leading AI Agent
-            </h1>
-            <p className="text-sm text-gray-500">
-              Powered by OpenRouter Models
-            </p>
-          </div>
-          <div className="ml-auto">
-            <CircleUser
-              onClick={() => setShowMenu(!showMenu)}
-              className="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700"
-            />
-            {showMenu && (
-              <div className="fixed z-20 top-16 right-4 rounded-lg shadow-lg border border-gray-300">
-                <ul className="text-gray-700 bg-white rounded-lg shadow-lg">
-                  <li>
-                    <button
-                      onClick={() => {
-                        setShowMenu(false);
-                        // Handle profile click
-                      }}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                    >
-                      <strong>Mushfiq R.</strong>
-                      <div className="text-sm text-gray-500">
-                        Remaining Prompt: 20
-                      </div>
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => {
-                        setShowMenu(false);
-                        // Handle data click
-                      }}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                    >
-                      My Data
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => {
-                        setShowMenu(false);
-                        // Handle settings click
-                      }}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                    >
-                      Settings
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => {
-                        setShowMenu(false);
-                        // Handle report click
-                      }}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                    >
-                      Report / Feedback
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => {
-                        setShowMenu(false);
-                        // Handle logout click
-                      }}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Messages */}
+    <div className="w-full max-w-3xl mx-auto min-h-screen flex flex-col bg-white">
       <div
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto scroll-smooth"

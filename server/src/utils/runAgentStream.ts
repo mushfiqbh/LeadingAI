@@ -1,6 +1,7 @@
 import openai from "./openaiClient";
 import callMCPServer from "./callMCPServer";
 import { ChatCompletionContentPart } from "openai/resources/index";
+import { tools } from "../mcp/tools";
 
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o";
 
@@ -15,23 +16,7 @@ export async function* runAgentStream(content: ChatCompletionContentPart[]) {
       },
       { role: "user", content },
     ],
-    tools: [
-      {
-        type: "function",
-        function: {
-          name: "call_mcp_server",
-          description: "Call an MCP server with given input",
-          parameters: {
-            type: "object",
-            properties: {
-              server: { type: "string" },
-              input: { type: "string" },
-            },
-            required: ["server", "input"],
-          },
-        },
-      },
-    ],
+    tools,
     tool_choice: "auto",
   });
 
