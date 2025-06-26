@@ -162,25 +162,7 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      {/* Header */}
-      <div className="flex-shrink-0 border-b border-gray-200 bg-white/80 backdrop-blur-sm p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">AI</span>
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">
-              Lucid AI Assistant
-            </h1>
-            <p className="text-sm text-gray-500">
-              Powered by OpenRouter Models
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Messages */}
+    <div className="w-full max-w-3xl mx-auto min-h-screen flex flex-col bg-white">
       <div
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto scroll-smooth"
@@ -192,12 +174,8 @@ export const Chat: React.FC = () => {
                 <span className="text-white font-bold text-xl">AI</span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Hello! I`m your AI assistant
+                Hello! I`m your AI Agent
               </h2>
-              <p className="text-gray-600 mb-6">
-                I can help you with questions, creative tasks, analysis, and
-                more. You can also share images by URL for me to analyze.
-              </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 <div className="bg-gray-50 rounded-lg p-3 text-left">
                   <p className="font-medium text-gray-900">
@@ -209,7 +187,7 @@ export const Chat: React.FC = () => {
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3 text-left">
                   <p className="font-medium text-gray-900">🖼️ Analyze images</p>
-                  <p className="text-gray-600">Share image URLs for analysis</p>
+                  <p className="text-gray-600">Upload image for explanation</p>
                 </div>
               </div>
             </div>

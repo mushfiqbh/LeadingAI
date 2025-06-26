@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import chatRouter from "./routes/chatRouter";
+import mcpRouter from "./routes/mcpRoute";
 
 // app config
 const app = express();
@@ -10,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 // middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 
 // routes
 app.get("/", (req, res) => {
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
   });
 });
 
+app.use("/mcp", mcpRouter);
 app.use("/chat", chatRouter);
 
 app.listen(PORT, () => {
