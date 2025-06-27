@@ -98,7 +98,7 @@ export const Chat: React.FC = () => {
             // 🔁 Actual content streaming
             result += data;
 
-            setStatusMessage(""); // clear any prior status
+            setStatusMessage("Please wait"); // clear any prior status
             setMessages((prev) =>
               prev.map((msg) =>
                 msg.id === messageId
@@ -170,7 +170,7 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto h-[75vh] flex flex-col bg-white rounded-md">
+    <div className="w-full max-w-3xl mx-auto h-[70dvh] flex flex-col bg-white rounded-md">
       <div
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto scroll-smooth p-4"
