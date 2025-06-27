@@ -7,7 +7,7 @@ export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <div className="w-full fixed z-10 flex-shrink-0 bg-white/80 backdrop-blur-sm p-4">
+    <div className="fixed top-0 w-full z-10 bg-transparent p-4">
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
           <span className="text-white font-bold text-sm">AI</span>
@@ -16,7 +16,7 @@ export default function Header() {
           <h1 className="text-lg font-semibold text-gray-900">
             Lucid AI Agent
           </h1>
-          <p className="text-sm text-gray-500">Powered by GPT - 4.1 Nano</p>
+          <p className="text-sm text-gray-500">Powered by GPT-4.1 Nano</p>
         </div>
         <div className="ml-auto">
           <CircleUser
@@ -38,6 +38,17 @@ export default function Header() {
                     <div className="text-sm text-gray-500">
                       Remaining Prompt: 50
                     </div>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      // Handle buy click
+                    }}
+                    className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-100 cursor-pointer rounded"
+                  >
+                    Buy Prompt Credits
                   </button>
                 </li>
                 <li>

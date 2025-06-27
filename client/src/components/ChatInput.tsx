@@ -24,6 +24,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
     if (!input.trim() && !image) return;
 
+    adjustTextareaHeight();
+
     const message: Message = {
       text: input.trim(),
       image: image || null,
@@ -64,7 +66,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="fixed bottom-0 border-t w-full max-w-3xl border-gray-200 bg-white p-4">
+    <div className="fixed bottom-0 border-t w-full max-w-3xl border-gray-200 bg-white px-4 py-1.5">
       {imagePreview && (
         <div className="relative mb-3 max-w-xs">
           <Image

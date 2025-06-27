@@ -34,9 +34,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   return (
     <div
-      className={`flex gap-4 p-4 ${
+      className={`flex gap-4 ${
         isUser ? "justify-end" : "justify-start"
-      } group animate-fade-in`}
+      } animate-fade-in`}
     >
       {!isUser && (
         <div className="flex-shrink-0">
@@ -48,7 +48,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
       <div className={`max-w-4xl ${isUser ? "order-first" : ""}`}>
         <div
-          className={`rounded-2xl px-4 py-3 ${
+          className={`rounded-2xl px-4 py-4 ${
             isUser
               ? "bg-blue-600 text-white ml-auto"
               : "bg-white text-gray-900 border border-gray-200 shadow-sm"
@@ -102,7 +102,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 const textContent = message.content.text;
                 handleCopy(textContent);
               }}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-200 rounded"
+              className="cursor-pointer transition-opacity p-1 hover:bg-gray-200 rounded"
               title="Copy message"
             >
               {copied ? (
