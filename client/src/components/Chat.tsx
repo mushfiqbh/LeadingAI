@@ -20,6 +20,7 @@ export const Chat: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [statusMessage, setStatusMessage] = useState<string>("");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -80,12 +81,24 @@ export const Chat: React.FC = () => {
             if (data === "[DONE]") {
               setIsStreaming(false);
               setStreamingMessageId(null);
+              setStatusMessage("");
               return result;
             }
 
+            // 🔁 Check for control signals from the backend
+            if (data === "__thinking__") {
+              setStatusMessage("Thinking");
+              continue;
+            }
+            if (data === "__requesting_mcp__") {
+              setStatusMessage("Requesting MCP Server");
+              continue;
+            }
+
+            // 🔁 Actual content streaming
             result += data;
 
-            // Update the streaming message in real-time
+            setStatusMessage(""); // clear any prior status
             setMessages((prev) =>
               prev.map((msg) =>
                 msg.id === messageId
@@ -101,8 +114,6 @@ export const Chat: React.FC = () => {
       }
     } finally {
       reader.releaseLock();
-      setIsStreaming(false);
-      setStreamingMessageId(null);
     }
 
     return result;
@@ -111,7 +122,6 @@ export const Chat: React.FC = () => {
   const handleSendMessage = async (content: Message) => {
     setError(null);
 
-    // Add user message
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: "user",
@@ -120,7 +130,7 @@ export const Chat: React.FC = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setIsLoading(true);
+    setIsLoading(true); // Start loading
 
     try {
       await getStreamedResponse(content);
@@ -132,16 +142,14 @@ export const Chat: React.FC = () => {
           : "Failed to send message. Please try again."
       );
 
-      // Remove the empty AI message if there was an error
-      if (streamingMessageId) {
-        setMessages((prev) =>
-          prev.filter((msg) => msg.id !== streamingMessageId)
-        );
-      }
+      // Remove streaming message only if it exists
+      setMessages((prev) =>
+        streamingMessageId
+          ? prev.filter((msg) => msg.id !== streamingMessageId)
+          : prev
+      );
     } finally {
-      setIsLoading(false);
-      setIsStreaming(false);
-      setStreamingMessageId(null);
+      setIsLoading(false); // End loading
     }
   };
 
@@ -162,17 +170,14 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <div className="pt-16 w-full max-w-3xl mx-auto min-h-screen flex flex-col bg-white">
+    <div className="w-full max-w-3xl mx-auto h-[75vh] flex flex-col bg-white rounded-md">
       <div
         ref={chatContainerRef}
-        className="flex-1 overflow-y-auto scroll-smooth"
+        className="flex-1 overflow-y-auto scroll-smooth p-4"
       >
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full p-8">
             <div className="text-center max-w-md">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
-                <span className="text-white font-bold text-xl">AI</span>
-              </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Hello! I`m your AI Agent
               </h2>
@@ -186,6 +191,22 @@ export const Chat: React.FC = () => {
                   </p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3 text-left">
+                  <p className="font-medium text-gray-900">
+                    📚 Find and explore
+                  </p>
+                  <p className="text-gray-600">
+                    Get class, exam, results and academic information
+                  </p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3 text-left">
+                  <p className="font-medium text-gray-900">
+                    🔍 Download Documents
+                  </p>
+                  <p className="text-gray-600">
+                    Search any notes, documents and files from lucse google drive
+                  </p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3 text-left">
                   <p className="font-medium text-gray-900">🖼️ Analyze images</p>
                   <p className="text-gray-600">Upload image for explanation</p>
                 </div>
@@ -193,15 +214,24 @@ export const Chat: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="pb-4">
-            {messages.map((message) => (
-              <MessageBubble
-                key={message.id}
-                message={message}
-                isStreaming={isStreaming && message.id === streamingMessageId}
-              />
-            ))}
-            {isLoading && !isStreaming && <TypingIndicator />}
+          <div className="flex flex-col gap-4">
+            {messages.map((message) => {
+              if (isLoading && message.id === streamingMessageId) {
+                return;
+              }
+
+              return (
+                <MessageBubble
+                  key={message.id}
+                  message={message}
+                  isStreaming={isStreaming && message.id === streamingMessageId}
+                />
+              );
+            })}
+
+            {(isLoading || isStreaming) && (
+              <TypingIndicator statusMessage={statusMessage} />
+            )}
             {error && <ErrorMessage message={error} onRetry={handleRetry} />}
             <div ref={messagesEndRef} />
           </div>

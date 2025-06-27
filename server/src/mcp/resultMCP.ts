@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getResult = async (student_id: string) => {
+export const getResult = async (student_id: string, birth_date?: string) => {
   if (!student_id) {
     return { success: false, message: "Missing student_id" };
   }
@@ -9,6 +9,9 @@ export const getResult = async (student_id: string) => {
     const formData = new URLSearchParams();
     formData.append("action", "get-result");
     formData.append("student_id", student_id);
+    if (birth_date) {
+      formData.append("birth_date", birth_date);
+    }
 
     const response = await axios.post(
       "https://www.lus.ac.bd/wp-admin/admin-ajax.php",
@@ -21,7 +24,7 @@ export const getResult = async (student_id: string) => {
     );
 
     const result = response.data;
-
+    
     return {
       success: true,
       student_id,
