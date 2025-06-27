@@ -1,13 +1,11 @@
 import axios from "axios";
+import { getResult } from "./mcpHandler";
 
 export default async function callMCPServer(serverName: string, input: string) {
   try {
     if (serverName === "result") {
-      const res = await axios.post("http://localhost:5000/mcp/result", {
-        student_id: input,
-      });
-
-      return res.data;
+      const result = await getResult(input);
+      return result;
     }
 
     const response = await axios.post(
