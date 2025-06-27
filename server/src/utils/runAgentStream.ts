@@ -1,5 +1,5 @@
 import openai from "./openaiClient";
-import callMCPServer from "./callMCPServer";
+import callMCPServer from "../mcp/callMCPServer";
 import { ChatCompletionContentPart } from "openai/resources/index";
 import { tools } from "../mcp/tools";
 

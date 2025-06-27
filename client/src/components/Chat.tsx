@@ -162,7 +162,7 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto min-h-screen flex flex-col bg-white">
+    <div className="pt-16 w-full max-w-3xl mx-auto min-h-screen flex flex-col bg-white">
       <div
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto scroll-smooth"

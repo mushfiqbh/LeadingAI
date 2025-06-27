@@ -1,9 +1,6 @@
 import express from "express";
-import { getResult } from "../controllers/mcpController";
 
 const mcpRouter = express.Router();
-
-mcpRouter.post("/result", getResult);
 
 mcpRouter.post("/:serverName", (req, res) => {
   const { serverName } = req.params;
