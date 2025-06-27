@@ -1,13 +1,8 @@
 import axios from "axios";
-import { Request, Response } from "express";
 
-export const getResult = async (req: Request, res: Response): Promise<void> => {
-  const { student_id } = req.body;
-
+export const getResult = async (student_id: string) => {
   if (!student_id) {
-    res
-      .status(400)
-      .json({ success: false, message: "Missing student_id" });
+    return { success: false, message: "Missing student_id" };
   }
 
   try {
@@ -27,16 +22,16 @@ export const getResult = async (req: Request, res: Response): Promise<void> => {
 
     const result = response.data;
 
-    res.json({
+    return {
       success: true,
       student_id,
       result,
-    });
+    };
   } catch (error: any) {
     console.error("❌ Error fetching result:", error.message);
-    res.status(500).json({
+    return {
       success: false,
       message: "Failed to fetch result from lus.ac.bd",
-    });
+    };
   }
 };
