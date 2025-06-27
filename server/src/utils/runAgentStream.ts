@@ -3,10 +3,11 @@ import callMCPServer from "../mcp/callMCPServer";
 import { ChatCompletionContentPart } from "openai/resources/index";
 import { tools } from "../mcp/tools";
 
-const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o";
+const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4.1-nano";
 
 export async function* runAgentStream(content: ChatCompletionContentPart[]) {
-  // Step 1: Check if tool is needed
+  yield "__thinking__";
+
   const toolCheck = await openai.chat.completions.create({
     model: MODEL,
     messages: [
@@ -21,16 +22,23 @@ export async function* runAgentStream(content: ChatCompletionContentPart[]) {
   });
 
   const choice = toolCheck.choices[0];
-
-  // Step 2: Check if tool call occurred
   const toolCall = choice?.message?.tool_calls?.[0];
 
-  if (toolCall?.function?.name === "call_mcp_server") {
+  if (toolCall?.type === "function") {
+    yield "__requesting_mcp__"; // Notify frontend to show MCP status
+
     const args = JSON.parse(toolCall.function.arguments || "{}");
+    const { server, input, input2 } = args;
 
-    const mcpResult = await callMCPServer(args.server, args.input);
+    let mcpResult;
+    if (toolCall.function.name === "call_mcp_server") {
+      mcpResult = await callMCPServer(server, input);
+    } else if (toolCall.function.name === "call_mcp_without_birthdate") {
+      mcpResult = await callMCPServer(server, input);
+    } else if (toolCall.function.name === "call_mcp_with_birthdate") {
+      mcpResult = await callMCPServer(server, input, input2);
+    }
 
-    // Step 3: Feed result back into AI for final streaming
     const stream = await openai.chat.completions.create({
       model: MODEL,
       messages: [
@@ -57,7 +65,6 @@ export async function* runAgentStream(content: ChatCompletionContentPart[]) {
       if (delta) yield delta;
     }
   } else {
-    // No tool needed — stream direct response
     const stream = await openai.chat.completions.create({
       model: MODEL,
       messages: [{ role: "user", content }],

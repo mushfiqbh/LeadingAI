@@ -1,10 +1,14 @@
 import axios from "axios";
-import { getResult } from "./mcpHandler";
+import { getResult } from "./resultMCP";
 
-export default async function callMCPServer(serverName: string, input: string) {
+export default async function callMCPServer(
+  serverName: string,
+  input: string,
+  input2?: string | undefined
+) {
   try {
     if (serverName === "result") {
-      const result = await getResult(input);
+      const result = await getResult(input, input2);
       return result;
     }
 
