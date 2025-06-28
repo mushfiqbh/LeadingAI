@@ -3,7 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/authContext";
 
 export const metadata: Metadata = {
-  title: "Leading AI Agent",
+  title: " AI Agent",
   description: "Agentic AI for Leading University Students",
 };
 

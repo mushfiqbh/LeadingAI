@@ -1,38 +1,61 @@
 "use client";
 
 import { useAuth } from "@/context/authContext";
-import { handleSignOut } from "@/lib/supabaseFunctions";
-import { CircleUser } from "lucide-react";
-import { useState } from "react";
+import { logout } from "@/lib/authFunctions";
+import { CircleUser, HistoryIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
-  const { user, session } = useAuth();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
-    <div className="fixed top-0 w-full z-10 p-4 bg-transparent backdrop-blur-md">
+    <div className="fixed top-0 w-full z-10 p-4 bg-white">
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
           <span className="text-white font-bold text-sm">AI</span>
         </div>
         <div>
-          <h1 className="text-lg font-semibold text-gray-900">
-            Lucid AI Agent
-          </h1>
+          <h1 className="text-lg font-semibold text-gray-900">AI Agent</h1>
           <p className="text-sm text-gray-500">Powered by GPT-4.1 Nano</p>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          {session ? (
+          {user && (
+            <button
+              onClick={() => {
+                setShowMenu(false);
+                // Handle history click
+              }}
+              className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-300"
+            >
+              <HistoryIcon className="w-6 h-6 text-black/50" />
+            </button>
+          )}
+          {user ? (
             <div
               onClick={() => setShowMenu(!showMenu)}
               className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300"
             >
-              {user?.user_metadata?.avatar_url ? (
+              {user.photoURL ? (
                 <Image
                   height={30}
                   width={30}
-                  src={user.user_metadata.avatar_url}
+                  src={user.photoURL}
                   alt="User Avatar"
                   className="w-full h-full rounded-full object-cover"
                 />
@@ -47,45 +70,26 @@ export default function Header() {
             />
           )}
 
-          {showMenu && session && (
-            <div className="fixed z-20 top-16 right-4 rounded-lg shadow-lg border border-gray-300">
+          {showMenu && user && (
+            <div
+              ref={menuRef}
+              className="fixed z-20 top-16 right-4 rounded-lg shadow-lg border border-gray-300"
+            >
               <ul className="text-gray-700 bg-white rounded-lg shadow-lg">
-                <li>
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      // Handle profile click
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    <strong>
-                      {user?.user_metadata?.full_name || user?.email || "User"}
-                    </strong>
-                    <div className="text-sm text-gray-500">
-                      {user?.email || "No email provided"}
-                    </div>
-                  </button>
+                <li className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded">
+                  <strong>{user.displayName || "Anonymous"}</strong>
+                  <div className="text-sm text-gray-500">
+                    {user.email || "No email provided"}
+                  </div>
                 </li>
                 <li>
                   <button
                     onClick={() => {
                       setShowMenu(false);
-                      // Handle buy click
                     }}
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
                   >
-                    Buy Prompt Credit
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      // Handle data click
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    My Data
+                    Profile
                   </button>
                 </li>
                 <li>
@@ -136,7 +140,7 @@ export default function Header() {
                   <button
                     onClick={() => {
                       setShowMenu(false);
-                      handleSignOut();
+                      logout();
                     }}
                     className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-100 cursor-pointer rounded"
                   >

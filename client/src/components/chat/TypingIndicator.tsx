@@ -19,7 +19,9 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
       <div className="max-w-3xl w-full flex justify-start px-4">
         <div className="flex items-center gap-3 bg-white border border-blue-200 rounded-xl px-4 py-2 shadow-md text-blue-600 animate-fade-in">
           {/* Status Message */}
-          <span className="font-medium whitespace-nowrap">{statusMessage}</span>
+          <span className="font-medium whitespace-nowrap">
+            {statusMessage || "Please wait"}
+          </span>
 
           {/* Animated Dots */}
           <div className="flex gap-1">

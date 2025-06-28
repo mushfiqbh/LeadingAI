@@ -1,37 +1,55 @@
 "use client";
 
-import { Chat } from "@/components/Chat";
-import LoginForm from "@/components/LoginForm";
+import { Chat } from "@/components/chat/Chat";
+import AuthForm from "@/components/auth/AuthForm";
+import VerifyEmail from "@/components/auth/VerifyEmail";
 import Header from "@/components/ui/Header";
 import { useAuth } from "@/context/authContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { logout } from "@/lib/authFunctions";
 
 export default function Home() {
-  const { user, session, loading } = useAuth();
+  const { user, isEmailVerified, loading } = useAuth();
+  const [showVerifyEmail, setShowVerifyEmail] = useState(false);
+  
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-cache",
-    });
-  }, []);
+    if (user && !isEmailVerified && !loading) {
+      setShowVerifyEmail(true);
+    } else {
+      setShowVerifyEmail(false);
+    }
+  }, [user, isEmailVerified, loading]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-white">
+        <Header />
+        <main className="flex-1 mt-[80px] flex items-center justify-center">
+          <p className="text-gray-500">Loading...</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-white">
       <Header />
       <main className="flex-1 mt-[80px]">
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500">Loading...</p>
-          </div>
-        ) : user || session ? (
+        {user && isEmailVerified ? (
           <Chat />
+        ) : showVerifyEmail ? (
+          <div className="flex items-center justify-center h-full">
+            <VerifyEmail
+              onBack={() => {
+                logout();
+                setShowVerifyEmail(false);
+              }}
+            />
+          </div>
         ) : (
           <div className="flex items-center justify-center h-full">
-            <LoginForm />
+            <AuthForm />
           </div>
         )}
       </main>
