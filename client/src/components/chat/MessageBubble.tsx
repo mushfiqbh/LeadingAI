@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { User, Bot, Copy, Check } from "lucide-react";
-import { ChatMessage } from "../types";
+import { ChatMessage } from "../../types";
 import MarkdownRenderer from "./MarkdownRenderer";
 
 interface MessageBubbleProps {

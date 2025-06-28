@@ -5,12 +5,14 @@ import { MessageBubble } from "./MessageBubble";
 import { ChatInput } from "./ChatInput";
 import { TypingIndicator } from "./TypingIndicator";
 import { ErrorMessage } from "./ErrorMessage";
-import { ChatMessage, Message } from "../types";
+import { ChatMessage, Message } from "../../types";
+import { useAuth } from "@/context/authContext";
 
 const API_ENDPOINT =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:5000";
 
 export const Chat: React.FC = () => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -170,16 +172,16 @@ export const Chat: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto h-[70dvh] flex flex-col bg-white rounded-md">
+    <div className="w-full max-w-3xl mx-auto flex flex-col bg-white rounded-md">
       <div
         ref={chatContainerRef}
-        className="flex-1 overflow-y-auto scroll-smooth p-4"
+        className="flex-1 overflow-y-auto scroll-smooth p-4 mb-24"
       >
         {messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full p-8">
+          <div className="flex items-center justify-center p-4">
             <div className="text-center max-w-md">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Hello! I`m your AI Agent
+                Hello! {user?.displayName?.split(" ")[0] || "Anonymous"} 👋
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                 <div className="bg-gray-50 rounded-lg p-3 text-left">
@@ -203,7 +205,8 @@ export const Chat: React.FC = () => {
                     🔍 Download Documents
                   </p>
                   <p className="text-gray-600">
-                    Search any notes, documents and files from lucse google drive
+                    Search any notes, documents and files from lucse google
+                    drive
                   </p>
                 </div>
                 <div className="bg-gray-50 rounded-lg p-3 text-left">
@@ -229,17 +232,27 @@ export const Chat: React.FC = () => {
               );
             })}
 
-            {(isLoading || isStreaming) && (
+            {(isLoading) && (
               <TypingIndicator statusMessage={statusMessage} />
             )}
+            
             {error && <ErrorMessage message={error} onRetry={handleRetry} />}
             <div ref={messagesEndRef} />
           </div>
         )}
       </div>
 
-      {/* Input */}
-      <div className="flex-shrink-0">
+      <div className="fixed w-full max-w-3xl mx-auto bottom-0 left-0 right-0 z-10">
+        {/* <div className="flex justify-center mb-2 bg-transparent">
+          <button
+            onClick={stopStreaming}
+            className="w-fit cursor-pointer bg-teal-500 text-sm text-white p-2 rounded-md hover:bg-teal-400 transition-colors"
+            hidden={!isStreaming}
+          >
+            Stop Streaming
+          </button>
+        </div> */}
+
         <ChatInput
           onSendMessage={handleSendMessage}
           isLoading={isLoading || isStreaming}
