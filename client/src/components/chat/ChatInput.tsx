@@ -3,7 +3,7 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Send, X, ImageUp } from "lucide-react";
-import { Message } from "../types";
+import { Message } from "../../types";
 
 interface ChatInputProps {
   onSendMessage: (messages: Message) => void;
@@ -66,9 +66,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="fixed bottom-0 border-t w-full max-w-3xl border-gray-200 bg-white px-4 py-1.5">
+    <div className="bg-white p-4">
       {imagePreview && (
-        <div className="relative mb-3 max-w-xs">
+        <div className="relative max-w-xs">
           <Image
             width={10}
             height={10}
