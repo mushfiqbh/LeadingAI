@@ -39,7 +39,7 @@ export default function VerifyEmail({ onBack }: { onBack: () => void }) {
     const interval = setInterval(async () => {
       const user = auth.currentUser;
       console.log(user);
-      
+
       if (user) {
         try {
           await user.reload();
@@ -99,9 +99,10 @@ export default function VerifyEmail({ onBack }: { onBack: () => void }) {
           We`ve sent a verification link to {email}
           <br />
           <br />
-          <span className="font-semibold">
-            Please check your inbox or spam folder
-          </span>
+          <p className="font-semibold">
+            Please check your
+            <span className="text-red-500"> inbox or spam </span>folder
+          </p>
         </p>
         <span className="text-sm text-gray-500">
           and click the link to verify your email address.
@@ -143,7 +144,7 @@ export default function VerifyEmail({ onBack }: { onBack: () => void }) {
           className="text-blue-600 hover:bg-blue-50 w-full"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Sign In
+          Back to Sign In (Logout)
         </Button>
       </div>
     </div>

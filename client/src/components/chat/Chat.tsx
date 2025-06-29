@@ -11,7 +11,7 @@ import { ChatInput } from "./ChatInput";
 const API_ENDPOINT =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:5000";
 
-export const Chat: React.FC = () => {
+const Chat: React.FC = () => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -239,9 +239,6 @@ export const Chat: React.FC = () => {
               );
             })}
 
-            {/* The separate TypingIndicator is no longer needed */}
-            {/* {isLoading && !isStreaming && <TypingIndicator statusMessage={statusMessage} />} */}
-
             {error && <ErrorMessage message={error} onRetry={handleRetry} />}
             <div ref={messagesEndRef} />
           </div>
@@ -262,3 +259,5 @@ export const Chat: React.FC = () => {
     </div>
   );
 };
+
+export default Chat;

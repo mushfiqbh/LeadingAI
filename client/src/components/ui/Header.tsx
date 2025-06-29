@@ -5,6 +5,7 @@ import { logout } from "@/lib/authFunctions";
 import { Check, CircleUser, HistoryIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
@@ -75,10 +76,14 @@ export default function Header() {
           {showMenu && user && (
             <div
               ref={menuRef}
+              onClick={() => setShowMenu(false)}
               className="fixed z-20 top-16 right-4 rounded-lg shadow-lg border border-gray-300"
             >
-              <ul className="text-gray-700 bg-white rounded-lg shadow-lg">
-                <li className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded">
+              <div className="flex flex-col items-center text-gray-700 bg-white rounded-lg shadow-lg">
+                <Link
+                  href="/profile"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                >
                   <div className="flex items-center gap-2">
                     <strong>{user.displayName || "Anonymous"}</strong>
                     {user.emailVerified && (
@@ -90,73 +95,47 @@ export default function Header() {
                   <div className="text-sm text-gray-500">
                     {user.email || "No email provided"}
                   </div>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    Profile
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      // Handle settings click
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    Settings
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      // Handle report click
-                    }}
-                    className="w-full text-left px-4 py-2 text-green-400 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    Contribute
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      // Handle report click
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    Report / Feedback
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      // Handle report click
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    Developer
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      setShowMenu(false);
-                      logout();
-                    }}
-                    className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    Logout
-                  </button>
-                </li>
-              </ul>
+                </Link>
+                <Link
+                  href="/profile"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                >
+                  My Data
+                </Link>
+                <Link
+                  href="/history"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                >
+                  History
+                </Link>
+                <Link
+                  href="/contribute"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded text-green-400"
+                >
+                  Contribute
+                </Link>
+                <Link
+                  href="/report"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                >
+                  Report / Feedback
+                </Link>
+                <Link
+                  href="/developer"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                >
+                  Developer
+                </Link>
+
+                <button
+                  onClick={() => {
+                    logout();
+                  }}
+                  className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-100 cursor-pointer rounded"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           )}
         </div>

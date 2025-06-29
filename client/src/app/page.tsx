@@ -1,14 +1,14 @@
 "use client";
 
-import { Chat } from "@/components/chat/Chat";
-import AuthForm from "@/components/auth/AuthForm";
-import VerifyEmail from "@/components/auth/VerifyEmail";
-import Header from "@/components/ui/Header";
 import { useAuth } from "@/context/authContext";
 import { useEffect, useState } from "react";
 import { logout } from "@/lib/authFunctions";
+import AuthForm from "@/components/auth/AuthForm";
+import VerifyEmail from "@/components/auth/VerifyEmail";
+import Chat from "@/components/chat/Chat";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
-export default function Home() {
+export default function Page() {
   const { user, isEmailVerified, loading } = useAuth();
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
 
@@ -20,38 +20,28 @@ export default function Home() {
     }
   }, [user, isEmailVerified, loading]);
 
-  if (loading) {
+  if (loading) return <LoadingScreen />;
+
+  if (!user) {
     return (
-      <div className="min-h-screen flex flex-col bg-white">
-        <Header />
-        <main className="flex-1 mt-[80px] flex items-center justify-center">
-          <p className="text-gray-500">Loading...</p>
-        </main>
+      <div className="flex items-center justify-center h-full">
+        <AuthForm />
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <Header />
-      <main className="flex-1 mt-[80px]">
-        {user && isEmailVerified ? (
-          <Chat />
-        ) : showVerifyEmail ? (
-          <div className="flex items-center justify-center h-full">
-            <VerifyEmail
-              onBack={() => {
-                logout();
-                setShowVerifyEmail(false);
-              }}
-            />
-          </div>
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <AuthForm />
-          </div>
-        )}
-      </main>
-    </div>
-  );
+  if (!isEmailVerified && !showVerifyEmail) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <VerifyEmail
+          onBack={() => {
+            logout();
+            setShowVerifyEmail(false);
+          }}
+        />
+      </div>
+    );
+  }
+
+  return <Chat />;
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/authContext";
 import { Analytics } from "@vercel/analytics/next";
+import Header from "@/components/ui/Header";
 
 export const metadata: Metadata = {
   title: "Leading AI Agent",
@@ -10,15 +11,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body>
-        <AuthProvider>{children}</AuthProvider>
+      <body className="bg-white text-black">
+        <AuthProvider>
+          <Header />
+          <main className="w-full min-h-[calc(100dvh-80px)] mt-[80px] bg-white">
+            {children}
+          </main>
+        </AuthProvider>
+        <Analytics />
       </body>
-      <Analytics />
     </html>
   );
 }
