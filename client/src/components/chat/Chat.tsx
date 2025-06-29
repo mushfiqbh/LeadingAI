@@ -2,11 +2,11 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { MessageBubble } from "./MessageBubble";
-import { ChatInput } from "./ChatInput";
-import { TypingIndicator } from "./TypingIndicator";
+// import { TypingIndicator } from "./TypingIndicator"; // No longer needed here
 import { ErrorMessage } from "./ErrorMessage";
 import { ChatMessage, Message } from "../../types";
 import { useAuth } from "@/context/authContext";
+import { ChatInput } from "./ChatInput";
 
 const API_ENDPOINT =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:5000";
@@ -23,6 +23,7 @@ export const Chat: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [statusMessage, setStatusMessage] = useState<string>("");
+  const [inputFocused, setInputFocused] = useState<boolean>(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -30,9 +31,11 @@ export const Chat: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading, isStreaming]);
+  }, [messages, isStreaming]);
 
   const getStreamedResponse = async (prompt: Message) => {
+    // ... (formData and fetch setup is the same)
+
     const formData = new FormData();
     formData.append("text", prompt.text);
     if (prompt.image) {
@@ -55,8 +58,6 @@ export const Chat: React.FC = () => {
 
     const decoder = new TextDecoder("utf-8");
     let result = "";
-
-    // Create initial AI message
     const messageId = (Date.now() + 1).toString();
     const aiMessage: ChatMessage = {
       id: messageId,
@@ -80,14 +81,13 @@ export const Chat: React.FC = () => {
         for (const line of lines) {
           if (line.startsWith("data: ")) {
             const data = line.replace("data: ", "");
+
             if (data === "[DONE]") {
               setIsStreaming(false);
               setStreamingMessageId(null);
               setStatusMessage("");
               return result;
             }
-
-            // 🔁 Check for control signals from the backend
             if (data === "__thinking__") {
               setStatusMessage("Thinking");
               continue;
@@ -97,17 +97,14 @@ export const Chat: React.FC = () => {
               continue;
             }
 
-            // 🔁 Actual content streaming
-            result += data;
+            // When actual text arrives, clear the status message
+            setStatusMessage("");
 
-            setStatusMessage("Please wait"); // clear any prior status
+            result += data;
             setMessages((prev) =>
               prev.map((msg) =>
                 msg.id === messageId
-                  ? {
-                      ...msg,
-                      content: { text: result, image: null },
-                    }
+                  ? { ...msg, content: { text: result, image: null } }
                   : msg
               )
             );
@@ -116,12 +113,16 @@ export const Chat: React.FC = () => {
       }
     } finally {
       reader.releaseLock();
+      setIsStreaming(false);
+      setStreamingMessageId(null);
+      setStatusMessage("");
     }
 
     return result;
   };
 
   const handleSendMessage = async (content: Message) => {
+    // ... (handleSendMessage logic is the same)
     setError(null);
 
     const userMessage: ChatMessage = {
@@ -132,7 +133,7 @@ export const Chat: React.FC = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
 
     try {
       await getStreamedResponse(content);
@@ -144,18 +145,18 @@ export const Chat: React.FC = () => {
           : "Failed to send message. Please try again."
       );
 
-      // Remove streaming message only if it exists
       setMessages((prev) =>
         streamingMessageId
           ? prev.filter((msg) => msg.id !== streamingMessageId)
           : prev
       );
     } finally {
-      setIsLoading(false); // End loading
+      setIsLoading(false);
     }
   };
 
   const handleRetry = () => {
+    // ... (handleRetry logic is the same)
     if (messages.length > 0) {
       const lastUserMessage = [...messages]
         .reverse()
@@ -177,6 +178,7 @@ export const Chat: React.FC = () => {
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto scroll-smooth p-4 mb-24"
       >
+        {/* ... (empty message state is the same) */}
         {messages.length === 0 ? (
           <div className="flex items-center justify-center p-4">
             <div className="text-center max-w-md">
@@ -219,43 +221,42 @@ export const Chat: React.FC = () => {
         ) : (
           <div className="flex flex-col gap-4">
             {messages.map((message) => {
-              if (isLoading && message.id === streamingMessageId) {
-                return;
-              }
+              const isCurrentStreamingMessage =
+                isStreaming && message.id === streamingMessageId;
+
+              // NEW: Pass status message only to the currently streaming bubble
+              const currentStatusMessage = isCurrentStreamingMessage
+                ? statusMessage
+                : "";
 
               return (
                 <MessageBubble
                   key={message.id}
                   message={message}
-                  isStreaming={isStreaming && message.id === streamingMessageId}
+                  isStreaming={isCurrentStreamingMessage}
+                  statusMessage={currentStatusMessage}
                 />
               );
             })}
 
-            {(isLoading) && (
-              <TypingIndicator statusMessage={statusMessage} />
-            )}
-            
+            {/* The separate TypingIndicator is no longer needed */}
+            {/* {isLoading && !isStreaming && <TypingIndicator statusMessage={statusMessage} />} */}
+
             {error && <ErrorMessage message={error} onRetry={handleRetry} />}
             <div ref={messagesEndRef} />
           </div>
         )}
       </div>
 
-      <div className="fixed w-full max-w-3xl mx-auto bottom-0 left-0 right-0 z-10">
-        {/* <div className="flex justify-center mb-2 bg-transparent">
-          <button
-            onClick={stopStreaming}
-            className="w-fit cursor-pointer bg-teal-500 text-sm text-white p-2 rounded-md hover:bg-teal-400 transition-colors"
-            hidden={!isStreaming}
-          >
-            Stop Streaming
-          </button>
-        </div> */}
-
+      <div
+        className={`fixed w-full max-w-3xl mx-auto bottom-0 left-0 right-0 z-10 shadow-xl transition-transform ${
+          inputFocused ? "-translate-y-44" : "translate-y-0"
+        }`}
+      >
         <ChatInput
           onSendMessage={handleSendMessage}
           isLoading={isLoading || isStreaming}
+          setInputFocused={setInputFocused}
         />
       </div>
     </div>

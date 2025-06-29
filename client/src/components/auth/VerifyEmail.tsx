@@ -20,7 +20,6 @@ export default function VerifyEmail({ onBack }: { onBack: () => void }) {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setEmail(user.email || "");
-        // Send verification email if not already verified
         if (!user.emailVerified) {
           handleResend();
         }
@@ -39,6 +38,8 @@ export default function VerifyEmail({ onBack }: { onBack: () => void }) {
 
     const interval = setInterval(async () => {
       const user = auth.currentUser;
+      console.log(user);
+      
       if (user) {
         try {
           await user.reload();
@@ -64,7 +65,7 @@ export default function VerifyEmail({ onBack }: { onBack: () => void }) {
       const user = auth.currentUser;
       if (user) {
         await sendEmailVerification(user, {
-          url: `${window.location.origin}/dashboard`,
+          url: `${window.location.origin}/`,
         });
         setMessage("Verification email sent! Please check your inbox.");
       } else {
@@ -94,15 +95,17 @@ export default function VerifyEmail({ onBack }: { onBack: () => void }) {
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Verify your email
         </h2>
-        <p className="text-gray-600 mb-4">
-          We`ve sent a verification link to{" "}
-          <span className="font-semibold">{email}</span>. Please check your
-          inbox and click the link to verify your email address.
+        <p className="text-gray-600">
+          We`ve sent a verification link to {email}
+          <br />
+          <br />
+          <span className="font-semibold">
+            Please check your inbox or spam folder
+          </span>
         </p>
-        <p className="text-sm text-gray-500">
-          Didn`t receive the email? Check your spam folder or resend the
-          verification email.
-        </p>
+        <span className="text-sm text-gray-500">
+          and click the link to verify your email address.
+        </span>
       </div>
 
       {message && (

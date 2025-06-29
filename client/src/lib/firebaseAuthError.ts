@@ -5,14 +5,14 @@ export function firebaseAuthError(error: unknown): string {
 
   if (typeof error === "object" && "code" in error) {
     switch (error.code) {
-      case "auth/invalid-credential":
-        return "Invalid credentials. Check your email and password.";
       case "auth/email-already-in-use":
         return "This email is already in use. Try logging in.";
       case "auth/invalid-email":
         return "The email address is invalid.";
       case "auth/user-not-found":
         return "No account found with this email.";
+      case "auth/invalid-credential":
+        return "Invalid credentials. Check your email and password.";
       case "auth/wrong-password":
         return "Incorrect password. Please try again.";
       case "auth/weak-password":

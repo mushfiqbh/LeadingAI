@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/authContext";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
-  title: " AI Agent",
+  title: "Leading AI Agent",
   description: "Agentic AI for Leading University Students",
 };
 
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>{children}</AuthProvider>
       </body>
+      <Analytics />
     </html>
   );
 }

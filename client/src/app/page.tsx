@@ -11,7 +11,6 @@ import { logout } from "@/lib/authFunctions";
 export default function Home() {
   const { user, isEmailVerified, loading } = useAuth();
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
-  
 
   useEffect(() => {
     if (user && !isEmailVerified && !loading) {

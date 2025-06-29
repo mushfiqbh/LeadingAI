@@ -26,6 +26,12 @@ export default function LoginForm({
     setLoading(true);
     setError(null);
 
+    if (!email || !password) {
+      setError("Email and password are required.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const { error } = await signInWithEmail(email, password);
 
@@ -52,13 +58,13 @@ export default function LoginForm({
       const { error } = await signInWithGoogle();
       if (error) {
         // Only show error if it's not a popup closed error
-        if (error.message !== 'Sign in was cancelled. Please try again.') {
+        if (error.message !== "Sign in was cancelled. Please try again.") {
           setError(error.message);
         }
       }
     } catch (err) {
-      console.error('Google sign-in error:', err);
-      setError('An unexpected error occurred during sign in.');
+      console.error("Google sign-in error:", err);
+      setError("An unexpected error occurred during sign in.");
     } finally {
       setLoading(false);
     }

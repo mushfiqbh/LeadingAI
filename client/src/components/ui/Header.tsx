@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/authContext";
 import { logout } from "@/lib/authFunctions";
-import { CircleUser, HistoryIcon } from "lucide-react";
+import { Check, CircleUser, HistoryIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
@@ -31,7 +31,9 @@ export default function Header() {
           <span className="text-white font-bold text-sm">AI</span>
         </div>
         <div>
-          <h1 className="text-lg font-semibold text-gray-900">AI Agent</h1>
+          <h1 className="text-lg font-semibold text-gray-900">
+            Leading AI Agent
+          </h1>
           <p className="text-sm text-gray-500">Powered by GPT-4.1 Nano</p>
         </div>
         <div className="ml-auto flex items-center gap-2">
@@ -77,7 +79,14 @@ export default function Header() {
             >
               <ul className="text-gray-700 bg-white rounded-lg shadow-lg">
                 <li className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded">
-                  <strong>{user.displayName || "Anonymous"}</strong>
+                  <div className="flex items-center gap-2">
+                    <strong>{user.displayName || "Anonymous"}</strong>
+                    {user.emailVerified && (
+                      <span className="text-green-500 text-xs">
+                        <Check className="inline w-4 h-4" />
+                      </span>
+                    )}
+                  </div>
                   <div className="text-sm text-gray-500">
                     {user.email || "No email provided"}
                   </div>

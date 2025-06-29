@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, useState, useEffect, useContext } from "react";
-import { auth } from "@/lib/firebaseClient";
+import { auth, db } from "@/lib/firebaseClient";
 import type { User } from "firebase/auth";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 type AuthContextType = {
   user: User | null;
@@ -27,6 +28,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await firebaseUser.reload();
         setUser(firebaseUser);
         setIsEmailVerified(firebaseUser.emailVerified);
+
+        if (firebaseUser.emailVerified) {
+          const userDocRef = doc(db, "users", firebaseUser.uid);
+          const userSnap = await getDoc(userDocRef);
+
+          if (userSnap.exists()) {
+            const data = userSnap.data();
+            if (!data.emailVerified) {
+              await updateDoc(userDocRef, { emailVerified: true });
+              console.log("Updated Firestore emailVerified to true");
+            }
+          }
+        }
       } else {
         setUser(null);
         setIsEmailVerified(false);
