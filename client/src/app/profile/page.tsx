@@ -4,11 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { CircleUser } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import {
-  getUserProfileFS,
-  updateUserProfileFS,
-  deleteUserAccountFS,
-} from "@/lib/firestore";
+import { getUserProfileFS, updateUserProfileFS } from "@/functions/userProfileFunctions";
 import { UserProfile } from "@/types";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 
@@ -26,7 +22,6 @@ export default function Page() {
 
   const [loading, setLoading] = useState(true);
   const [updateLoading, setUpdateLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -69,27 +64,10 @@ export default function Page() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!user) return;
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete your account? This action cannot be undone."
-    );
-    if (!confirmDelete) return;
-
-    setDeleteLoading(true);
-    try {
-      await deleteUserAccountFS(user);
-    } catch (error) {
-      console.error("Error deleting account:", error);
-    } finally {
-      setDeleteLoading(false);
-    }
-  };
-
   if (loading && !user) return <LoadingScreen />;
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6">
+    <div className="min-h-screen bg-gray-50 px-6 pb-10">
       <div className="flex flex-col items-center py-10">
         {user?.photoURL ? (
           <Image
@@ -187,14 +165,6 @@ export default function Page() {
           className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition"
         >
           {updateLoading ? "Updating..." : "Update Profile"}
-        </button>
-
-        <button
-          onClick={handleDeleteAccount}
-          disabled={deleteLoading}
-          className="w-fit text-red-600 hover:text-red-500 cursor-pointer text-sm font-semibold p-2 rounded-lg transition mt-2"
-        >
-          {deleteLoading ? "Deleting..." : "Delete Account"}
         </button>
       </div>
     </div>

@@ -53,19 +53,3 @@ export const updateUserProfileFS = async (
   }
 };
 
-export const deleteUserAccountFS = async (user: User) => {
-  if (!user || !user.uid) {
-    console.warn("No user or user ID provided");
-    return null;
-  }
-
-  const userDocRef = doc(db, "users", user.uid);
-  try {
-    await updateDoc(userDocRef, { deleted: true });
-    console.log("User account marked as deleted successfully");
-    return true;
-  } catch (error) {
-    console.error("Error deleting user account:", error);
-    return null;
-  }
-};

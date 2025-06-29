@@ -6,11 +6,13 @@ import { Check, CircleUser, HistoryIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const router = useRouter();
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -126,6 +128,8 @@ export default function Header() {
                   <button
                     onClick={() => {
                       logout();
+                      router.push("/");
+                      setShowMenu(false);
                     }}
                     className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-100 cursor-pointer rounded"
                   >
