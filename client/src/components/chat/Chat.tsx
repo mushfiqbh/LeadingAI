@@ -5,7 +5,7 @@ import { MessageBubble } from "./MessageBubble";
 // import { TypingIndicator } from "./TypingIndicator"; // No longer needed here
 import { ErrorMessage } from "./ErrorMessage";
 import { ChatMessage, Message } from "../../types";
-import { useAuth } from "@/context/authContext";
+import { useAuth } from "@/context/AuthContext";
 import { ChatInput } from "./ChatInput";
 
 const API_ENDPOINT =

@@ -1,16 +1,18 @@
 "use client";
 
-import { useAuth } from "@/context/authContext";
+import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { logout } from "@/lib/authFunctions";
 import AuthForm from "@/components/auth/AuthForm";
 import VerifyEmail from "@/components/auth/VerifyEmail";
 import Chat from "@/components/chat/Chat";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import Landing from "@/components/general/LandingPage";
 
 export default function Page() {
   const { user, isEmailVerified, loading } = useAuth();
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
     if (user && !isEmailVerified && !loading) {
@@ -20,28 +22,29 @@ export default function Page() {
     }
   }, [user, isEmailVerified, loading]);
 
+  // If loading
   if (loading) return <LoadingScreen />;
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <AuthForm />
-      </div>
+  // If user is not logged in
+  if (!user)
+    return showLanding ? (
+      <Landing setShowLanding={setShowLanding} />
+    ) : (
+      <AuthForm />
     );
-  }
 
+  // If user is logged in but email is not verified
   if (!isEmailVerified && !showVerifyEmail) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <VerifyEmail
-          onBack={() => {
-            logout();
-            setShowVerifyEmail(false);
-          }}
-        />
-      </div>
+      <VerifyEmail
+        onBack={() => {
+          logout();
+          setShowVerifyEmail(false);
+        }}
+      />
     );
   }
 
+  // If user is logged in and email is verified
   return <Chat />;
 }

@@ -9,10 +9,8 @@ import { firebaseAuthError } from "@/lib/firebaseAuthError";
 
 export default function CreateAccountForm({
   onSwitch,
-  onVerifyEmail,
 }: {
   onSwitch: () => void;
-  onVerifyEmail: () => void;
 }) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -43,11 +41,9 @@ export default function CreateAccountForm({
         setFullName("");
         setEmail("");
         setPassword("");
-        // Let the parent component handle showing the verify email component
-        onVerifyEmail();
       }
     } catch (err) {
-      console.error('Signup error:', err);
+      console.error("Signup error:", err);
       let message = "An unexpected error occurred.";
       if (typeof err === "object" && err && "code" in err) {
         message = (err as { code: string }).code;
@@ -94,7 +90,7 @@ export default function CreateAccountForm({
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder=""
+            placeholder="Enter your password"
           />
           <button
             type="button"

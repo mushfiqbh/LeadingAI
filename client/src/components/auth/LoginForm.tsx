@@ -75,7 +75,7 @@ export default function LoginForm({
       <Button
         type="button"
         variant="outline"
-        className="w-full flex items-center justify-center gap-2"
+        className="w-full flex items-center justify-center gap-2 text-gray-700 hover:bg-gray-100"
         onClick={handleGoogleLogin}
         disabled={loading}
       >
@@ -121,7 +121,7 @@ export default function LoginForm({
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder=""
+              placeholder="Enter your password"
             />
             <button
               type="button"
