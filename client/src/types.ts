@@ -9,3 +9,18 @@ export interface ChatMessage {
   content: Message;
   timestamp: Date;
 }
+
+export interface UserProfile {
+  uid: string;
+  fullName: string;
+  email: string;
+  emailVerified: boolean;
+  createdAt: Date;
+  lastLogin?: Date;
+  photoURL?: string | null;
+  studentId?: string;
+  batch?: string;
+  section?: string;
+  department?: string;
+  aboutme?: string;
+}

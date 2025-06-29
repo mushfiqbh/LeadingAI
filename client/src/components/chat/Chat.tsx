@@ -34,8 +34,6 @@ const Chat: React.FC = () => {
   }, [messages, isStreaming]);
 
   const getStreamedResponse = async (prompt: Message) => {
-    // ... (formData and fetch setup is the same)
-
     const formData = new FormData();
     formData.append("text", prompt.text);
     if (prompt.image) {
@@ -122,7 +120,6 @@ const Chat: React.FC = () => {
   };
 
   const handleSendMessage = async (content: Message) => {
-    // ... (handleSendMessage logic is the same)
     setError(null);
 
     const userMessage: ChatMessage = {

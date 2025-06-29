@@ -46,6 +46,7 @@ export default function Header() {
               onClick={() => {
                 setShowMenu(false);
               }}
+              hidden={!user.emailVerified}
               className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-300"
             >
               <HistoryIcon className="w-6 h-6 text-black/50" />
