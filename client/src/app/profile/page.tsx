@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { CircleUser } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { getUserProfileFS, updateUserProfileFS } from "@/functions/userProfileFunctions";
+import { getUserProfileFS, updateUserProfileFS } from "@/lib/firestore";
 import { UserProfile } from "@/types";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 

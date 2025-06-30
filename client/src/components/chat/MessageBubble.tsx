@@ -37,11 +37,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     if (!timestamp) {
       return "Now";
     }
-    
+
     try {
       // Handle Firestore Timestamp objects
       let date: Date;
-      if (timestamp && typeof timestamp === 'object' && 'toDate' in timestamp) {
+      if (timestamp && typeof timestamp === "object" && "toDate" in timestamp) {
         // It's a Firestore Timestamp
         date = (timestamp as Timestamp).toDate();
       } else if (timestamp instanceof Date) {
@@ -51,13 +51,16 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         // Try to create a Date from the value
         date = new Date(timestamp as string | number);
       }
-      
+
       // Check if the date is valid
       if (isNaN(date.getTime())) {
         return "Now";
       }
-      
-      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     } catch (error) {
       console.error("Error formatting timestamp:", error);
       return "Now";
@@ -65,11 +68,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   };
 
   return (
-    <div
-      className={`flex gap-4 ${
-        isUser ? "justify-end" : "justify-start"
-      } animate-fade-in`}
-    >
+    <div className={`flex gap-4 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
         <div className="flex-shrink-0">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
@@ -99,14 +98,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   </div>
                 ) : (
                   <div className="relative">
-                    {/* NEW: Render status message OR the main content */}
                     {statusMessage && !message.content.text ? (
                       <TypingIndicator statusMessage={statusMessage} />
                     ) : (
                       <MarkdownRenderer content={message.content.text} />
                     )}
 
-                    {/* Show streaming cursor only when text is present */}
                     {isStreaming && message.content.text && (
                       <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />
                     )}

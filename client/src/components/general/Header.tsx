@@ -2,17 +2,20 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { logout } from "@/lib/authFunctions";
-import { Check, CircleUser, HistoryIcon } from "lucide-react";
+import { Check, CircleUser, MessageSquareDiff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useChatStore } from "@/hooks/useChatStore";
 
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
+  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const router = useRouter();
+  const { createConversationInFirebase, selectConversation } = useChatStore();
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -26,6 +29,39 @@ export default function Header() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleNewConversation = async () => {
+    if (!user?.uid || isCreatingConversation) return;
+
+    setIsCreatingConversation(true);
+    setShowMenu(false);
+
+    try {
+      const newConversationData = {
+        title: "New Conversation",
+        participants: [user.uid],
+        messageIds: [],
+        lastMessage: null,
+      };
+
+      const conversationId = await createConversationInFirebase(
+        newConversationData
+      );
+
+      // Select the new conversation
+      selectConversation(conversationId);
+
+      // Navigate to chat page if not already there
+      if (window.location.pathname !== "/") {
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("❌ Error creating new conversation:", error);
+      // You might want to show a toast notification here
+    } finally {
+      setIsCreatingConversation(false);
+    }
+  };
 
   return (
     <div className="fixed top-0 w-full z-10 p-4 bg-white">
@@ -45,13 +81,21 @@ export default function Header() {
         {user && (
           <div className="ml-auto flex items-center gap-2">
             <button
-              onClick={() => {
-                setShowMenu(false);
-              }}
-              hidden={!user.emailVerified}
-              className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-300"
+              onClick={handleNewConversation}
+              name="new-conversation"
+              disabled={!user.emailVerified || isCreatingConversation}
+              className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-colors ${
+                !user.emailVerified || isCreatingConversation
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-300"
+              }`}
+              title="Start new conversation"
             >
-              <HistoryIcon className="w-6 h-6 text-black/50" />
+              <MessageSquareDiff
+                className={`w-5 h-5 text-gray-900 ${
+                  isCreatingConversation ? "animate-pulse" : ""
+                }`}
+              />
             </button>
 
             <div
