@@ -10,7 +10,7 @@
 !.yarn/releases
 !.yarn/versions
 
-# keys
+# secret keys
 src/services/serviceAccountKey.json
 
 # testing

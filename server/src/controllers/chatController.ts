@@ -3,8 +3,11 @@ import { runAgentStream } from "../utils/runAgentStream";
 import { ChatCompletionContentPart } from "openai/resources/index";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
 
-export const chatController = async (req: Request, res: Response): Promise<void> => {
-  // Chat controller called
+export const chatController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  console.log("🎯 Chat controller called");
 
   const { text, conversationId, userId } = req.body;
   const image = req.file as Express.Multer.File | undefined;
@@ -45,9 +48,12 @@ export const chatController = async (req: Request, res: Response): Promise<void>
     });
   }
 
+  // Set up SSE headers
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "Cache-Control");
 
   let userMessageId: string | null = null;
   let aiMessageId: string | null = null;
@@ -78,72 +84,52 @@ export const chatController = async (req: Request, res: Response): Promise<void>
       senderId: userId,
     });
 
-    // 2. Create initial empty AI message in Firebase
-    aiMessageId = await FirebaseAdminService.createMessage({
-      role: "assistant",
-      content: {
-        text: "",
-        image: null,
-      },
-      conversationId,
-      senderId: "system",
-    });
-
-    // Add AI message to conversation
-    await FirebaseAdminService.addMessageToConversation(
-      conversationId,
-      aiMessageId
-    );
-
-    // Send message IDs to frontend for reference (optional)
+    // Send user message ID confirmation as JSON (keep this as JSON since it has data)
     res.write(
-      `data: {"type": "message_ids", "userMessageId": "${userMessageId}", "aiMessageId": "${aiMessageId}"}\n\n`
+      `data: ${JSON.stringify({
+        type: "message_ids",
+        userMessageId: userMessageId,
+      })}\n\n`
     );
 
-    // 3. Stream AI response and update Firebase in real-time
+    // 2. Stream AI response directly to client
     let accumulatedText = "";
-    let updateCount = 0;
-    const UPDATE_FREQUENCY = 3; // Update Firebase every 3 chunks
 
     for await (const messageChunk of runAgentStream(content)) {
-      // Send chunk to frontend for immediate display (optional - frontend can rely on Firebase listeners)
-      res.write(`data: ${messageChunk}\n\n`);
-
-      // Handle special status messages
-      if (
-        messageChunk === "__thinking__" ||
-        messageChunk === "__requesting_mcp__"
-      ) {
+      // Handle special status messages - send as simple strings
+      if (messageChunk === "__thinking__") {
+        res.write(`data: __thinking__\n\n`);
         continue;
       }
 
-      // Accumulate actual text content
-      accumulatedText += messageChunk;
-      updateCount++;
-
-      // Update Firebase periodically and on final chunk
-      if (updateCount % UPDATE_FREQUENCY === 0) {
-        try {
-          await FirebaseAdminService.updateMessageById(aiMessageId, {
-            content: {
-              text: accumulatedText,
-              image: null,
-            },
-          });
-        } catch (updateError) {
-          // Continue streaming even if update fails
-        }
+      if (messageChunk === "__requesting_mcp__") {
+        res.write(`data: __requesting_mcp__\n\n`);
+        continue;
       }
+
+      // Stream the actual text chunk as raw text
+      accumulatedText += messageChunk;
+      res.write(`data: ${messageChunk}\n\n`);
     }
 
-    // 4. Final update to Firebase with complete message
+    // 3. Create AI message in Firebase after completion
     if (accumulatedText) {
-      await FirebaseAdminService.updateMessageById(aiMessageId, {
+      aiMessageId = await FirebaseAdminService.createMessage({
+        role: "assistant",
         content: {
           text: accumulatedText,
           image: null,
         },
+        conversationId,
+        senderId: "system",
+        timestamp: new Date(),
       });
+
+      // Add AI message to conversation
+      await FirebaseAdminService.addMessageToConversation(
+        conversationId,
+        aiMessageId
+      );
 
       // Update conversation lastMessage with AI response
       await FirebaseAdminService.updateConversationLastMessage(conversationId, {
@@ -152,22 +138,25 @@ export const chatController = async (req: Request, res: Response): Promise<void>
           (accumulatedText.length > 100 ? "..." : ""),
         senderId: "system",
       });
+
+      // Send completion with AI message ID as JSON (keep this as JSON since it has data)
+      res.write(
+        `data: ${JSON.stringify({
+          type: "complete",
+          aiMessageId: aiMessageId,
+        })}\n\n`
+      );
     }
 
+    // Send simple completion signal
     res.write(`data: [DONE]\n\n`);
-    res.end();
   } catch (err) {
-    console.error("Error in chat controller:", err);
-    
-    // Check if the error is Firebase-related
-    if (err instanceof Error) {
-      console.error("Error details:", err.message);
-      if (err.message.includes("credential") || err.message.includes("authentication")) {
-        console.error("Firebase credentials issue detected. Please check your Firebase Admin setup.");
-      }
-    }
-    
+    console.error("💥 Error in chat controller:", err);
+
+    // Send simple error signal
     res.write(`data: [ERROR]\n\n`);
+  } finally {
+    // Always end the response
     res.end();
   }
 };

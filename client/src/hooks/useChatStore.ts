@@ -9,6 +9,7 @@ type ChatStore = {
   conversations: Conversation[];
   messages: Record<string, Message[]>;
   selectedConversationId: string | null;
+  areConversationsLoading: boolean;
 
   setConversations: (conversations: Conversation[]) => void;
   createConversation: (conversation: Conversation) => void;
@@ -18,6 +19,7 @@ type ChatStore = {
   selectConversation: (id: string | null) => void;
   setMessages: (conversationId: string, messages: Message[]) => void;
   addMessage: (conversationId: string, message: Message) => void;
+  updateMessage: (conversationId: string, messageId: string, updates: Partial<Message>) => void;
   addMessageToFirebase: (
     message: Omit<Message, "id" | "timestamp">
   ) => Promise<string>;
@@ -27,8 +29,12 @@ export const useChatStore = create<ChatStore>((set) => ({
   conversations: [],
   messages: {},
   selectedConversationId: null,
+  areConversationsLoading: true,
 
-  setConversations: (conversations) => set({ conversations }),
+  setConversations: (conversations) => set({ 
+    conversations,
+    areConversationsLoading: false 
+  }),
 
   createConversation: (conversation) =>
     set((state) => ({
@@ -58,12 +64,40 @@ export const useChatStore = create<ChatStore>((set) => ({
     })),
 
   addMessage: (conversationId, message) =>
-    set((state) => ({
-      messages: {
-        ...state.messages,
-        [conversationId]: [...(state.messages[conversationId] || []), message],
-      },
-    })),
+    set((state) => {
+      const currentMessages = state.messages[conversationId] || [];
+      return {
+        messages: {
+          ...state.messages,
+          [conversationId]: [...currentMessages, message],
+        },
+      };
+    }),
+
+  updateMessage: (conversationId, messageId, updates) =>
+    set((state) => {
+      const currentMessages = state.messages[conversationId] || [];
+      const messageIndex = currentMessages.findIndex((msg) => msg.id === messageId);
+
+      if (messageIndex === -1) return state;
+
+      const updatedMessages = [...currentMessages];
+      updatedMessages[messageIndex] = {
+        ...updatedMessages[messageIndex],
+        ...updates,
+        content: {
+          ...updatedMessages[messageIndex].content,
+          ...(updates.content || {}),
+        },
+      };
+
+      return {
+        messages: {
+          ...state.messages,
+          [conversationId]: updatedMessages,
+        },
+      };
+    }),
 
   addMessageToFirebase: async (messageData) => {
     try {

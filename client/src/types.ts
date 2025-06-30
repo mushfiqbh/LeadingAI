@@ -17,10 +17,10 @@ export interface Message {
 
 export interface Conversation {
   id: string;
+  title: string;
   participants: string[];
-  messages: Message[];
+  messageIds: string[];
   lastMessage: Message | null;
-  userId: string;
   createdAt: Date | Timestamp;
   updatedAt: Date | Timestamp;
 }
@@ -31,6 +31,7 @@ export interface UserProfile {
   email: string;
   emailVerified: boolean;
   createdAt: Date;
+  lastConversation: Conversation | null;
   lastLogin?: Date;
   photoURL?: string | null;
   studentId?: string;
@@ -38,6 +39,5 @@ export interface UserProfile {
   section?: string;
   department?: string;
   aboutme?: string;
-  conversations?: string[];
   isAdmin?: boolean;
 }
