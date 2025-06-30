@@ -1,5 +1,5 @@
 import { doc, updateDoc, getDoc } from "firebase/firestore";
-import { db } from "./firebaseClient";
+import { db } from "@/lib/firebaseClient";
 import { User } from "firebase/auth";
 import { UserProfile } from "@/types";
 
@@ -52,4 +52,3 @@ export const updateUserProfileFS = async (
     return null;
   }
 };
-

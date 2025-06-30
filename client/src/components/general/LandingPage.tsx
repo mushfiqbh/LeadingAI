@@ -54,7 +54,7 @@ export default function Landing({
         </p>
 
         <p>
-          Made with <span className="text-red-500">♥</span>
+          Made with <span className="text-red-500">♥</span> Github Copilot
         </p>
       </div>
     </div>

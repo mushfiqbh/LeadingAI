@@ -1,29 +1,139 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import { MessageBubble } from "./MessageBubble";
-// import { TypingIndicator } from "./TypingIndicator"; // No longer needed here
 import { ErrorMessage } from "./ErrorMessage";
-import { ChatMessage, Message } from "../../types";
+import { ChatMessage } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 import { ChatInput } from "./ChatInput";
+import { useChatListeners } from "@/store/useChatListeners";
+import { useChatStore } from "@/store/useChatStore";
 
 const API_ENDPOINT =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:5000";
 
+const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
 const Chat: React.FC = () => {
   const { user } = useAuth();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  // Zustand store hooks
+  const {
+    conversations,
+    selectedConversationId,
+    messages: storeMessages,
+    createConversationInFirebase,
+    selectConversation,
+  } = useChatStore();
+
+  // Initialize chat listeners with user ID
+  useChatListeners(user?.uid || "");
+
+  // Get messages for the current conversation
+  const currentMessages = useMemo(() => {
+    return selectedConversationId
+      ? storeMessages[selectedConversationId] || []
+      : [];
+  }, [selectedConversationId, storeMessages]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(
-    null
-  );
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [inputFocused, setInputFocused] = useState<boolean>(false);
+
+  // Session management
+  const getSessionKey = (userId: string) => `chat_session_${userId}`;
+
+  const initializeSession = useCallback(async () => {
+    if (!user?.uid) return;
+
+    const sessionKey = getSessionKey(user.uid);
+    const storedSession = localStorage.getItem(sessionKey);
+
+    if (storedSession) {
+      try {
+        const { conversationId, timestamp } = JSON.parse(storedSession);
+        const now = Date.now();
+
+        // Check if session is still valid (within 24 hours)
+        if (now - timestamp < SESSION_DURATION) {
+          // Session is valid, select the existing conversation
+          const existingConversation = conversations.find(
+            (c) => c.id === conversationId
+          );
+          if (existingConversation) {
+            selectConversation(conversationId);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing stored session:", error);
+      }
+    }
+
+    // No valid session or conversation not found, create new conversation or select the last one
+    if (conversations.length > 0) {
+      // Select the most recent conversation
+      const latestConversation = conversations[0]; // conversations are ordered by updatedAt desc
+      selectConversation(latestConversation.id);
+
+      // Update session
+      localStorage.setItem(
+        sessionKey,
+        JSON.stringify({
+          conversationId: latestConversation.id,
+          timestamp: Date.now(),
+        })
+      );
+    } else {
+      // Create a new conversation in Firebase
+      const newConversationData = {
+        participants: [user.uid],
+        messages: [],
+        lastMessage: null,
+        userId: user.uid,
+      };
+
+      try {
+        const conversationId = await createConversationInFirebase(
+          newConversationData
+        );
+        selectConversation(conversationId);
+
+        // Store session
+        localStorage.setItem(
+          sessionKey,
+          JSON.stringify({
+            conversationId,
+            timestamp: Date.now(),
+          })
+        );
+      } catch (error) {
+        console.error("Error creating conversation:", error);
+      }
+    }
+  }, [
+    user?.uid,
+    conversations,
+    selectConversation,
+    createConversationInFirebase,
+  ]);
+
+  // Initialize session when user changes or conversations load
+  useEffect(() => {
+    if (user?.uid && conversations !== undefined) {
+      initializeSession();
+    }
+  }, [user?.uid, conversations, initializeSession]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,11 +141,22 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isStreaming]);
+  }, [currentMessages, isStreaming]);
 
-  const getStreamedResponse = async (prompt: Message) => {
+  const getStreamedResponse = async (prompt: ChatMessage) => {
+    if (!selectedConversationId || !user?.uid) return;
+
+    console.log("🚀 Sending message to backend:", {
+      text: prompt.text.substring(0, 50) + "...",
+      conversationId: selectedConversationId,
+      userId: user.uid,
+      hasImage: !!prompt.image,
+    });
+
     const formData = new FormData();
     formData.append("text", prompt.text);
+    formData.append("conversationId", selectedConversationId);
+    formData.append("userId", user.uid);
     if (prompt.image) {
       formData.append("image", prompt.image);
     }
@@ -55,17 +176,6 @@ const Chat: React.FC = () => {
     }
 
     const decoder = new TextDecoder("utf-8");
-    let result = "";
-    const messageId = (Date.now() + 1).toString();
-    const aiMessage: ChatMessage = {
-      id: messageId,
-      role: "assistant",
-      content: { text: "", image: null },
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, aiMessage]);
-    setStreamingMessageId(messageId);
     setIsStreaming(true);
 
     try {
@@ -82,70 +192,92 @@ const Chat: React.FC = () => {
 
             if (data === "[DONE]") {
               setIsStreaming(false);
-              setStreamingMessageId(null);
               setStatusMessage("");
-              return result;
+              return;
             }
+
+            if (data === "[ERROR]") {
+              setIsStreaming(false);
+              setStatusMessage("");
+              throw new Error("Server error during streaming");
+            }
+
             if (data === "__thinking__") {
               setStatusMessage("Thinking");
               continue;
             }
+
             if (data === "__requesting_mcp__") {
               setStatusMessage("Requesting MCP Server");
               continue;
             }
 
+            // Try to parse as JSON for message IDs
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.type === "message_ids") {
+                console.log("Message IDs received:", parsed);
+                continue;
+              }
+            } catch {
+              // Not JSON, treat as regular text chunk
+            }
+
             // When actual text arrives, clear the status message
             setStatusMessage("");
 
-            result += data;
-            setMessages((prev) =>
-              prev.map((msg) =>
-                msg.id === messageId
-                  ? { ...msg, content: { text: result, image: null } }
-                  : msg
-              )
-            );
+            // Note: We don't need to update local state here anymore
+            // The Firebase listeners will automatically update the UI
+            // This streaming is now just for real-time visual feedback
           }
         }
       }
     } finally {
       reader.releaseLock();
       setIsStreaming(false);
-      setStreamingMessageId(null);
       setStatusMessage("");
     }
-
-    return result;
   };
 
-  const handleSendMessage = async (content: Message) => {
+  const handleSendMessage = async (content: ChatMessage) => {
+    if (!selectedConversationId || !user?.uid) return;
+
     setError(null);
-
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      role: "user",
-      content,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
+    // 1. Immediately add user message to UI (optimistic update)
+    const tempUserMessage = {
+      id: `temp_${Date.now()}`, // Temporary ID
+      role: "user" as const,
+      content,
+      timestamp: new Date(),
+      conversationId: selectedConversationId,
+      senderId: user.uid,
+    };
+
+    // Add to Zustand store immediately
+    const { addMessage } = useChatStore.getState();
+    addMessage(selectedConversationId, tempUserMessage);
+
     try {
+      // 2. Send to backend (which handles Firebase)
       await getStreamedResponse(content);
     } catch (err) {
+      // 3. If error, remove the optimistic message
+      const currentMessages =
+        useChatStore.getState().messages[selectedConversationId] || [];
+      const filteredMessages = currentMessages.filter(
+        (msg) => msg.id !== tempUserMessage.id
+      );
+      useChatStore
+        .getState()
+        .setMessages(selectedConversationId, filteredMessages);
+
       console.error("Error sending message:", err);
       setError(
         err instanceof Error
           ? err.message
           : "Failed to send message. Please try again."
-      );
-
-      setMessages((prev) =>
-        streamingMessageId
-          ? prev.filter((msg) => msg.id !== streamingMessageId)
-          : prev
       );
     } finally {
       setIsLoading(false);
@@ -153,16 +285,21 @@ const Chat: React.FC = () => {
   };
 
   const handleRetry = () => {
-    // ... (handleRetry logic is the same)
-    if (messages.length > 0) {
-      const lastUserMessage = [...messages]
+    if (!selectedConversationId) return;
+
+    const currentConvMessages = storeMessages[selectedConversationId] || [];
+    if (currentConvMessages.length > 0) {
+      const lastUserMessage = [...currentConvMessages]
         .reverse()
         .find((msg) => msg.role === "user");
       if (lastUserMessage) {
         // Remove the last assistant message if it exists and retry
-        const lastMessageIndex = messages.length - 1;
-        if (messages[lastMessageIndex]?.role === "assistant") {
-          setMessages((prev) => prev.slice(0, -1));
+        const lastMessageIndex = currentConvMessages.length - 1;
+        if (currentConvMessages[lastMessageIndex]?.role === "assistant") {
+          const updatedMessages = currentConvMessages.slice(0, -1);
+          useChatStore
+            .getState()
+            .setMessages(selectedConversationId, updatedMessages);
         }
         handleSendMessage(lastUserMessage.content);
       }
@@ -176,7 +313,7 @@ const Chat: React.FC = () => {
         className="flex-1 overflow-y-auto scroll-smooth p-4 mb-24"
       >
         {/* ... (empty message state is the same) */}
-        {messages.length === 0 ? (
+        {currentMessages.length === 0 ? (
           <div className="flex items-center justify-center p-4">
             <div className="text-center max-w-md">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -217,11 +354,14 @@ const Chat: React.FC = () => {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {messages.map((message) => {
+            {currentMessages.map((message, index) => {
+              // Show streaming indicator on the last assistant message when streaming
+              const isLastMessage = index === currentMessages.length - 1;
+              const isAssistantMessage = message.role === "assistant";
               const isCurrentStreamingMessage =
-                isStreaming && message.id === streamingMessageId;
+                isStreaming && isLastMessage && isAssistantMessage;
 
-              // NEW: Pass status message only to the currently streaming bubble
+              // Pass status message only to the currently streaming bubble
               const currentStatusMessage = isCurrentStreamingMessage
                 ? statusMessage
                 : "";

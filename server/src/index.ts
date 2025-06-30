@@ -1,7 +1,11 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import { getApps } from "firebase-admin/app";
 import chatRouter from "./routes/chatRouter";
+
+// Initialize Firebase Admin (this will run the initialization code)
+import "./services/firebaseAdmin";
 
 // app config
 const app = express();
@@ -18,6 +22,31 @@ app.get("/", (req, res) => {
     live: true,
     message: "Server is running",
   });
+});
+
+// Health check for Firebase
+app.get("/health/firebase", async (req, res) => {
+  try {
+    // Check if Firebase is initialized by getting the app instance
+    const apps = getApps();
+    if (apps.length === 0) {
+      throw new Error("Firebase app not initialized");
+    }
+
+    res.status(200).json({
+      status: "success",
+      firebase: "connected",
+      message: "Firebase Admin SDK is working properly",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Firebase health check failed:", error);
+    res.status(500).json({
+      firebase: "error",
+      message: "Firebase Admin SDK is not properly configured",
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
 });
 
 app.use("/chat", chatRouter);

@@ -3,10 +3,10 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Send, X, ImageUp } from "lucide-react";
-import { Message } from "../../types";
+import { ChatMessage } from "../../types";
 
 interface ChatInputProps {
-  onSendMessage: (messages: Message) => void;
+  onSendMessage: (messages: ChatMessage) => void;
   isLoading: boolean;
   setInputFocused: (focused: boolean) => void;
 }
@@ -29,7 +29,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     adjustTextareaHeight();
     setInputFocused(false);
 
-    const message: Message = {
+    const message: ChatMessage = {
       text: input.trim(),
       image: image || null,
     };

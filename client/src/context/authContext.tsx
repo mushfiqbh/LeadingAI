@@ -24,28 +24,46 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
-      if (firebaseUser) {
-        await firebaseUser.reload();
-        setUser(firebaseUser);
-        setIsEmailVerified(firebaseUser.emailVerified);
+      setLoading(true);
+      try {
+        if (firebaseUser) {
+          await firebaseUser.reload();
+          setUser(firebaseUser);
+          setIsEmailVerified(firebaseUser.emailVerified);
 
-        if (firebaseUser.emailVerified) {
-          const userDocRef = doc(db, "users", firebaseUser.uid);
-          const userSnap = await getDoc(userDocRef);
+          if (firebaseUser.emailVerified) {
+            try {
+              const userDocRef = doc(db, "users", firebaseUser.uid);
+              const userSnap = await getDoc(userDocRef);
 
-          if (userSnap.exists()) {
-            const data = userSnap.data();
-            if (!data.emailVerified) {
-              await updateDoc(userDocRef, { emailVerified: true });
-              console.log("Updated Firestore emailVerified to true");
+              if (userSnap.exists()) {
+                const data = userSnap.data();
+                if (data.emailVerified !== true) {
+                  await updateDoc(userDocRef, { 
+                    emailVerified: true,
+                    lastUpdated: new Date().toISOString() 
+                  });
+                  console.log("Updated Firestore emailVerified to true");
+                }
+              } else {
+                console.log("User document does not exist yet");
+              }
+            } catch (error) {
+              console.error("Error accessing user document:", error);
+              if (error && typeof error === 'object' && 'code' in error && error.code === 'permission-denied') {
+                console.error("Firestore permission denied. Check your security rules.");
+              }
             }
           }
+        } else {
+          setUser(null);
+          setIsEmailVerified(false);
         }
-      } else {
-        setUser(null);
-        setIsEmailVerified(false);
+      } catch (error) {
+        console.error("Auth state change error:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();
