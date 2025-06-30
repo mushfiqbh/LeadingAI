@@ -19,15 +19,17 @@ export default function Landing({
         </button>
       </div>
 
-      <div className="max-w-2xl mx-auto py-16">
-        <h2 className="text-3xl font-semibold mb-6">Features</h2>
-        <ul className="list-disc list-inside text-left space-y-4">
-          <li>Collaborative AI agents for group projects</li>
-          <li>Advanced AI tools for research and learning</li>
-          <li>Seamless integration with university resources</li>
-          <li>Community-driven knowledge sharing</li>
-        </ul>
-        <p className="mt-6 text-gray-600">
+      <div className="max-w-2xl mx-auto py-16 text-gray-600 flex flex-col items-center gap-4">
+        <h2 className="text-3xl font-semibold mb-6 text-gray-800">Features</h2>
+        <p>Get help with questions, explanations, or creative writing.</p>
+        <p>Access class schedules, exam details, academic results, and more.</p>
+        <p>
+          Instantly search and retrieve notes, files, and resources from LU CSE
+          Google Drive.
+        </p>
+        <p>Powered by advanced AI for quick, context-aware responses.</p>
+        <p>Designed to assist with study, research, and campus life.</p>
+        <p>
           Join us in revolutionizing the way students collaborate and learn
           using AI.
         </p>

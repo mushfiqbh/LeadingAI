@@ -3,9 +3,20 @@ import express from "express";
 import cors from "cors";
 import { getApps } from "firebase-admin/app";
 import chatRouter from "./routes/chatRouter";
+import fs from "fs";
 
 // Initialize Firebase Admin (this will run the initialization code)
 import "./services/firebaseAdmin";
+
+if (
+  process.env.GCP_CREDENTIALS_JSON &&
+  process.env.GOOGLE_APPLICATION_CREDENTIALS
+) {
+  fs.writeFileSync(
+    process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    process.env.GCP_CREDENTIALS_JSON
+  );
+}
 
 // app config
 const app = express();

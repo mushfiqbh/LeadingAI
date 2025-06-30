@@ -39,9 +39,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               if (userSnap.exists()) {
                 const data = userSnap.data();
                 if (data.emailVerified !== true) {
-                  await updateDoc(userDocRef, { 
+                  await updateDoc(userDocRef, {
                     emailVerified: true,
-                    lastUpdated: new Date().toISOString() 
+                    lastUpdated: new Date().toISOString(),
                   });
                   console.log("Updated Firestore emailVerified to true");
                 }
@@ -50,8 +50,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               }
             } catch (error) {
               console.error("Error accessing user document:", error);
-              if (error && typeof error === 'object' && 'code' in error && error.code === 'permission-denied') {
-                console.error("Firestore permission denied. Check your security rules.");
+              if (
+                error &&
+                typeof error === "object" &&
+                "code" in error &&
+                error.code === "permission-denied"
+              ) {
+                console.error(
+                  "Firestore permission denied. Check your security rules."
+                );
               }
             }
           }
