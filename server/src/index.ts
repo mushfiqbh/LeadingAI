@@ -7,6 +7,7 @@ import fs from "fs";
 
 // Initialize Firebase Admin (this will run the initialization code)
 import "./services/firebaseAdmin";
+import { version } from "os";
 
 if (
   process.env.GCP_CREDENTIALS_JSON &&
@@ -31,6 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.status(200).json({
     live: true,
+    version: "2.3.0",
     message: "Server is running",
   });
 });
