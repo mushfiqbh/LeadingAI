@@ -31,7 +31,7 @@ export const getResult = async (student_id: string, birth_date?: string) => {
       result,
     };
   } catch (error: any) {
-    console.error("❌ Error fetching result:", error.message);
+    console.error("Error fetching result:", error.message);
     return {
       success: false,
       message: "Failed to fetch result from lus.ac.bd",

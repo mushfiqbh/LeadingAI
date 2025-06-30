@@ -16,6 +16,7 @@ export async function* runAgentStream(content: ChatCompletionContentPart[]) {
         content: "You're an agent that can use an MCP server if needed.",
       },
       { role: "user", content },
+      { role: "user", content: new Date().toISOString() },
     ],
     tools,
     tool_choice: "auto",
@@ -47,6 +48,7 @@ export async function* runAgentStream(content: ChatCompletionContentPart[]) {
           content: "You're an agent that uses MCP data to answer.",
         },
         { role: "user", content },
+        { role: "user", content: new Date().toISOString() },
         {
           role: "assistant",
           tool_calls: [toolCall],
