@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/f6464555-5e08-485d-93d8-fd67b8839e32/resourceGroups/appsvc_linux_eastus2/providers/Microsoft.Web/sites/LeadingAI",
+    "appService.deploySubpath": "."
+}

@@ -26,7 +26,7 @@ export async function* runAgentStream(content: ChatCompletionContentPart[]) {
   const toolCall = choice?.message?.tool_calls?.[0];
 
   if (toolCall?.type === "function") {
-    yield "__requesting_mcp__"; // Notify frontend to show MCP status
+    yield "__calling_mcp__"; // Notify frontend to show MCP status
 
     const args = JSON.parse(toolCall.function.arguments || "{}");
     const { server, input, input2 } = args;

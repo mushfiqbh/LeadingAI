@@ -12,10 +12,10 @@ export const useChatApi = () => {
   const { user } = useAuth();
   const {
     selectedConversationId,
-    addMessage,
     updateMessage,
     setMessages,
     messages,
+    addMessageToFirebase,
   } = useChatStore();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -23,13 +23,14 @@ export const useChatApi = () => {
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>("");
 
-  const getStreamedResponse = async (prompt: ChatMessage) => {
+  const getStreamedResponse = async (prompt: ChatMessage, aiMessageId: string) => {
     if (!selectedConversationId || !user?.uid) return;
 
     const formData = new FormData();
     formData.append("text", prompt.text);
     formData.append("conversationId", selectedConversationId);
     formData.append("userId", user.uid);
+    formData.append("aiMessageId", aiMessageId); // Send the real AI message ID
     if (prompt.image) {
       formData.append("image", prompt.image);
     }
@@ -44,104 +45,85 @@ export const useChatApi = () => {
     const reader = response.body?.getReader();
     if (!reader) throw new Error("Response body is not readable");
 
-    const decoder = new TextDecoder("utf-8");
+    const decoder = new TextDecoder();
     let buffer = "";
     let streamingText = "";
-    let tempAiMessageId: string | null = null;
+    let wordBuffer = ""; // Buffer for word-by-word streaming
 
     setIsStreaming(true);
-    setStatusMessage("Please wait");
+    setStatusMessage("🔄 Connecting to server...");
 
     try {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
+        // Decode the chunk properly with stream option
         buffer += decoder.decode(value, { stream: true });
 
-        // Process all complete SSE messages in buffer
+        // Process all complete SSE messages
         while (buffer.includes("\n\n")) {
-          const newlineIndex = buffer.indexOf("\n\n");
-          const line = buffer.substring(0, newlineIndex).trim();
-          buffer = buffer.substring(newlineIndex + 2);
+          const idx = buffer.indexOf("\n\n");
+          const fullLine = buffer.slice(0, idx).trim();
+          buffer = buffer.slice(idx + 2);
 
-          if (!line.startsWith("data: ")) continue;
+          if (!fullLine.startsWith("data: ")) continue;
 
-          const dataStr = line.substring(5).trim();
+          const data = fullLine.slice(6);
 
-          // Handle completion signals
-          if (dataStr === "[DONE]") {
+          if (data === "[DONE]") {
             return;
           }
-          if (dataStr === "[ERROR]") {
+
+          if (data === "[ERROR]") {
             throw new Error("Server error during streaming");
           }
 
-          // Handle status messages (raw strings)
-          if (dataStr === "__thinking__") {
+          if (data === "__thinking__") {
             setStatusMessage("🤔 Thinking");
             continue;
           }
-          if (dataStr === "__requesting_mcp__") {
-            setStatusMessage("🔗 Requesting MCP Server");
+
+          if (data === "__calling_mcp__") {
+            setStatusMessage("🔗 Calling MCP Server");
             continue;
           }
 
-          // Check if message looks like JSON before trying to parse
-          if (dataStr.startsWith("{") && dataStr.endsWith("}")) {
-            try {
-              const data = JSON.parse(dataStr);
+          // Clear status message when we start receiving actual content
+          if (statusMessage && statusMessage !== "") {
+            setStatusMessage("");
+          }
 
-              // Handle user message creation confirmation
-              if (data.type === "message_ids" && data.userMessageId) {
-                continue;
-              }
+          // Add characters to word buffer for smoother streaming
+          wordBuffer += data;
+          
+          // Check if we should update the display (on word boundaries or after some characters)
+          const shouldUpdate = /[\s\n\r\t,.!?;:]/.test(data) || wordBuffer.length >= 10;
+          
+          if (shouldUpdate) {
+            // Update streaming text with the buffered content
+            streamingText += wordBuffer;
+            wordBuffer = ""; // Reset buffer
 
-              // Handle AI response chunks
-              if (data.type === "chunk" && data.text) {
-                streamingText += data.text;
-
-                // Create or update temporary AI message in UI
-                if (!tempAiMessageId) {
-                  tempAiMessageId = `temp_ai_${Date.now()}`;
-                  const tempMessage = {
-                    id: tempAiMessageId,
-                    role: "assistant" as const,
-                    content: { text: streamingText, image: null },
-                    timestamp: new Date(),
-                    conversationId: selectedConversationId,
-                    senderId: "system",
-                  };
-                  addMessage(selectedConversationId, tempMessage);
-                } else {
-                  // Update existing temporary message
-                  updateMessage(selectedConversationId, tempAiMessageId, {
-                    content: { text: streamingText, image: null },
-                  });
-                }
-                continue;
-              }
-
-              // Handle completion with final message ID
-              if (data.type === "complete" && data.aiMessageId) {
-                setStatusMessage("");
-                continue;
-              }
-            } catch (parseError) {
-              console.warn("Invalid JSON message:", dataStr, parseError);
-            }
-          } else {
-            // Handle non-JSON messages (raw strings)
-            if (dataStr) {
-              setStatusMessage(dataStr);
-            }
+            // Update the real AI message with streaming content
+            updateMessage(selectedConversationId, aiMessageId, {
+              content: { text: streamingText, image: null },
+            });
           }
         }
       }
+      
+      // Handle any remaining content in word buffer
+      if (wordBuffer) {
+        streamingText += wordBuffer;
+        updateMessage(selectedConversationId, aiMessageId, {
+          content: { text: streamingText, image: null },
+        });
+      }
     } finally {
       reader.releaseLock();
-      setIsStreaming(false);
-      setStatusMessage("");
+      setStatusMessage(""); // Clear FIRST
+      setIsStreaming(false); // Then stop streaming
     }
   };
 
@@ -152,7 +134,24 @@ export const useChatApi = () => {
     setIsLoading(true);
 
     try {
-      await getStreamedResponse(content);
+      // 1. Create user message in Firebase (frontend)
+      await addMessageToFirebase({
+        role: "user",
+        content: content,
+        conversationId: selectedConversationId,
+        senderId: user.uid,
+      });
+
+      // 2. Create empty AI message in Firebase (frontend)
+      const aiMessageId = await addMessageToFirebase({
+        role: "assistant",
+        content: { text: "", image: null },
+        conversationId: selectedConversationId,
+        senderId: "system",
+      });
+
+      // 3. Stream AI response and update the real AI message
+      await getStreamedResponse(content, aiMessageId);
     } catch (err) {
       console.error("Error sending message:", err);
       setError(
@@ -180,16 +179,12 @@ export const useChatApi = () => {
         .find((msg) => msg.role === "user");
 
       if (lastUserMessage) {
-        // Remove the last assistant message if it exists (including temp messages)
+        // Remove the last assistant message if it exists
         const lastMessageIndex = currentMessages.length - 1;
         const lastMessage = currentMessages[lastMessageIndex];
 
-        if (
-          lastMessage &&
-          (lastMessage.role === "assistant" ||
-            lastMessage.id.startsWith("temp_"))
-        ) {
-          // Filter out the last message
+        if (lastMessage && lastMessage.role === "assistant") {
+          // Filter out the last AI message
           const updatedMessages = currentMessages.slice(0, -1);
           setMessages(selectedConversationId, updatedMessages);
         }

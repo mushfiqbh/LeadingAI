@@ -86,7 +86,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           }`}
         >
           <div className="mb-2 last:mb-0">
-            {message.content.text || statusMessage ? ( // Render if there's text OR a status
+            {(message.content.text || statusMessage) && (
               <div
                 className={`prose prose-sm max-w-none ${
                   isUser ? "prose-invert" : ""
@@ -101,16 +101,18 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     {statusMessage && !message.content.text ? (
                       <TypingIndicator statusMessage={statusMessage} />
                     ) : (
-                      <MarkdownRenderer content={message.content.text} />
-                    )}
-
-                    {isStreaming && message.content.text && (
-                      <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />
+                      <>
+                        <MarkdownRenderer content={message.content.text} />
+                        {isStreaming && message.content.text && (
+                          <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />
+                        )}
+                      </>
                     )}
                   </div>
                 )}
               </div>
-            ) : null}
+            )}
+
             {message.content.image && (
               // ... (image rendering is the same)
               <div className="mt-2">
@@ -153,7 +155,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       </div>
 
       {isUser && (
-        // ... (user icon is the same)
         <div className="flex-shrink-0">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-blue-600 flex items-center justify-center">
             <User className="w-4 h-4 text-white" />

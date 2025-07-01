@@ -12,14 +12,16 @@ type ChatStore = {
   areConversationsLoading: boolean;
 
   setConversations: (conversations: Conversation[]) => void;
-  createConversation: (conversation: Conversation) => void;
   createConversationInFirebase: (
     conversation: Omit<Conversation, "id" | "createdAt" | "updatedAt">
   ) => Promise<string>;
   selectConversation: (id: string | null) => void;
   setMessages: (conversationId: string, messages: Message[]) => void;
-  addMessage: (conversationId: string, message: Message) => void;
-  updateMessage: (conversationId: string, messageId: string, updates: Partial<Message>) => void;
+  updateMessage: (
+    conversationId: string,
+    messageId: string,
+    updates: Partial<Message>
+  ) => void;
   addMessageToFirebase: (
     message: Omit<Message, "id" | "timestamp">
   ) => Promise<string>;
@@ -31,17 +33,11 @@ export const useChatStore = create<ChatStore>((set) => ({
   selectedConversationId: null,
   areConversationsLoading: true,
 
-  setConversations: (conversations) => set({ 
-    conversations,
-    areConversationsLoading: false 
-  }),
-
-  createConversation: (conversation) =>
-    set((state) => ({
-      conversations: [...state.conversations, conversation],
-      selectedConversationId: conversation.id,
-      messages: { ...state.messages, [conversation.id]: [] },
-    })),
+  setConversations: (conversations) =>
+    set({
+      conversations,
+      areConversationsLoading: false,
+    }),
 
   createConversationInFirebase: async (conversationData) => {
     try {
@@ -63,21 +59,12 @@ export const useChatStore = create<ChatStore>((set) => ({
       messages: { ...state.messages, [conversationId]: messages },
     })),
 
-  addMessage: (conversationId, message) =>
-    set((state) => {
-      const currentMessages = state.messages[conversationId] || [];
-      return {
-        messages: {
-          ...state.messages,
-          [conversationId]: [...currentMessages, message],
-        },
-      };
-    }),
-
   updateMessage: (conversationId, messageId, updates) =>
     set((state) => {
       const currentMessages = state.messages[conversationId] || [];
-      const messageIndex = currentMessages.findIndex((msg) => msg.id === messageId);
+      const messageIndex = currentMessages.findIndex(
+        (msg) => msg.id === messageId
+      );
 
       if (messageIndex === -1) return state;
 
