@@ -59,26 +59,7 @@ export function useChatListeners(userId: string) {
         timestamp: doc.data().timestamp?.toDate() || new Date(),
       })) as Message[];
 
-      // Get current messages to handle temp message replacement
-      const currentMessages =
-        useChatStore.getState().messages[selectedConversationId] || [];
-
-      // Check if we have temp AI messages that should be replaced
-      const tempAiMessages = currentMessages.filter((msg) =>
-        msg.id.startsWith("temp_ai_")
-      );
-
-      if (
-        tempAiMessages.length > 0 &&
-        firebaseMessages.length >
-          currentMessages.filter((msg) => !msg.id.startsWith("temp_")).length
-      ) {
-        console.log(
-          "🔄 Replacing temporary AI messages with Firestore messages"
-        );
-      }
-
-      // Always replace with Firestore messages (this handles temp message cleanup)
+      // Since we're using real AI messages now, just use Firebase messages directly
       setMessages(selectedConversationId, firebaseMessages);
     });
 

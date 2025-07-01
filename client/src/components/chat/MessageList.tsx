@@ -35,9 +35,9 @@ export const MessageList: React.FC<MessageListProps> = ({
         const isAssistantMessage = message.role === "assistant";
         const isCurrentStreamingMessage =
           isStreaming && isLastMessage && isAssistantMessage;
-        const currentStatusMessage = isCurrentStreamingMessage
-          ? statusMessage
-          : "✋ Please wait";
+        
+        // Only pass statusMessage to the current streaming message
+        const currentStatusMessage = isCurrentStreamingMessage ? statusMessage : "";
 
         return (
           <MessageBubble
@@ -48,6 +48,25 @@ export const MessageList: React.FC<MessageListProps> = ({
           />
         );
       })}
+
+      {/* Show status bubble when streaming but no AI message exists yet */}
+      {isStreaming && statusMessage && messages.length > 0 && 
+       messages[messages.length - 1].role !== "assistant" && (
+        <MessageBubble
+          key="status-loading"
+          message={{
+            id: "status-loading",
+            role: "assistant" as const,
+            content: { text: "", image: null },
+            timestamp: new Date(),
+            conversationId: "",
+            senderId: "system",
+          }}
+          isStreaming={true}
+          statusMessage={statusMessage}
+        />
+      )}
+
       {error && <ErrorMessage message={error} onRetry={onRetry} />}
       <div ref={messagesEndRef} />
     </div>
