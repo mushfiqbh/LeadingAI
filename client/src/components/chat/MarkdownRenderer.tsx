@@ -35,15 +35,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
     }
   }, [copiedCode]);
 
-  // Process the content to handle escaped newlines and ensure proper markdown formatting
-  const processContent = (text: string) => {
-    return text
-      .replace(/\\n/g, "\n") // Convert \n to actual newlines
-      .replace(/\n\n\n+/g, "\n\n") // Normalize multiple newlines to double newlines
-      .trim();
-  };
-
-  const processedContent = processContent(content);
+  const processedContent = content;
 
   return (
     <ReactMarkdown

@@ -23,8 +23,11 @@ export const useChatApi = () => {
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>("");
 
-  const getStreamedResponse = async (prompt: ChatMessage, aiMessageId: string) => {
-    if (!selectedConversationId || !user?.uid) return;
+  const getStreamedResponse = async (
+    prompt: ChatMessage,
+    aiMessageId: string
+  ) => {
+    if (!selectedConversationId || !user?.uid || !prompt.text) return;
 
     const formData = new FormData();
     formData.append("text", prompt.text);
@@ -51,7 +54,6 @@ export const useChatApi = () => {
     let wordBuffer = ""; // Buffer for word-by-word streaming
 
     setIsStreaming(true);
-    setStatusMessage("🔄 Connecting to server...");
 
     try {
       while (true) {
@@ -96,12 +98,15 @@ export const useChatApi = () => {
 
           // Add characters to word buffer for smoother streaming
           wordBuffer += data;
-          
+
           // Check if we should update the display (on word boundaries or after some characters)
-          const shouldUpdate = /[\s\n\r\t,.!?;:]/.test(data) || wordBuffer.length >= 10;
-          
+          // Preserve all newlines and whitespace in the buffer
+          const shouldUpdate =
+            /[\s\n\r\t,.!?;:]/.test(data) || wordBuffer.length >= 10;
+
           if (shouldUpdate) {
-            // Update streaming text with the buffered content
+            // Update streaming text with the buffered content (preserving all characters including \n\n)
+
             streamingText += wordBuffer;
             wordBuffer = ""; // Reset buffer
 
@@ -112,7 +117,7 @@ export const useChatApi = () => {
           }
         }
       }
-      
+
       // Handle any remaining content in word buffer
       if (wordBuffer) {
         streamingText += wordBuffer;
