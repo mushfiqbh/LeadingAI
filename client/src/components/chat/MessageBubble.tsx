@@ -6,7 +6,7 @@ import { User, Bot, Copy, Check } from "lucide-react";
 import { Message } from "../../types";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { TypingIndicator } from "./TypingIndicator";
-import { Timestamp } from "firebase/firestore";
+import { formatTime } from "@/utils/formatFirebaseTimestamp";
 
 interface MessageBubbleProps {
   message: Message;
@@ -30,40 +30,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy text:", err);
-    }
-  };
-
-  const formatTime = (timestamp: Date | Timestamp | null | undefined) => {
-    if (!timestamp) {
-      return "Now";
-    }
-
-    try {
-      // Handle Firestore Timestamp objects
-      let date: Date;
-      if (timestamp && typeof timestamp === "object" && "toDate" in timestamp) {
-        // It's a Firestore Timestamp
-        date = (timestamp as Timestamp).toDate();
-      } else if (timestamp instanceof Date) {
-        // It's already a Date object
-        date = timestamp;
-      } else {
-        // Try to create a Date from the value
-        date = new Date(timestamp as string | number);
-      }
-
-      // Check if the date is valid
-      if (isNaN(date.getTime())) {
-        return "Now";
-      }
-
-      return date.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch (error) {
-      console.error("Error formatting timestamp:", error);
-      return "Now";
     }
   };
 
@@ -94,13 +60,16 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               }`}
             >
               {isUser ? (
-                <div>{message.content.text}</div>
+                <div className="whitespace-pre-wrap break-words">
+                  {message.content.text}
+                </div>
               ) : (
                 <div className="relative">
                   {statusMessage && !message.content.text ? (
                     <TypingIndicator statusMessage={statusMessage} />
                   ) : (
-                    <div className="whitespace-pre-wrap break-words">
+                    // Never style this div as "whitespace-pre-wrap break-words", MarkdownRenderer will handle it
+                    <div>
                       <MarkdownRenderer content={message.content.text} />
                       {isStreaming && message.content.text && (
                         <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />

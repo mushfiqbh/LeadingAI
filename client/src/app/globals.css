@@ -40,9 +40,10 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none; /* IE and Edge */
   overflow: -moz-scrollbars-none; /* Firefox */
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-  }
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
 
 .animate-fade-in {

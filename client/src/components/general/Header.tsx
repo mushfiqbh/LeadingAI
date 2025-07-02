@@ -63,7 +63,7 @@ export default function Header() {
   };
 
   return (
-    <div className="fixed top-0 w-full z-10 p-4 bg-white">
+    <div className="fixed top-0 w-full z-20 p-4 bg-white">
       <div className="flex items-center gap-3">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
@@ -118,7 +118,7 @@ export default function Header() {
               <div
                 ref={menuRef}
                 onClick={() => setShowMenu(false)}
-                className="fixed z-20 top-16 right-4 rounded-lg shadow-lg border border-gray-300"
+                className="fixed z-30 top-16 right-4 rounded-lg shadow-lg border border-gray-300"
               >
                 <div className="flex flex-col items-center text-gray-700 bg-white rounded-lg shadow-lg">
                   <Link
