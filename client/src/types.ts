@@ -19,7 +19,6 @@ export interface Conversation {
   id: string;
   title: string;
   participants: string[];
-  messageIds: string[];
   lastMessage: Message | null;
   createdAt: Date | Timestamp;
   updatedAt: Date | Timestamp;

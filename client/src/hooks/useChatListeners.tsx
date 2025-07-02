@@ -59,7 +59,6 @@ export function useChatListeners(userId: string) {
         timestamp: doc.data().timestamp?.toDate() || new Date(),
       })) as Message[];
 
-      // Since we're using real AI messages now, just use Firebase messages directly
       setMessages(selectedConversationId, firebaseMessages);
     });
 

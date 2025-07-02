@@ -34,7 +34,7 @@ export default function Page() {
     );
 
   // If user is logged in but email is not verified
-  if (!isEmailVerified && !showVerifyEmail) {
+  if (!isEmailVerified && showVerifyEmail) {
     return (
       <VerifyEmail
         onBack={() => {

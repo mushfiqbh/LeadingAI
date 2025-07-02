@@ -34,6 +34,8 @@ export default function CreateAccountForm({
     try {
       const { error } = await signUpWithEmail(email, password, fullName);
 
+      localStorage.setItem("emailVerificationLastSent", Date.now().toString());
+
       if (error) {
         setError(firebaseAuthError(error));
       } else {

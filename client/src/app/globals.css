@@ -36,6 +36,16 @@ body {
   }
 }
 
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none; /* IE and Edge */
+  overflow: -moz-scrollbars-none; /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
 }
