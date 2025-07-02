@@ -45,12 +45,8 @@ export const useChatSession = () => {
         // User has no conversation - create one
         const newConversationData = {
           participants: [user.uid],
-          messageIds: [],
           lastMessage: null,
           title: "New Chat",
-          model: "gpt-4",
-          createdAt: new Date(),
-          updatedAt: new Date(),
         };
 
         const conversationId = await createConversationInFirebase(

@@ -40,7 +40,6 @@ export default function Header() {
       const newConversationData = {
         title: "New Conversation",
         participants: [user.uid],
-        messageIds: [],
         lastMessage: null,
       };
 
