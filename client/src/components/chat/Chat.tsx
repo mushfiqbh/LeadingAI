@@ -52,7 +52,9 @@ const Chat: React.FC = () => {
 
       <div
         className={`fixed w-full max-w-3xl mx-auto bottom-0 left-0 right-0 z-10 shadow-xl transition-transform ${
-          inputFocused ? "-translate-y-44" : "translate-y-0"
+          window.outerWidth < 768 && inputFocused
+            ? "-translate-y-64"
+            : "translate-y-0"
         }`}
       >
         <ChatInput

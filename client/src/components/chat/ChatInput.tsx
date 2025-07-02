@@ -100,7 +100,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             accept="image/*"
             onChange={handleImageUpload}
             className="hidden"
-            disabled={isLoading}
+            disabled
           />
           <ImageUp className="w-5 h-5" />
         </label>
@@ -116,7 +116,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           }}
           onKeyDown={handleKeyDown}
           placeholder="Prompt here..."
-          className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[48px] max-h-[120px] placeholder-gray-500"
+          className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-xl scrollbar-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[48px] max-h-[120px] placeholder-gray-500"
           rows={1}
           disabled={isLoading}
         />

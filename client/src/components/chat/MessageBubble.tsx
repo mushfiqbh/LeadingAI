@@ -67,6 +67,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     }
   };
 
+  if (!message.content.text && !statusMessage) return null;
+
   return (
     <div className={`flex gap-4 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
@@ -86,32 +88,28 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           }`}
         >
           <div className="mb-2 last:mb-0">
-            {(message.content.text || statusMessage) && (
-              <div
-                className={`prose prose-sm max-w-none ${
-                  isUser ? "prose-invert" : ""
-                }`}
-              >
-                {isUser ? (
-                  <div className="whitespace-pre-wrap break-words">
-                    {message.content.text}
-                  </div>
-                ) : (
-                  <div className="relative">
-                    {statusMessage && !message.content.text ? (
-                      <TypingIndicator statusMessage={statusMessage} />
-                    ) : (
-                      <>
-                        <MarkdownRenderer content={message.content.text} />
-                        {isStreaming && message.content.text && (
-                          <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />
-                        )}
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
+            <div
+              className={`prose prose-sm max-w-none ${
+                isUser ? "prose-invert" : ""
+              }`}
+            >
+              {isUser ? (
+                <div>{message.content.text}</div>
+              ) : (
+                <div className="relative">
+                  {statusMessage && !message.content.text ? (
+                    <TypingIndicator statusMessage={statusMessage} />
+                  ) : (
+                    <div className="whitespace-pre-wrap break-words">
+                      <MarkdownRenderer content={message.content.text} />
+                      {isStreaming && message.content.text && (
+                        <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {message.content.image && (
               // ... (image rendering is the same)

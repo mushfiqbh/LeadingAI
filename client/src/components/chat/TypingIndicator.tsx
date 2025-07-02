@@ -10,9 +10,7 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({
   return (
     <div className="flex items-center gap-3 bg-white text-blue-600">
       {/* Status Message */}
-      <span className="font-medium whitespace-nowrap">
-        {statusMessage}
-      </span>
+      <span className="font-medium whitespace-nowrap">{statusMessage}</span>
 
       {/* Animated Dots */}
       <div className="flex gap-1">
