@@ -78,6 +78,25 @@ export class FirebaseAdminService {
     }
   }
 
+  // Get all messages by conversation ID
+  static async getMessagesByConversationId(conversationId: string) {
+    try {
+      const messagesSnapshot = await adminDb
+        .collection("messages")
+        .where("conversationId", "==", conversationId)
+        .orderBy("timestamp", "asc")
+        .get();
+
+      return messagesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error) {
+      console.error("💥 Error getting messages by conversation ID:", error);
+      throw error;
+    }
+  }
+
   // Create a new message in a conversation
   static async createMessage(messageData: any) {
     try {
@@ -112,12 +131,18 @@ export class FirebaseAdminService {
   }
 
   // Add a message to a conversation's messages array
-  static async addMessageToConversation(conversationId: string, messageId: string) {
+  static async addMessageToConversation(
+    conversationId: string,
+    messageId: string
+  ) {
     try {
-      await adminDb.collection("conversations").doc(conversationId).update({
-        messageIds: FieldValue.arrayUnion(messageId),
-        updatedAt: FieldValue.serverTimestamp(),
-      });
+      await adminDb
+        .collection("conversations")
+        .doc(conversationId)
+        .update({
+          messageIds: FieldValue.arrayUnion(messageId),
+          updatedAt: FieldValue.serverTimestamp(),
+        });
       // Added message to conversation
     } catch (error) {
       console.error("💥 Error adding message to conversation:", error);
