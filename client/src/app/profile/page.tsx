@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getUserProfileFS, updateUserProfileFS } from "@/lib/firestore";
 import { UserProfile } from "@/types";
+import ProtectedRoute from "@/components/general/ProtectedRoute";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 
 export default function Page() {
@@ -64,113 +65,120 @@ export default function Page() {
     }
   };
 
-  if (loading && !user) return <LoadingScreen />;
+  if (loading) return <LoadingScreen />;
 
   return (
-    <div className="min-h-screen bg-gray-50 px-6 pb-10">
-      <div className="flex flex-col items-center py-10">
-        {user?.photoURL ? (
-          <Image
-            priority
-            src={user.photoURL}
-            width={96}
-            height={96}
-            alt="Profile Picture"
-            className="rounded-full w-24 h-24 object-cover"
-          />
-        ) : (
-          <CircleUser className="w-24 h-24 text-gray-400" />
-        )}
-        <div className="text-center">
-          <p className="text-xl font-semibold text-gray-800">
-            {userProfile?.fullName || "Name not set"}
-          </p>
-          <p className="text-sm text-gray-500">{userProfile?.email}</p>
-          <p className="text-xs text-gray-400">
-            {userProfile?.emailVerified
-              ? "Email verified"
-              : "Email not verified"}
-          </p>
-        </div>
-      </div>
-
-      <div className="w-full max-w-md mx-auto space-y-4">
-        <Input
-          label="Full Name"
-          value={formData.fullName}
-          onChange={(val) => setFormData({ ...formData, fullName: val })}
-        />
-        <Input
-          label="Student ID"
-          value={formData.studentId}
-          onChange={(val) => setFormData({ ...formData, studentId: val })}
-        />
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            label="Batch"
-            value={formData.batch}
-            onChange={(val) => setFormData({ ...formData, batch: val })}
-          />
-          <Input
-            label="Section"
-            value={formData.section}
-            onChange={(val) => setFormData({ ...formData, section: val })}
-          />
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50 px-6 pb-10">
+        <div className="flex flex-col items-center py-10">
+          {user?.photoURL ? (
+            <Image
+              priority
+              src={user.photoURL}
+              width={96}
+              height={96}
+              alt="Profile Picture"
+              className="rounded-full w-24 h-24 object-cover"
+            />
+          ) : (
+            <CircleUser className="w-24 h-24 text-gray-400" />
+          )}
+          <div className="text-center">
+            <p className="text-xl font-semibold text-gray-800">
+              {userProfile?.fullName || "Name not set"}
+            </p>
+            <p className="text-sm text-gray-500">{userProfile?.email}</p>
+            <p className="text-xs text-gray-400">
+              {userProfile?.emailVerified
+                ? "Email verified"
+                : "Email not verified"}
+            </p>
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">Department</label>
-          <select
-            value={formData.department}
-            onChange={(e) =>
-              setFormData({ ...formData, department: e.target.value })
-            }
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+        <div className="w-full max-w-md mx-auto space-y-4">
+          <Input
+            label="Full Name"
+            value={formData.fullName}
+            onChange={(val) => setFormData({ ...formData, fullName: val })}
+          />
+          <Input
+            label="Student ID"
+            value={formData.studentId}
+            onChange={(val) => setFormData({ ...formData, studentId: val })}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Batch"
+              value={formData.batch}
+              onChange={(val) => setFormData({ ...formData, batch: val })}
+            />
+            <Input
+              label="Section"
+              value={formData.section}
+              onChange={(val) => setFormData({ ...formData, section: val })}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">
+              Department
+            </label>
+            <select
+              value={formData.department}
+              onChange={(e) =>
+                setFormData({ ...formData, department: e.target.value })
+              }
+              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            >
+              <option value="">Select Department</option>
+              <option value="CSE">Computer Science and Engineering</option>
+              <option value="ECE">
+                Electronics and Communication Engineering
+              </option>
+              <option value="EEE">
+                Electrical and Electronics Engineering
+              </option>
+              <option value="ME">Mechanical Engineering</option>
+              <option value="CE">Civil Engineering</option>
+              <option value="IT">Information Technology</option>
+              <option value="BBA">Bachelor of Business Administration</option>
+              <option value="MBA">Master of Business Administration</option>
+              <option value="BCA">Bachelor of Computer Applications</option>
+              <option value="MCA">Master of Computer Applications</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">
+              Anything About You AI Will Use
+            </label>
+            <textarea
+              placeholder="About Me"
+              value={formData.aboutme}
+              onChange={(e) =>
+                setFormData({ ...formData, aboutme: e.target.value })
+              }
+              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+              rows={4}
+            />
+          </div>
+
+          <button
+            onClick={handleUpdateProfile}
+            disabled={updateLoading}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition"
           >
-            <option value="">Select Department</option>
-            <option value="CSE">Computer Science and Engineering</option>
-            <option value="ECE">
-              Electronics and Communication Engineering
-            </option>
-            <option value="EEE">Electrical and Electronics Engineering</option>
-            <option value="ME">Mechanical Engineering</option>
-            <option value="CE">Civil Engineering</option>
-            <option value="IT">Information Technology</option>
-            <option value="BBA">Bachelor of Business Administration</option>
-            <option value="MBA">Master of Business Administration</option>
-            <option value="BCA">Bachelor of Computer Applications</option>
-            <option value="MCA">Master of Computer Applications</option>
-            <option value="Other">Other</option>
-          </select>
+            {updateLoading ? "Updating..." : "Update Profile"}
+          </button>
         </div>
-
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">
-            Anything About You AI Will Use
-          </label>
-          <textarea
-            placeholder="About Me"
-            value={formData.aboutme}
-            onChange={(e) =>
-              setFormData({ ...formData, aboutme: e.target.value })
-            }
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-            rows={4}
-          />
-        </div>
-
-        <button
-          onClick={handleUpdateProfile}
-          disabled={updateLoading}
-          className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition"
-        >
-          {updateLoading ? "Updating..." : "Update Profile"}
-        </button>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }
 
+// Reusable Input Component
 function Input({
   label,
   value,

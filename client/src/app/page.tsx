@@ -10,8 +10,8 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import Landing from "@/components/general/LandingPage";
 
 export default function Page() {
-  const { user, isEmailVerified, loading } = useAuth();
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
+  const { user, isEmailVerified, loading } = useAuth();
   const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {

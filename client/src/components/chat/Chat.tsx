@@ -34,7 +34,7 @@ const Chat: React.FC = () => {
   }, [selectedConversationId, storeMessages]);
 
   return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col bg-white rounded-md h-full">
+    <div className="w-full max-w-3xl mx-auto flex flex-col bg-white rounded-md">
       <div className="flex-1 overflow-y-auto scroll-smooth p-4 mb-24">
         {currentMessages.length === 0 ? (
           <EmptyChat userName={user?.displayName?.split(" ")[0]} />
