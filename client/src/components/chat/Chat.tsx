@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useChatStore } from "@/hooks/useChatStore";
 import { useChatSession } from "@/hooks/useChatSession";
@@ -13,7 +13,6 @@ import { useChatListeners } from "@/hooks/useChatListeners";
 const Chat: React.FC = () => {
   const { user } = useAuth();
   const { selectedConversationId, messages: storeMessages } = useChatStore();
-  const [inputFocused, setInputFocused] = useState<boolean>(false);
 
   // Custom hooks to manage logic
   useChatListeners(user?.uid || "");
@@ -50,17 +49,10 @@ const Chat: React.FC = () => {
         )}
       </div>
 
-      <div
-        className={`fixed w-full max-w-3xl mx-auto bottom-0 left-0 right-0 z-10 shadow-xl transition-transform ${
-          window.outerWidth < 768 && inputFocused
-            ? "-translate-y-64"
-            : "translate-y-0"
-        }`}
-      >
+      <div className="fixed w-full max-w-3xl mx-auto bottom-0 left-0 right-0 z-10 shadow-xl transition-transform">
         <ChatInput
           onSendMessage={handleSendMessage}
           isLoading={isLoading || isStreaming}
-          setInputFocused={setInputFocused}
         />
       </div>
     </div>

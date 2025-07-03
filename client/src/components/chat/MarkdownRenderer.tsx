@@ -35,8 +35,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
     }
   }, [copiedCode]);
 
-  const processedContent = content;
-
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
@@ -203,7 +201,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
         ),
       }}
     >
-      {processedContent}
+      {content}
     </ReactMarkdown>
   );
 };
