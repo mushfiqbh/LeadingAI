@@ -8,13 +8,11 @@ import { ChatMessage } from "../../types";
 interface ChatInputProps {
   onSendMessage: (messages: ChatMessage) => void;
   isLoading: boolean;
-  setInputFocused: (focused: boolean) => void;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   isLoading,
-  setInputFocused,
 }) => {
   const [input, setInput] = useState("");
   const [image, setImage] = useState<File | null>(null);
@@ -27,7 +25,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     if (!input.trim() && !image) return;
 
     adjustTextareaHeight();
-    setInputFocused(false);
 
     const message: ChatMessage = {
       text: input.trim(),
@@ -108,8 +105,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         <textarea
           ref={textareaRef}
           value={input}
-          onFocus={() => setInputFocused(true)}
-          onBlur={() => setInputFocused(false)}
           onChange={(e) => {
             setInput(e.target.value);
             adjustTextareaHeight();
