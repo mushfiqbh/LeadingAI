@@ -45,7 +45,7 @@ export default function Landing({
           onClick={() => setShowLanding(false)}
           className="px-6 py-3 cursor-pointer bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
         >
-          Start Now
+          Login
         </button>
       </div>
 
