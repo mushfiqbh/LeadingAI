@@ -80,6 +80,7 @@ export default function Header() {
         {user && (
           <div className="ml-auto flex items-center gap-2">
             <button
+              hidden
               onClick={handleNewConversation}
               name="new-conversation"
               disabled={!user.emailVerified || isCreatingConversation}
@@ -95,6 +96,20 @@ export default function Header() {
                   isCreatingConversation ? "animate-pulse" : ""
                 }`}
               />
+            </button>
+
+            <button
+              name="contribute"
+              onClick={() => {
+                if (!user.emailVerified) {
+                  alert("Please verify your email to contribute.");
+                  return;
+                }
+                router.push("/contribute");
+              }}
+              className="text-xs md:text-sm cursor-pointer text-blue-600 hover:text-blue-800 transition-colors p-1 rounded-full border border-blue-600 hover:border-blue-800 "
+            >
+              Contribute
             </button>
 
             <div
@@ -142,6 +157,12 @@ export default function Header() {
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
                   >
                     My Data
+                  </Link>
+                  <Link
+                    href="/"
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
+                  >
+                    Back to Chat
                   </Link>
                   <Link
                     href="/history"

@@ -6,6 +6,7 @@ import {
   where,
   orderBy,
   onSnapshot,
+  limit,
 } from "firebase/firestore";
 import { useChatStore } from "./useChatStore";
 import { Conversation, Message } from "@/types";
@@ -49,7 +50,8 @@ export function useChatListeners(userId: string) {
     const q = query(
       collection(db, "messages"),
       where("conversationId", "==", selectedConversationId),
-      orderBy("timestamp", "asc")
+      orderBy("timestamp", "asc"),
+      limit(100)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {

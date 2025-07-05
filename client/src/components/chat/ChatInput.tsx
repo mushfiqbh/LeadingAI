@@ -17,7 +17,27 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const [input, setInput] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Sample suggested messages
+  const suggestions = [
+    "Check my result",
+    "Latest university notices",
+    "Create my class routine",
+    "Generate exam schedule",
+    "Find notes and pdfs",
+    "What can you do?",
+  ];
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setInput(suggestion);
+    setShowSuggestions(false);
+    textareaRef.current?.focus();
+    setTimeout(() => {
+      adjustTextareaHeight();
+    }, 0);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +54,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     setInput("");
     setImage(null);
     setImagePreview(null);
+    setShowSuggestions(true); // Show suggestions again after sending
 
     // Reset textarea height after clearing input
     setTimeout(() => {
@@ -77,7 +98,25 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="bg-white p-4">
+    <div className="bg-white p-2 pb-4">
+      {/* Suggested Messages */}
+      {showSuggestions && input.trim() === "" && !image && (
+        <div className="mb-2">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hidden pb-2">
+            {suggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 border border-gray-200 whitespace-nowrap flex-shrink-0"
+                type="button"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {imagePreview && (
         <div className="relative max-w-xs">
           <Image
@@ -117,6 +156,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           value={input}
           onChange={(e) => {
             setInput(e.target.value);
+            setShowSuggestions(e.target.value.trim() === ""); // Hide suggestions when typing
             adjustTextareaHeight();
           }}
           onKeyDown={handleKeyDown}

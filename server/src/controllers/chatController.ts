@@ -72,6 +72,7 @@ export const chatController = async (
               content: {
                 text,
                 imageUrl: image_url,
+                uploadStatus: "done",
               },
             });
             console.log("✅ Image uploaded and message updated successfully");

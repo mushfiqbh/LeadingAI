@@ -4,7 +4,7 @@ export interface ChatMessage {
   text: string;
   image?: File | null;
   imageUrl?: string;
-  uploadStatus?: "pending" | "sent" | "received" | "none" | "error";
+  uploadStatus?: "pending" | "sent" | "received" | "done" | "none" | "error";
 }
 
 export interface Message {
