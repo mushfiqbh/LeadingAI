@@ -120,8 +120,7 @@ export class FirebaseAdminService {
         .collection("messages")
         .doc(messageId)
         .update({
-          ...updateData,
-          timestamp: FieldValue.serverTimestamp(),
+          ...updateData, // Avoid overwriting the timestamp (Important for streaming)
         });
       // Message updated
     } catch (error) {
@@ -163,6 +162,40 @@ export class FirebaseAdminService {
       // Conversation updated
     } catch (error) {
       console.error("💥 Error updating conversation:", error);
+      throw error;
+    }
+  }
+
+  // Get user profile by user ID
+  static async getUserProfile(userId: string) {
+    try {
+      const doc = await adminDb.collection("users").doc(userId).get();
+
+      if (!doc.exists) {
+        throw new Error(`User profile ${userId} not found`);
+      }
+
+      return { id: doc.id, ...doc.data() };
+    } catch (error) {
+      console.error("💥 Error getting user profile:", error);
+      throw error;
+    }
+  }
+
+  // Update user profile by user ID
+  static async updateUserProfile(userId: string, profileData: any) {
+    try {
+      await adminDb
+        .collection("users")
+        .doc(userId)
+        .update({
+          ...profileData,
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+
+      console.log(`✅ User profile ${userId} updated successfully`);
+    } catch (error) {
+      console.error("💥 Error updating user profile:", error);
       throw error;
     }
   }

@@ -7,6 +7,7 @@ interface StreamAgentParams {
   messages: ChatCompletionMessageParam[];
   aiMessageId: string;
   conversationId: string;
+  onComplete?: () => Promise<void>;
   res: Response;
 }
 
@@ -14,6 +15,7 @@ export async function streamAgentResponse({
   messages,
   aiMessageId,
   conversationId,
+  onComplete,
   res,
 }: StreamAgentParams): Promise<void> {
   res.setHeader("Content-Type", "text/event-stream");
@@ -42,12 +44,18 @@ export async function streamAgentResponse({
       });
 
       await FirebaseAdminService.updateConversationLastMessage(conversationId, {
-        text: accumulatedText.substring(0, 100) + (accumulatedText.length > 100 ? "..." : ""),
+        text:
+          accumulatedText.substring(0, 100) +
+          (accumulatedText.length > 100 ? "..." : ""),
         senderId: "system",
       });
     }
 
     res.write(`data: [DONE]\n\n`);
+
+    if (onComplete) {
+      await onComplete();
+    }
   } catch (error) {
     console.error("❌ SSE streaming error:", error);
     res.write(`data: [ERROR]\n\n`);

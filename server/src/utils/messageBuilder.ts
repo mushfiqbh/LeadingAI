@@ -4,17 +4,51 @@ interface MessageBuilderParams {
   text: string;
   conversationMessages: any[];
   image?: Express.Multer.File;
+  userProfile?: any;
 }
+
 
 export function buildMessagesWithContext({
   text,
   conversationMessages,
   image,
+  userProfile,
 }: MessageBuilderParams): ChatCompletionMessageParam[] {
+  // Build system message with user profile context
+  let systemContent = `You are a helpful AI assistant. Today's date is ${
+    new Date().toISOString().split("T")[0]
+  }. `;
+
+  if (userProfile) {
+    // Filter out excluded fields
+    const excludedFields = [
+      "id",
+      "uid",
+      "photourl",
+      "lastLogin",
+      "lastUpdated",
+      "createdAt",
+      "updatedAt",
+      "emailVerified",
+      "isAdmin",
+    ];
+    const profileData = Object.entries(userProfile)
+      .filter(([key]) => !excludedFields.includes(key))
+      .filter(
+        ([, value]) => value !== null && value !== undefined && value !== ""
+      )
+      .map(([key, value]) => `${key}: ${value}`)
+      .join(", ");
+
+    if (profileData) {
+      systemContent += `User Profile: ${profileData}`;
+    }
+  }
+
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: `You are a helpful AI assistant. Today's date is ${new Date().toISOString().split("T")[0]}`,
+      content: systemContent,
     },
   ];
 
