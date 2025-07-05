@@ -70,8 +70,8 @@ const Chat: React.FC = () => {
   }, [isStreaming, selectedConversationId]);
 
   return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col bg-white rounded-md">
-      <div className="flex-1 overflow-y-auto scroll-smooth p-4 mb-32">
+    <div className="w-full max-w-5xl mx-auto flex flex-col h-full bg-gradient-to-br from-gray-50/50 via-white/30 to-blue-50/30 rounded-xl shadow-lg border border-white/20">
+      <div className="flex-1 overflow-y-auto scroll-smooth p-2 mb-32 min-h-0">
         {currentMessages.length === 0 ? (
           <EmptyChat userName={user?.displayName?.split(" ")[0]} />
         ) : (
@@ -85,7 +85,7 @@ const Chat: React.FC = () => {
         )}
       </div>
 
-      <div className="fixed w-full max-w-3xl mx-auto bottom-0 left-0 right-0 z-10 shadow-xl transition-transform">
+      <div className="fixed w-full max-w-5xl mx-auto bottom-0 left-0 right-0 z-10 bg-white/80 backdrop-blur-sm border-t border-gray-200/50 shadow-2xl">
         <ChatInput
           onSendMessage={handleSendMessageWithLatency}
           isLoading={isLoading || isStreaming}

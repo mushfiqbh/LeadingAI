@@ -63,147 +63,241 @@ export default function Header() {
   };
 
   return (
-    <div className="fixed top-0 w-full z-20 p-4 bg-white">
-      <div className="flex items-center gap-3">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
-            <span className="text-white font-bold text-sm">AI</span>
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">
-              Leading AI Agent
-            </h1>
-            <p className="text-sm text-gray-500">Powered by GPT-4.1 Nano</p>
-          </div>
-        </Link>
-
-        {user && (
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              hidden
-              onClick={handleNewConversation}
-              name="new-conversation"
-              disabled={!user.emailVerified || isCreatingConversation}
-              className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-colors ${
-                !user.emailVerified || isCreatingConversation
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-300"
-              }`}
-              title="Start new conversation"
-            >
-              <MessageSquareDiff
-                className={`w-5 h-5 text-gray-900 ${
-                  isCreatingConversation ? "animate-pulse" : ""
-                }`}
-              />
-            </button>
-
-            <button
-              name="contribute"
-              onClick={() => {
-                if (!user.emailVerified) {
-                  alert("Please verify your email to contribute.");
-                  return;
-                }
-                router.push("/contribute");
-              }}
-              className="text-xs md:text-sm cursor-pointer text-blue-600 hover:text-blue-800 transition-colors p-1 rounded-full border border-blue-600 hover:border-blue-800 "
-            >
-              Contribute
-            </button>
-
-            <div
-              onClick={() => setShowMenu(!showMenu)}
-              className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300"
-            >
-              {user.photoURL ? (
-                <Image
-                  height={30}
-                  width={30}
-                  src={user.photoURL}
-                  alt="User Avatar"
-                  className="w-full h-full rounded-full object-cover"
-                />
-              ) : (
-                <CircleUser className="w-4 h-4 text-gray-500" />
-              )}
+    <div className="fixed top-0 w-full z-20 bg-white backdrop-blur-md shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+              <span className="text-white font-bold text-lg">AI</span>
             </div>
+            <div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                Leading AI
+              </h1>
+              <p className="text-sm text-gray-500 font-medium">
+                GPT - 4.1 Nano
+              </p>
+            </div>
+          </Link>
 
-            {user && showMenu && (
-              <div
-                ref={menuRef}
-                onClick={() => setShowMenu(false)}
-                className="fixed z-30 top-16 right-4 rounded-lg shadow-lg border border-gray-300"
+          {user && (
+            <div className="flex items-center gap-2">
+              <button
+                hidden
+                onClick={handleNewConversation}
+                name="new-conversation"
+                disabled={!user.emailVerified || isCreatingConversation}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
+                  !user.emailVerified || isCreatingConversation
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-100 hover:scale-105"
+                }`}
+                title="Start new conversation"
               >
-                <div className="flex flex-col items-center text-gray-700 bg-white rounded-lg shadow-lg">
-                  <Link
-                    href="/profile"
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    <div className="flex items-center gap-2">
-                      <strong>{user.displayName || "Anonymous"}</strong>
-                      {user.emailVerified && (
-                        <span className="text-green-500 text-xs">
-                          <Check className="inline w-4 h-4" />
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {user.email || "No email provided"}
-                    </div>
-                  </Link>
-                  <Link
-                    href="/profile"
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    My Data
-                  </Link>
-                  <Link
-                    href="/"
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    Back to Chat
-                  </Link>
-                  <Link
-                    href="/history"
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    History
-                  </Link>
-                  <Link
-                    href="/contribute"
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded text-green-400"
-                  >
-                    Contribute
-                  </Link>
-                  <Link
-                    href="/report"
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    Report / Feedback
-                  </Link>
-                  <Link
-                    href="/developer"
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer rounded"
-                  >
-                    Developer
-                  </Link>
+                <MessageSquareDiff
+                  className={`w-5 h-5 text-gray-700 ${
+                    isCreatingConversation ? "animate-pulse" : ""
+                  }`}
+                />
+              </button>
 
-                  <button
-                    onClick={() => {
-                      logout();
-                      router.push("/");
-                      setShowMenu(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-100 cursor-pointer rounded"
+              <button
+                name="contribute"
+                onClick={() => {
+                  if (!user.emailVerified) {
+                    alert("Please verify your email to contribute.");
+                    return;
+                  }
+                  router.push("/contribute");
+                }}
+                className="px-2 py-1 text-xs md:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+              >
+                Contribute
+              </button>
+
+              <div className="relative">
+                <button
+                  onClick={() => setShowMenu(!showMenu)}
+                  className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all duration-200 hover:scale-105 ring-2 ring-transparent hover:ring-blue-500/20"
+                >
+                  {user.photoURL ? (
+                    <Image
+                      height={32}
+                      width={32}
+                      src={user.photoURL}
+                      alt="User Avatar"
+                      className="w-8 h-8 rounded-lg object-cover"
+                    />
+                  ) : (
+                    <CircleUser className="w-5 h-5 text-gray-600" />
+                  )}
+                </button>
+
+                {showMenu && (
+                  <div
+                    ref={menuRef}
+                    onClick={() => setShowMenu(false)}
+                    className="absolute top-12 right-0 w-56 bg-white rounded-2xl shadow-2xl border border-gray-200/50 backdrop-blur-sm z-50 overflow-hidden"
                   >
-                    Logout
-                  </button>
-                </div>
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200/50">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <strong className="text-gray-800 font-semibold">
+                              {user.displayName || "Anonymous"}
+                            </strong>
+                            {user.emailVerified && (
+                              <span className="text-green-500">
+                                <Check className="w-4 h-4" />
+                              </span>
+                            )}
+                          </div>
+                          <div className="w-full pr-1 text-xs text-gray-600 truncate">
+                            {user.email || "No email provided"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="py-2">
+                      <Link
+                        href="/profile"
+                        className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                      >
+                        <CircleUser className="w-4 h-4" />
+                        <span className="font-medium">Profile</span>
+                      </Link>
+
+                      {window.location.pathname !== "/" && (
+                        <Link
+                          href="/"
+                          className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                        >
+                          <MessageSquareDiff className="w-4 h-4" />
+                          <span className="font-medium">Back to Chat</span>
+                        </Link>
+                      )}
+
+                      <Link
+                        href="/history"
+                        className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <span className="font-medium">History</span>
+                      </Link>
+
+                      <button
+                        onClick={handleNewConversation}
+                        className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                      >
+                        <MessageSquareDiff className="w-4 h-4" />
+                        <span className="font-medium">New Chat</span>
+                      </button>
+
+                      <Link
+                        href="/contribute"
+                        className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-green-600 hover:text-green-700"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                          />
+                        </svg>
+                        <span className="font-medium">Contribute</span>
+                      </Link>
+
+                      <Link
+                        href="/report"
+                        className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                          />
+                        </svg>
+                        <span className="font-medium">Report / Feedback</span>
+                      </Link>
+
+                      <Link
+                        href="/developer"
+                        className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                          />
+                        </svg>
+                        <span className="font-medium">Developer</span>
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-gray-200/50 p-2">
+                      <button
+                        onClick={() => {
+                          logout();
+                          router.push("/");
+                          setShowMenu(false);
+                        }}
+                        className="w-full flex items-center gap-3 p-2 text-red-500 hover:bg-red-50 transition-colors duration-200 rounded-xl"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                          />
+                        </svg>
+                        <span className="font-medium">Logout</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

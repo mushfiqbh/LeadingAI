@@ -19,7 +19,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <Header />
-          <main className="w-full min-h-[calc(100dvh-80px)] mt-[80px] bg-white text-black/80">
+          <main className="w-full min-h-[calc(100dvh-70px)] mt-[70px] bg-white text-black/80">
             {children}
           </main>
         </AuthProvider>
