@@ -17,24 +17,49 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const [input, setInput] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Sample suggested messages
+  const suggestions = [
+    "Check my result",
+    "Latest university notices",
+    "Create my class routine",
+    "Generate exam schedule",
+    "Find notes and pdfs",
+    "What can you do?",
+  ];
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setInput(suggestion);
+    setShowSuggestions(false);
+    textareaRef.current?.focus();
+    setTimeout(() => {
+      adjustTextareaHeight();
+    }, 0);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!input.trim() && !image) return;
 
-    adjustTextareaHeight();
-
     const message: ChatMessage = {
       text: input.trim(),
       image: image || null,
+      uploadStatus: image ? "pending" : "none",
     };
 
     onSendMessage(message);
     setInput("");
     setImage(null);
     setImagePreview(null);
+    setShowSuggestions(true); // Show suggestions again after sending
+
+    // Reset textarea height after clearing input
+    setTimeout(() => {
+      adjustTextareaHeight();
+    }, 0);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -48,7 +73,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = "auto";
-      textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+      const newHeight = textarea.scrollHeight;
+      // Reset to minimum height if content is empty or very small
+      if (newHeight <= 48 || textarea.value.trim() === "") {
+        textarea.style.height = "48px";
+      } else {
+        textarea.style.height = `${Math.min(newHeight, 120)}px`;
+      }
     }
   };
 
@@ -57,6 +88,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     if (file) {
       setImage(file);
       setImagePreview(URL.createObjectURL(file));
+      textareaRef.current?.focus();
     }
   };
 
@@ -66,7 +98,25 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="bg-white p-4">
+    <div className="bg-white p-2 pb-4">
+      {/* Suggested Messages */}
+      {showSuggestions && input.trim() === "" && !image && (
+        <div className="mb-2">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hidden pb-2">
+            {suggestions.map((suggestion, index) => (
+              <button
+                key={index}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 border border-gray-200 whitespace-nowrap flex-shrink-0"
+                type="button"
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {imagePreview && (
         <div className="relative max-w-xs">
           <Image
@@ -74,7 +124,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             height={10}
             src={imagePreview}
             alt="Preview"
-            className="rounded-lg w-full h-auto object-cover border"
+            className="rounded-lg w-full h-auto object-cover border mb-2"
           />
           <button
             onClick={removeImage}
@@ -97,7 +147,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             accept="image/*"
             onChange={handleImageUpload}
             className="hidden"
-            disabled
           />
           <ImageUp className="w-5 h-5" />
         </label>
@@ -107,6 +156,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           value={input}
           onChange={(e) => {
             setInput(e.target.value);
+            setShowSuggestions(e.target.value.trim() === ""); // Hide suggestions when typing
             adjustTextareaHeight();
           }}
           onKeyDown={handleKeyDown}

@@ -2,6 +2,7 @@ import openai from "./openaiClient";
 import { tools } from "../mcp/tools";
 import { ChatCompletionMessageParam } from "openai/resources/index";
 import { getResult } from "../mcp/resultMCP";
+import { getUnifiedSystemPrompt } from "./systemPrompt";
 
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4.1-nano";
 
@@ -10,14 +11,7 @@ export async function* runAgentStream(messages: ChatCompletionMessageParam[]) {
 
   const systemPrompt: ChatCompletionMessageParam = {
     role: "system",
-    content: `
-You are an assistant that helps users retrieve their academic results.
-- Always collect the student_id first.
-- If the user only gives their student ID, call 'get_result' with just the ID to show a partial result.
-- Then offer: "If you want your full result, please provide your birthday (YYYY-MM-DD)."
-- If the user provides both student ID and birthday, call 'get_result' with both to return the full result.
-Ask clearly for missing info if needed.
-`,
+    content: getUnifiedSystemPrompt(),
   };
 
   const toolCheck = await openai.chat.completions.create({
