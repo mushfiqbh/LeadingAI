@@ -33,30 +33,54 @@ export const MessageList: React.FC<MessageListProps> = ({
   }, [messages, isStreaming]);
 
   return (
-    <div className="flex flex-col gap-4">
-      {messages.map((message, index) => {
-        const isLastMessage = index === messages.length - 1;
-        const isAssistantMessage = message.role === "assistant";
-        const isCurrentStreamingMessage =
-          isStreaming && isLastMessage && isAssistantMessage;
+    <div className="flex flex-col gap-6 py-4 max-w-4xl mx-auto">
+      {/* Chat Messages */}
+      <div className="space-y-6">
+        {messages.map((message, index) => {
+          const isLastMessage = index === messages.length - 1;
+          const isAssistantMessage = message.role === "assistant";
+          const isCurrentStreamingMessage =
+            isStreaming && isLastMessage && isAssistantMessage;
 
-        // Only pass statusMessage to the current streaming message
-        const currentStatusMessage = isCurrentStreamingMessage
-          ? statusMessage
-          : "✋ Please wait";
+          // Only pass statusMessage to the current streaming message
+          const currentStatusMessage = isCurrentStreamingMessage
+            ? statusMessage
+            : "✋ Please wait";
 
-        return (
-          <MessageBubble
-            key={message.id}
-            message={message}
-            isStreaming={isCurrentStreamingMessage}
-            statusMessage={currentStatusMessage}
-          />
-        );
-      })}
+          return (
+            <div
+              key={message.id}
+              className={`flex ${
+                message.role === "user" ? "justify-end" : "justify-start"
+              } px-2`}
+            >
+              <div
+                className={`max-w-[85%] md:max-w-[75%] ${
+                  message.role === "user" ? "order-2" : "order-1"
+                }`}
+              >
+                <MessageBubble
+                  message={message}
+                  isStreaming={isCurrentStreamingMessage}
+                  statusMessage={currentStatusMessage}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-      {error && <ErrorMessage message={error} onRetry={onRetry} />}
-      <div ref={messagesEndRef} />
+      {/* Error Message */}
+      {error && (
+        <div className="flex justify-center px-2">
+          <div className="max-w-[85%] md:max-w-[75%]">
+            <ErrorMessage message={error} onRetry={onRetry} />
+          </div>
+        </div>
+      )}
+
+      {/* Scroll anchor */}
+      <div ref={messagesEndRef} className="h-2" />
     </div>
   );
 };

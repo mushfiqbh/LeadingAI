@@ -42,21 +42,21 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     return null;
 
   return (
-    <div className={`flex gap-4 ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
         <div className="flex-shrink-0">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-            <Bot className="w-4 h-4 text-white" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <Bot className="w-5 h-5 text-white" />
           </div>
         </div>
       )}
 
       <div className={`max-w-4xl ${isUser ? "order-first" : ""}`}>
         <div
-          className={`flex flex-col rounded-2xl px-4 py-2 ${
+          className={`flex flex-col rounded-2xl px-3 py-1 ${
             isUser
-              ? "bg-blue-600 text-white ml-auto"
-              : "bg-white text-gray-900 border border-gray-200 shadow-sm"
+              ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg"
+              : "bg-white/90 backdrop-blur-sm text-gray-900 border border-gray-200/50 shadow-lg"
           }`}
         >
           <div className="mb-2 last:mb-0">
@@ -66,7 +66,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               }`}
             >
               {isUser ? (
-                <div className="whitespace-pre-wrap break-words">
+                <div className="whitespace-pre-wrap break-words leading-relaxed">
                   {message.content.text}
                 </div>
               ) : (
@@ -76,9 +76,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   ) : (
                     // Never style this div as "whitespace-pre-wrap break-words", MarkdownRenderer will handle it
                     <div>
-                      <MarkdownRenderer content={message.content.text || ""} />
+                      <MarkdownRenderer content={message.content.text} />
                       {isStreaming && message.content.text && (
-                        <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />
+                        <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse rounded-sm" />
                       )}
                     </div>
                   )}
@@ -90,35 +90,45 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             {message.content.uploadStatus &&
               message.content.uploadStatus !== "none" &&
               !message.content.imageUrl && (
-                <div className="mt-3 h-[100px] w-[150px] flex items-center justify-center border border-gray-300 rounded-lg bg-gray-50">
+                <div className="mt-4 h-[120px] w-[180px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl bg-gray-50/50">
                   {message.content.uploadStatus === "pending" && (
                     <div className="text-center text-gray-600">
-                      <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-                      <div className="text-sm">Uploading image...</div>
+                      <div className="animate-spin w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+                      <div className="text-sm font-medium">
+                        Uploading image...
+                      </div>
                     </div>
                   )}
                   {message.content.uploadStatus === "sent" && (
                     <div className="text-center text-blue-600">
-                      <div className="animate-pulse w-8 h-8 border-2 border-blue-500 rounded-full mx-auto mb-2"></div>
-                      <div className="text-sm">Processing image...</div>
+                      <div className="animate-pulse w-8 h-8 border-3 border-blue-500 rounded-full mx-auto mb-3"></div>
+                      <div className="text-sm font-medium">
+                        Processing image...
+                      </div>
                     </div>
                   )}
                   {message.content.uploadStatus === "received" && (
                     <div className="text-center text-green-600">
-                      <Check className="w-8 h-8 mx-auto mb-2" />
-                      <div className="text-sm">Image Uploaded</div>
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Check className="w-5 h-5" />
+                      </div>
+                      <div className="text-sm font-medium">Image Uploaded</div>
                     </div>
                   )}
                   {message.content.uploadStatus === "done" && (
                     <div className="text-center text-green-600">
-                      <Check className="w-8 h-8 mx-auto mb-2" />
-                      <div className="text-sm">Image Uploaded</div>
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Check className="w-5 h-5" />
+                      </div>
+                      <div className="text-sm font-medium">Image Uploaded</div>
                     </div>
                   )}
                   {message.content.uploadStatus === "error" && (
                     <div className="text-center text-red-600">
-                      <X className="w-8 h-8 mx-auto mb-2" />
-                      <div className="text-sm">
+                      <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <X className="w-5 h-5" />
+                      </div>
+                      <div className="text-sm font-medium">
                         Upload failed. Please try again.
                       </div>
                     </div>
@@ -128,7 +138,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
             {/* Actual image - show when upload is complete or for assistant messages */}
             {message.content.imageUrl && (
-              <div className="mt-3 h-[100px] w-[150px] border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+              <div className="mt-4 h-[120px] w-[180px] border border-gray-200 rounded-xl overflow-hidden bg-gray-50 shadow-sm">
                 <Image
                   width={300}
                   height={200}
@@ -154,7 +164,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 const textContent = message.content.text;
                 handleCopy(textContent);
               }}
-              className="cursor-pointer transition-opacity p-1 hover:bg-gray-200 rounded"
+              className="cursor-pointer transition-all p-1.5 hover:bg-gray-200 rounded-lg opacity-60 hover:opacity-100"
               title="Copy message"
             >
               {copied ? (
@@ -169,8 +179,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
       {isUser && (
         <div className="flex-shrink-0">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-blue-600 flex items-center justify-center">
-            <User className="w-4 h-4 text-white" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-emerald-500 to-blue-600 flex items-center justify-center shadow-lg">
+            <User className="w-5 h-5 text-white" />
           </div>
         </div>
       )}

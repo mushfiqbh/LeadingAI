@@ -41,5 +41,6 @@ export interface UserProfile {
   aboutme?: string;
   gender?: string;
   religion?: string;
+  birthdate?: string;
   isAdmin?: boolean;
 }

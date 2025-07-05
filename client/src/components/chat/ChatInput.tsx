@@ -98,16 +98,16 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="bg-white p-2 pb-4">
+    <div className="bg-white/95 backdrop-blur-sm p-4 border-t border-gray-200/50">
       {/* Suggested Messages */}
       {showSuggestions && input.trim() === "" && !image && (
-        <div className="mb-2">
+        <div className="mb-4">
           <div className="flex gap-2 overflow-x-auto scrollbar-hidden pb-2">
             {suggestions.map((suggestion, index) => (
               <button
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 border border-gray-200 whitespace-nowrap flex-shrink-0"
+                className="px-4 py-2.5 text-sm bg-gradient-to-r from-blue-50 to-purple-50 text-gray-700 rounded-full hover:from-blue-100 hover:to-purple-100 transition-all duration-200 border border-blue-200/50 whitespace-nowrap flex-shrink-0 shadow-sm hover:shadow-md transform hover:scale-105"
                 type="button"
               >
                 {suggestion}
@@ -117,62 +117,74 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       )}
 
+      {/* Image Preview */}
       {imagePreview && (
-        <div className="relative max-w-xs">
-          <Image
-            width={10}
-            height={10}
-            src={imagePreview}
-            alt="Preview"
-            className="rounded-lg w-full h-auto object-cover border mb-2"
-          />
-          <button
-            onClick={removeImage}
-            type="button"
-            className="absolute top-1 right-1 bg-white text-gray-600 rounded-full p-1 shadow hover:text-red-500"
-            title="Remove image"
-          >
-            <X className="w-4 h-4" />
-          </button>
+        <div className="mb-4">
+          <div className="relative inline-block max-w-xs">
+            <Image
+              width={200}
+              height={150}
+              src={imagePreview}
+              alt="Preview"
+              className="rounded-xl w-full h-auto object-cover border-2 border-gray-200/50 shadow-lg"
+            />
+            <button
+              onClick={removeImage}
+              type="button"
+              className="absolute -top-2 -right-2 bg-white text-gray-600 rounded-full p-1.5 shadow-lg hover:text-red-500 hover:bg-red-50 transition-all duration-200 border border-gray-200"
+              title="Remove image"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       )}
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex items-center justify-between gap-3"
-      >
-        <label className="block text-blue-600 p-2 rounded-full hover:bg-slate-200 cursor-pointer">
+      {/* Input Form */}
+      <form onSubmit={handleSubmit} className="flex items-center gap-3">
+        {/* Image Upload Button */}
+        <label className="flex-shrink-0 group cursor-pointer">
           <input
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
             className="hidden"
           />
-          <ImageUp className="w-5 h-5" />
+          <div className="p-3 text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 hover:text-blue-600 transition-all duration-200 border border-gray-200/50 group-hover:border-blue-300 shadow-sm hover:shadow-md">
+            <ImageUp className="w-5 h-5" />
+          </div>
         </label>
 
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-            setShowSuggestions(e.target.value.trim() === ""); // Hide suggestions when typing
-            adjustTextareaHeight();
-          }}
-          onKeyDown={handleKeyDown}
-          placeholder="Prompt here..."
-          className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-xl scrollbar-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[48px] max-h-[120px] placeholder-gray-500"
-          rows={1}
-          disabled={isLoading}
-        />
+        {/* Text Input */}
+        <div className="flex-1 relative">
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              setShowSuggestions(e.target.value.trim() === "");
+              adjustTextareaHeight();
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder="Prompt here..."
+            className="w-full px-4 py-3 text-gray-900 bg-white border-2 border-gray-200/50 rounded-xl scrollbar-hidden focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 resize-none min-h-[48px] max-h-[120px] placeholder-gray-400 shadow-sm hover:shadow-md transition-all duration-200"
+            rows={1}
+            disabled={isLoading}
+          />
+        </div>
 
+        {/* Send Button */}
         <button
           type="submit"
           disabled={isLoading || (!input.trim() && !image)}
-          className="flex-shrink-0 p-3 cursor-pointer bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
+          className="flex-shrink-0 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
           title="Send message"
         >
-          <Send className="w-5 h-5" />
+          {isLoading ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Send className="w-5 h-5" />
+          )}
         </button>
       </form>
     </div>
