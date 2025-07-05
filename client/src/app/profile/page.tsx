@@ -19,10 +19,40 @@ export default function Page() {
     section: "",
     department: "",
     aboutme: "",
+    gender: "",
+    religion: "",
   });
 
   const [loading, setLoading] = useState(true);
-  const [updateLoading, setUpdateLoading] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<'saving' | 'saved' | null>(null);
+
+  // Auto-update profile with debouncing
+  useEffect(() => {
+    // Skip auto-update on initial load
+    if (initialLoad) return;
+    
+    const timeoutId = setTimeout(async () => {
+      if (!user) return;
+      
+      // Check if any field has content (not just initial empty values)
+      const hasContent = Object.values(formData).some(value => value.trim() !== '');
+      if (!hasContent) return;
+      
+      setSaveStatus('saving');
+      try {
+        const updatedProfile = await updateUserProfileFS(user, formData);
+        setUserProfile(updatedProfile ?? null);
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus(null), 2000); // Hide "saved" message after 2 seconds
+      } catch (error) {
+        console.error("Error updating user profile:", error);
+        setSaveStatus(null);
+      }
+    }, 1000); // 1 second debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [formData, user, initialLoad]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -38,32 +68,23 @@ export default function Page() {
               section: profile.section ?? "",
               department: profile.department ?? "",
               aboutme: profile.aboutme ?? "",
+              gender: profile.gender ?? "",
+              religion: profile.religion ?? "",
             });
           }
         } catch (error) {
           console.error("Error fetching user profile:", error);
         } finally {
           setLoading(false);
+          setInitialLoad(false); // Allow auto-updates after initial load
         }
       } else {
         setLoading(false);
+        setInitialLoad(false); // Allow auto-updates after initial load
       }
     };
     fetchUserProfile();
   }, [user]);
-
-  const handleUpdateProfile = async () => {
-    if (!user) return;
-    setUpdateLoading(true);
-    try {
-      const updatedProfile = await updateUserProfileFS(user, formData);
-      setUserProfile(updatedProfile ?? null);
-    } catch (error) {
-      console.error("Error updating user profile:", error);
-    } finally {
-      setUpdateLoading(false);
-    }
-  };
 
   if (loading) return <LoadingScreen />;
 
@@ -96,12 +117,69 @@ export default function Page() {
           </div>
         </div>
 
+        {saveStatus === 'saving' && (
+          <div className="text-center text-sm text-blue-500 mb-4">
+            Auto-saving...
+          </div>
+        )}
+        {saveStatus === 'saved' && (
+          <div className="text-center text-sm text-green-500 mb-4">
+            ✓ Profile saved automatically
+          </div>
+        )}
+
         <div className="w-full max-w-md mx-auto space-y-4">
           <Input
             label="Full Name"
             value={formData.fullName}
             onChange={(val) => setFormData({ ...formData, fullName: val })}
           />
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Gender</label>
+              <select
+                value={formData.gender}
+                onChange={(e) =>
+                  setFormData({ ...formData, gender: e.target.value })
+                }
+                className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <option value="">Select Gender</option>
+                {["Male", "Female", "Other"].map((item, index) => {
+                  return (
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                Religion
+              </label>
+              <select
+                value={formData.religion}
+                onChange={(e) =>
+                  setFormData({ ...formData, religion: e.target.value })
+                }
+                className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <option value="">Select Religion</option>
+                {["Islam", "Hindu", "Christian", "Buddhism", "Other"].map(
+                  (item, index) => {
+                    return (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    );
+                  }
+                )}
+              </select>
+            </div>
+          </div>
+
           <Input
             label="Student ID"
             value={formData.studentId}
@@ -164,14 +242,6 @@ export default function Page() {
               rows={4}
             />
           </div>
-
-          <button
-            onClick={handleUpdateProfile}
-            disabled={updateLoading}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition"
-          >
-            {updateLoading ? "Updating..." : "Update Profile"}
-          </button>
         </div>
       </div>
     </ProtectedRoute>

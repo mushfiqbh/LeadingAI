@@ -25,6 +25,7 @@ export const useChatApi = () => {
 
   const getStreamedResponse = async (
     prompt: ChatMessage,
+    userMessageId: string,
     aiMessageId: string
   ) => {
     if (!selectedConversationId || !user?.uid || !prompt.text) return;
@@ -33,6 +34,7 @@ export const useChatApi = () => {
     formData.append("text", prompt.text);
     formData.append("conversationId", selectedConversationId);
     formData.append("userId", user.uid);
+    formData.append("userMessageId", userMessageId);
     formData.append("aiMessageId", aiMessageId); // Send the real AI message ID
     if (prompt.image) {
       formData.append("image", prompt.image);
@@ -140,9 +142,13 @@ export const useChatApi = () => {
 
     try {
       // 1. Create user message in Firebase (frontend)
-      await addMessageToFirebase({
+      const userMessageId = await addMessageToFirebase({
         role: "user",
-        content: content,
+        content: {
+          text: content.text,
+          image: null, // Image is null in Firebase, handled in backend
+          uploadStatus: content.uploadStatus,
+        },
         conversationId: selectedConversationId,
         senderId: user.uid,
       });
@@ -156,7 +162,7 @@ export const useChatApi = () => {
       });
 
       // 3. Stream AI response and update the real AI message
-      await getStreamedResponse(content, aiMessageId);
+      await getStreamedResponse(content, userMessageId, aiMessageId);
     } catch (err) {
       console.error("Error sending message:", err);
       setError(

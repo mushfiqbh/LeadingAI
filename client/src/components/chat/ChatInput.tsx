@@ -24,17 +24,21 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
     if (!input.trim() && !image) return;
 
-    adjustTextareaHeight();
-
     const message: ChatMessage = {
       text: input.trim(),
       image: image || null,
+      uploadStatus: image ? "pending" : "none",
     };
 
     onSendMessage(message);
     setInput("");
     setImage(null);
     setImagePreview(null);
+
+    // Reset textarea height after clearing input
+    setTimeout(() => {
+      adjustTextareaHeight();
+    }, 0);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -48,7 +52,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = "auto";
-      textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+      const newHeight = textarea.scrollHeight;
+      // Reset to minimum height if content is empty or very small
+      if (newHeight <= 48 || textarea.value.trim() === "") {
+        textarea.style.height = "48px";
+      } else {
+        textarea.style.height = `${Math.min(newHeight, 120)}px`;
+      }
     }
   };
 
@@ -57,6 +67,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     if (file) {
       setImage(file);
       setImagePreview(URL.createObjectURL(file));
+      textareaRef.current?.focus();
     }
   };
 
@@ -74,7 +85,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             height={10}
             src={imagePreview}
             alt="Preview"
-            className="rounded-lg w-full h-auto object-cover border"
+            className="rounded-lg w-full h-auto object-cover border mb-2"
           />
           <button
             onClick={removeImage}
@@ -97,7 +108,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             accept="image/*"
             onChange={handleImageUpload}
             className="hidden"
-            disabled
           />
           <ImageUp className="w-5 h-5" />
         </label>

@@ -4,6 +4,7 @@ export interface ChatMessage {
   text: string;
   image?: File | null;
   imageUrl?: string;
+  uploadStatus?: "pending" | "sent" | "received" | "none" | "error";
 }
 
 export interface Message {
@@ -38,5 +39,7 @@ export interface UserProfile {
   section?: string;
   department?: string;
   aboutme?: string;
+  gender?: string;
+  religion?: string;
   isAdmin?: boolean;
 }

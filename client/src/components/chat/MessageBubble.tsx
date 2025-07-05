@@ -62,6 +62,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               {isUser ? (
                 <div className="whitespace-pre-wrap break-words">
                   {message.content.text}
+                  {message.content.uploadStatus !== "none" &&
+                    !message.content.imageUrl && (
+                      <div className="mt-2 h-[150px] w-[200px] bg-white flex items-center justify-center">
+                        {message.content.uploadStatus === "pending" &&
+                          "Uploading image..."}
+                        {message.content.uploadStatus === "received" &&
+                          "Image Uploaded"}
+                        {message.content.uploadStatus === "error" &&
+                          "Image upload failed. Please send again."}
+                      </div>
+                    )}
                 </div>
               ) : (
                 <div className="relative">
@@ -80,13 +91,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               )}
             </div>
 
-            {message.content.image && (
-              // ... (image rendering is the same)
+            {message.content.imageUrl && (
               <div className="mt-2">
                 <Image
-                  width={400}
-                  height={300}
-                  src={URL.createObjectURL(message.content.image)}
+                  width={200}
+                  height={150}
+                  src={message.content.imageUrl}
                   alt="Shared image"
                   className="rounded-lg max-w-full h-auto shadow-md"
                   loading="lazy"
