@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { ToasterProvider } from "@/context/ToasterContext";
 import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/general/Header";
 
@@ -18,10 +19,12 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-          <Header />
-          <main className="w-full min-h-[calc(100dvh-70px)] mt-[70px] bg-white text-black/80">
-            {children}
-          </main>
+          <ToasterProvider>
+            <Header />
+            <main className="w-full min-h-[calc(100dvh-70px)] mt-[70px] bg-white text-black/80">
+              {children}
+            </main>
+          </ToasterProvider>
         </AuthProvider>
         <Analytics />
       </body>

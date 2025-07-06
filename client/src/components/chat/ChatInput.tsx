@@ -3,7 +3,7 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Send, X, ImageUp } from "lucide-react";
-import { ChatMessage } from "../../types";
+import { ChatMessage } from "../../types/types";
 
 interface ChatInputProps {
   onSendMessage: (messages: ChatMessage) => void;
@@ -17,18 +17,35 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const [input, setInput] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [showSuggestions, setShowSuggestions] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [suggestions, setSuggestions] = useState([
+    "রেজাল্ট চেক করো",
+    "সর্বশেষ নোটিশ",
+    "ক্লাস রুটিন তৈরি করো",
+    "পরীক্ষার রুটিন তৈরি করো",
+    "নোট বা পিডিএফ খুঁজে দাও",
+    "তুমি কি করতে পারো?",
+  ]);
 
-  // Sample suggested messages
-  const suggestions = [
-    "Check my result",
-    "Latest university notices",
-    "Create my class routine",
-    "Generate exam schedule",
-    "Find notes and pdfs",
-    "What can you do?",
+  const baseSuggestions = [
+    "রেজাল্ট চেক করো",
+    "সর্বশেষ নোটিশ",
+    "ক্লাস রুটিন তৈরি করো",
+    "পরীক্ষার রুটিন তৈরি করো",
+    "নোট বা পিডিএফ খুঁজে দাও",
+    "তুমি কি করতে পারো?",
   ];
+
+  // Shuffle function to randomize suggestions
+  const shuffleSuggestions = () => {
+    const shuffled = [...baseSuggestions];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    setSuggestions(shuffled);
+  };
 
   const handleSuggestionClick = (suggestion: string) => {
     setInput(suggestion);
@@ -54,7 +71,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     setInput("");
     setImage(null);
     setImagePreview(null);
-    setShowSuggestions(true); // Show suggestions again after sending
+    setShowSuggestions(true);
+    shuffleSuggestions();
 
     // Reset textarea height after clearing input
     setTimeout(() => {

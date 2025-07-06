@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useChatStore } from "@/hooks/useChatStore";
 import { useChatSession } from "@/hooks/useChatSession";
 import { useChatApi } from "@/hooks/useChatApi";
-import { ChatMessage } from "@/types";
+import { ChatMessage } from "@/types/types";
 import { ChatInput } from "./ChatInput";
 import { MessageList } from "./MessageList";
 import { EmptyChat } from "./EmptyChat";

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useChatStore } from "@/hooks/useChatStore";
-import { ChatMessage } from "@/types";
+import { ChatMessage } from "@/types/types";
 
 const API_ENDPOINT =
   process.env.NEXT_PUBLIC_API_ENDPOINT || "http://localhost:5000";

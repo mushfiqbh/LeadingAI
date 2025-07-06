@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { MessageBubble } from "./MessageBubble";
 import { ErrorMessage } from "./ErrorMessage";
-import { Message } from "@/types";
+import { Message } from "@/types/types";
 
 interface MessageListProps {
   messages: Message[];

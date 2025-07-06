@@ -9,7 +9,7 @@ import {
   limit,
 } from "firebase/firestore";
 import { useChatStore } from "./useChatStore";
-import { Conversation, Message } from "@/types";
+import { Conversation, Message } from "@/types/types";
 
 export function useChatListeners(userId: string) {
   const { setConversations, setMessages, selectedConversationId } =
