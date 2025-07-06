@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { User, Bot, Copy, Check, X } from "lucide-react";
-import { Message } from "../../types";
+import { Message } from "../../types/types";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { TypingIndicator } from "./TypingIndicator";
 import { formatTime } from "@/utils/formatFirebaseTimestamp";

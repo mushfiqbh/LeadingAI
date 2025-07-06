@@ -6,7 +6,7 @@ import {
   doc,
   serverTimestamp,
 } from "firebase/firestore";
-import { Conversation, Message } from "@/types";
+import { Conversation, Message } from "@/types/types";
 
 // Create a new conversation in Firestore
 export const createConversationInFirebase = async (

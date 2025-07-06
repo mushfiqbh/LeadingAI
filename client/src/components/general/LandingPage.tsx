@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function Landing({
   setShowLanding,
 }: {
@@ -287,8 +285,8 @@ export default function Landing({
                 leaderboard! Every contribution earns you points and
                 recognition.
               </p>
-              <Link
-                href="/contribute"
+              <button
+                onClick={() => setShowLanding(false)}
                 className="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 shadow-lg"
               >
                 <span>Start Contributing</span>
@@ -305,7 +303,7 @@ export default function Landing({
                     d="M13 7l5 5m0 0l-5 5m5-5H6"
                   />
                 </svg>
-              </Link>
+              </button>
             </div>
           </div>
         </div>

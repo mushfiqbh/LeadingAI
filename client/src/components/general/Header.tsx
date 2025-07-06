@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useToaster } from "@/context/ToasterContext";
 import { logout } from "@/lib/authFunctions";
 import { Check, CircleUser, MessageSquareDiff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -16,6 +17,7 @@ export default function Header() {
   const { user } = useAuth();
   const router = useRouter();
   const { createConversationInFirebase, selectConversation } = useChatStore();
+  const { prompt } = useToaster();
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -33,33 +35,47 @@ export default function Header() {
   const handleNewConversation = async () => {
     if (!user?.uid || isCreatingConversation) return;
 
-    setIsCreatingConversation(true);
     setShowMenu(false);
 
-    try {
-      const newConversationData = {
-        title: "New Conversation",
-        participants: [user.uid],
-        lastMessage: null,
-      };
+    // Use toaster prompt to get conversation title
+    prompt(
+      "New Conversation",
+      "Enter a title for your new conversation:",
+      async (title: string) => {
+        if (!title.trim()) return;
 
-      const conversationId = await createConversationInFirebase(
-        newConversationData
-      );
+        setIsCreatingConversation(true);
 
-      // Select the new conversation
-      selectConversation(conversationId);
+        try {
+          const newConversationData = {
+            title: title.trim(),
+            participants: [user.uid],
+            lastMessage: null,
+          };
 
-      // Navigate to chat page if not already there
-      if (window.location.pathname !== "/") {
-        router.push("/");
+          const conversationId = await createConversationInFirebase(
+            newConversationData
+          );
+
+          // Select the new conversation
+          selectConversation(conversationId);
+
+          // Navigate to chat page if not already there
+          if (window.location.pathname !== "/") {
+            router.push("/");
+          }
+        } catch (error) {
+          console.error("❌ Error creating new conversation:", error);
+          // You might want to show a toast notification here
+        } finally {
+          setIsCreatingConversation(false);
+        }
+      },
+      {
+        inputPlaceholder: "e.g., Math Help, Study Session, etc.",
+        buttonText: "Create",
       }
-    } catch (error) {
-      console.error("❌ Error creating new conversation:", error);
-      // You might want to show a toast notification here
-    } finally {
-      setIsCreatingConversation(false);
-    }
+    );
   };
 
   return (

@@ -1,71 +1,126 @@
-# LucidAI - AI-Powered Chat Application
+# LeadingAI - AI-Powered Chat Platform for University Students
 
-LucidAI is a real-time chat application powered by AI, built with a modern tech stack including Firebase for real-time data synchronization and backend services.
+LeadingAI is a comprehensive AI-powered chat platform designed specifically for Leading University students. Built with Next.js, Express.js, and Firebase, it provides real-time AI assistance, academic resources, and collaborative features tailored to university life.
 
-## 🚀 Features
+## 🚀 Key Features
 
-- Real-time chat with AI assistant
-- Conversation history with Firestore persistence
-- Streaming responses for better UX
-- User authentication and conversation management
-- Responsive web interface
+### 💬 AI Chat Assistant
+- Real-time chat with intelligent AI assistant
+- Streaming responses for optimal user experience
+- OpenAI-compatible message formatting
+- Time-to-first-byte (TTFB) latency tracking
+- Suggested prompts for quick interactions
 
-## 📦 Prerequisites
+### 👤 User Profile Management
+- Complete student profile with automatic saving
+- Birthdate field with intuitive date picker
+- Real-time profile sync with status indicators
+- Context-aware AI responses based on user profile
 
-- Node.js 16+
-- npm or yarn
-- Firebase project with Firestore
-- Google Cloud account (for Firebase Admin)
+### � Academic Resources
+- Class routine and exam schedule integration
+- Bus schedule and notice board
+- PDF note uploads and sharing
+- Collaborative resource contribution system
 
-## 🛠️ Quick Start
+### 🔐 Authentication & Security
+- Firebase Authentication integration
+- Email verification system
+- Secure user session management
+- Protected routes and API endpoints
 
-1. **Clone the repository**
-   ```bash
-   git clone [your-repo-url]
-   cd LucidAI
-   ```
+### 📱 Modern UI/UX
+- Responsive design with glassmorphism effects
+- Gradient-based modern interface
+- Dark/light theme support
+- Intuitive navigation and user experience
 
-2. **Install dependencies**
-   ```bash
-   # Install server dependencies
-   cd server
-   npm install
-   
-   # Install client dependencies
-   cd ../client
-   npm install
-   ```
+## 🛠️ Technical Stack
 
-3. **Set up environment variables**
-   Create `.env` files in both `server` and `client` directories with required configurations.
-   See [Firebase Setup Guide](./FIREBASE_SETUP.md) for detailed instructions.
+### Frontend
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first CSS framework
+- **Firebase Client SDK** - Real-time database and authentication
 
-4. **Start the development servers**
-   ```bash
-   # In server directory
-   npm run dev
-   
-   # In client directory (new terminal)
-   npm start
-   ```
+### Backend
+- **Express.js** - Node.js web framework
+- **TypeScript** - Server-side type safety
+- **Firebase Admin SDK** - Server-side Firebase operations
+- **OpenAI API** - AI chat functionality
+- **Cloudinary** - Image upload and management
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+### Database & Storage
+- **Firestore** - NoSQL document database
+- **Firebase Storage** - File storage solution
+- **Cloudinary** - Image optimization and CDN
+
+## 🎯 Core Functionalities
+
+### Chat System
+- Real-time message synchronization
+- Image upload with background processing
+- Message history persistence
+- Error handling and recovery
+- Typing indicators and status updates
+
+### Profile Management
+- Auto-save functionality with debounce
+- Profile completion tracking
+- Academic information integration
+- Privacy-focused data handling
+
+### Resource Sharing
+- Google Sheets integration for schedules
+- Multi-file PDF upload support
+- Image upload for notices and announcements
+- Community contribution tracking
+
+### Analytics & Reporting
+- Chat interaction analytics
+- User engagement metrics
+- Performance monitoring
+- Error tracking and reporting
+
+## 📊 Project Structure
+
+```
+LeadingAI/
+├── client/                 # Next.js frontend application
+│   ├── src/
+│   │   ├── app/           # App Router pages
+│   │   ├── components/    # Reusable UI components
+│   │   ├── hooks/         # Custom React hooks
+│   │   ├── lib/           # Utility libraries
+│   │   └── services/      # API services
+│   └── public/            # Static assets
+├── server/                # Express.js backend
+│   └── src/
+│       ├── controllers/   # Route handlers
+│       ├── middlewares/   # Custom middleware
+│       ├── routes/        # API routes
+│       ├── services/      # Business logic
+│       └── utils/         # Helper functions
+└── docs/                  # Documentation files
+```
 
 ## 📚 Documentation
 
-- [Firebase Setup & Configuration](./FIREBASE_SETUP.md) - Complete guide to setting up Firebase
-- [Troubleshooting Guide](./TROUBLESHOOTING.md) - Common issues and solutions
-- [Migration Guide](./MIGRATION_GUIDE.md) - Information about recent changes and updates
+- [Firebase Setup & Configuration](./FIREBASE_SETUP.md) - Complete Firebase integration guide
 - [Architecture Overview](./ARCHITECTURE.md) - System design and component documentation
+- [API Documentation](./API_DOCS.md) - Backend API reference
+- [Troubleshooting Guide](./TROUBLESHOOTING.md) - Common issues and solutions
 
-## 🤝 Contributing
+## 🎓 About LeadingAI
 
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details.
+LeadingAI is designed to enhance the academic experience at Leading University by providing:
+- Personalized AI assistance for academic queries
+- Centralized access to university resources
+- Collaborative platform for knowledge sharing
+- Modern, intuitive interface for seamless interaction
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+The platform leverages cutting-edge AI technology to understand student needs and provide relevant, contextual assistance while maintaining data privacy and security standards.
 
 ---
 
-Built with ❤️ by [Your Team Name]
+*Empowering Leading University students with AI-driven academic assistance.*

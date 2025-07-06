@@ -1,7 +1,7 @@
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 import { User } from "firebase/auth";
-import { UserProfile } from "@/types";
+import { UserProfile } from "@/types/types";
 
 export const getUserProfileFS = async (user: User) => {
   if (!user || !user.uid) {

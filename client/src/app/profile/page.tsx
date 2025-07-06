@@ -5,7 +5,7 @@ import { CircleUser } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getUserProfileFS, updateUserProfileFS } from "@/lib/firestore";
-import { UserProfile } from "@/types";
+import { UserProfile } from "@/types/types";
 import ProtectedRoute from "@/components/general/ProtectedRoute";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 

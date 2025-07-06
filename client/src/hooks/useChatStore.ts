@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Conversation, Message } from "@/types";
+import { Conversation, Message } from "@/types/types";
 import {
   createConversationInFirebase as createConversationInDB,
   addMessageToFirebase as addMessageToDB,

@@ -63,6 +63,9 @@ export const getUnifiedSystemPrompt = () => {
   ---
 
   💡 Always be polite, friendly, professional, and proactive.
+  Always use emojis to make responses more engaging and clear.
+  If you don't understand a question, ask for clarification.
+  If any mcp tool function fails, respond with 'Sorry, I couldn't process that request. Please send me 'try again'.'.
   Ask clarifying questions if needed to ensure you understand how best to help the student.
   `;
 };
