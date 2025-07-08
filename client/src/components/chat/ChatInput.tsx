@@ -21,20 +21,20 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [suggestions, setSuggestions] = useState([
     "রেজাল্ট চেক করো",
-    "সর্বশেষ নোটিশ",
+    "নোটিশ",
     "ক্লাস রুটিন তৈরি করো",
     "পরীক্ষার রুটিন তৈরি করো",
     "নোট বা পিডিএফ খুঁজে দাও",
-    "তুমি কি করতে পারো?",
+    "তুমি কি করতে পারো",
   ]);
 
   const baseSuggestions = [
     "রেজাল্ট চেক করো",
-    "সর্বশেষ নোটিশ",
+    "নোটিশ",
     "ক্লাস রুটিন তৈরি করো",
     "পরীক্ষার রুটিন তৈরি করো",
     "নোট বা পিডিএফ খুঁজে দাও",
-    "তুমি কি করতে পারো?",
+    "তুমি কি করতে পারো",
   ];
 
   // Shuffle function to randomize suggestions

@@ -4,10 +4,9 @@ import cors from "cors";
 import { getApps } from "firebase-admin/app";
 import chatRouter from "./routes/chatRouter";
 import fs from "fs";
-
+import uploadRouter from "./routes/uploadRouter";
 // Initialize Firebase Admin (this will run the initialization code)
 import "./services/firebaseAdmin";
-import { version } from "os";
 
 if (
   process.env.GCP_CREDENTIALS_JSON &&
@@ -63,6 +62,7 @@ app.get("/health/firebase", async (req, res) => {
 });
 
 app.use("/chat", chatRouter);
+app.use("/upload", uploadRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
