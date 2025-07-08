@@ -1,6 +1,6 @@
 {
   "name": "leadingai-server",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.1",
     "axios": "^1.10.0",
+    "cheerio": "^1.1.0",
     "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",

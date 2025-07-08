@@ -1,357 +1,256 @@
-"use client";
-
 import ProtectedRoute from "@/components/general/ProtectedRoute";
-import { useState } from "react";
-import { Upload, Link, Calendar, Bus, Bell, FileText, X } from "lucide-react";
-import Image from "next/image";
+import { FileText } from "lucide-react";
+import { Bell, Calendar, BookOpen } from "lucide-react";
+import Link from "next/link";
 
 const ContributePage = () => {
-  const [classRoutineUrl, setClassRoutineUrl] = useState("");
-  const [examRoutineUrl, setExamRoutineUrl] = useState("");
-  const [busScheduleImage, setBusScheduleImage] = useState<File | null>(null);
-  const [noticeImage, setNoticeImage] = useState<File | null>(null);
-  const [noteTitle, setNoteTitle] = useState("");
-  const [noteDescription, setNoteDescription] = useState("");
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
-  const handleFileUpload = (
-    files: FileList | null,
-    type: "bus" | "notice" | "notes"
-  ) => {
-    if (!files) return;
-
-    if (type === "bus") {
-      setBusScheduleImage(files[0]);
-    } else if (type === "notice") {
-      setNoticeImage(files[0]);
-    } else if (type === "notes") {
-      const newFiles = Array.from(files);
-      setSelectedFiles((prev) => [...prev, ...newFiles]);
-    }
-  };
-
-  const removeFile = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const removeImage = (type: "bus" | "notice") => {
-    if (type === "bus") {
-      setBusScheduleImage(null);
-    } else {
-      setNoticeImage(null);
-    }
-  };
+  const forms = [
+    {
+      name: "Upload Notices",
+      link: "notices",
+      icon: Bell,
+      description: "Upload image of latest notice",
+      color: "from-red-500 to-pink-500",
+    },
+    {
+      name: "Share Exam Routine",
+      link: "exam-routine",
+      icon: Calendar,
+      description: "Share google sheet url of exam routine",
+      color: "from-orange-500 to-yellow-500",
+    },
+    {
+      name: "Share Class Routine",
+      link: "class-routine",
+      icon: BookOpen,
+      description: "Share google sheet url of class routine",
+      color: "from-green-500 to-emerald-500",
+    },
+    {
+      name: "Upload Notes & PDFs",
+      link: "notes",
+      icon: FileText,
+      description: "Upload study materials you have",
+      color: "from-purple-500 to-indigo-500",
+    },
+    // {
+    //   name: "Update Bus Schedule",
+    //   link: "bus-schedule",
+    //   icon: Bus,
+    //   description: "Update image of bus schedule",
+    //   color: "from-blue-500 to-cyan-500",
+    // },
+  ];
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
-        {/* Header Section */}
-        <div className="max-w-6xl mx-auto mb-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-              This page is under construction
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="py-10 relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white">
+          <div className="relative max-w-7xl mx-auto text-center p-5">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 leading-tight">
+              Contribute to AI Model Context
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg lg:text-xl text-white/90 max-w-4xl mx-auto leading-relaxed px-4">
               Help your fellow students by sharing academic resources,
-              schedules, and important notices
+              schedules, and important notices. Together, we build a stronger
+              academic community!
             </p>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
+            {/* Navigation Cards Section */}
+            <div className="mb-12 lg:mb-16">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                {forms.map((form) => {
+                  const IconComponent = form.icon;
+
+                  return (
+                    <Link
+                      key={form.link}
+                      href={`/contribute/${form.link}`}
+                      className="group relative p-4 lg:p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 active:scale-95 border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div
+                          className={`flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center bg-gradient-to-r ${form.color} text-white shadow-lg`}
+                        >
+                          <IconComponent className="w-5 h-5 lg:w-6 lg:h-6" />
+                        </div>
+                        <div className="flex-1 min-w-0 items-center">
+                          <h3 className="font-semibold text-sm lg:text-base mb-1 leading-tight">
+                            {form.name}
+                          </h3>
+                          <p className="text-xs lg:text-sm leading-relaxed text-gray-500 line-clamp-2">
+                            {form.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Hover effect overlay */}
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Class Routine Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-800">
-                    Class Routine
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Share your class schedule via Google Sheets
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700">
-                  Google Sheets URL
-                </label>
-                <div className="relative">
-                  <input
-                    type="url"
-                    value={classRoutineUrl}
-                    onChange={(e) => setClassRoutineUrl(e.target.value)}
-                    placeholder="https://docs.google.com/spreadsheets/..."
-                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all duration-200"
-                  />
-                  <Link className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
-                </div>
-                <button className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
-                  Submit Class Routine
-                </button>
-              </div>
+        <div className="relative py-20 px-4 bg-gradient-to-r from-gray-50 to-blue-50">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 via-purple-100/20 to-indigo-100/20"></div>
+          <div className="relative max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Top Contributors
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Meet the amazing students who are helping build our academic
+                community by sharing valuable resources
+              </p>
             </div>
 
-            {/* Exam Routine Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-white" />
+            {/* Contributors Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {/* Contributor 1 */}
+              <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                  🏆 #1
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-800">
-                    Exam Routine
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Share exam schedule via Google Sheets
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700">
-                  Google Sheets URL
-                </label>
-                <div className="relative">
-                  <input
-                    type="url"
-                    value={examRoutineUrl}
-                    onChange={(e) => setExamRoutineUrl(e.target.value)}
-                    placeholder="https://docs.google.com/spreadsheets/..."
-                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all duration-200"
-                  />
-                  <Link className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
-                </div>
-                <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
-                  Submit Exam Routine
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            {/* Bus Schedule Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
-                  <Bus className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-800">
-                    Bus Schedule
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Upload bus schedule image
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <label className="block">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileUpload(e.target.files, "bus")}
-                    className="hidden"
-                  />
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-green-400 hover:bg-green-50/50 transition-all duration-200 cursor-pointer">
-                    {busScheduleImage ? (
-                      <div className="relative">
-                        <Image
-                          src={URL.createObjectURL(busScheduleImage)}
-                          alt="Bus schedule preview"
-                          width={200}
-                          height={128}
-                          className="max-w-full h-32 object-contain mx-auto rounded-lg"
-                        />
-                        <button
-                          onClick={() => removeImage("bus")}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-600">
-                          Click to upload bus schedule image
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          PNG, JPG up to 10MB
-                        </p>
-                      </>
-                    )}
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                    AR
                   </div>
-                </label>
-                <button className="w-full py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
-                  Submit Bus Schedule
-                </button>
-              </div>
-            </div>
-
-            {/* Notice Upload Card */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
-                  <Bell className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-800">
-                    University Notice
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Upload important notices
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <label className="block">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileUpload(e.target.files, "notice")}
-                    className="hidden"
-                  />
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-orange-400 hover:bg-orange-50/50 transition-all duration-200 cursor-pointer">
-                    {noticeImage ? (
-                      <div className="relative">
-                        <Image
-                          src={URL.createObjectURL(noticeImage)}
-                          alt="Notice preview"
-                          width={200}
-                          height={128}
-                          className="max-w-full h-32 object-contain mx-auto rounded-lg"
-                        />
-                        <button
-                          onClick={() => removeImage("notice")}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-600">
-                          Click to upload notice image
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          PNG, JPG up to 10MB
-                        </p>
-                      </>
-                    )}
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-800">
+                      Ahmed Rahman
+                    </h3>
+                    <p className="text-sm text-gray-600">CSE, Batch 2021</p>
                   </div>
-                </label>
-                <button className="w-full py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
-                  Submit Notice
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* PDF Notes Upload Card - Full Width */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                <FileText className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800">
-                  Study Notes & Materials
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Upload PDF notes, books, and study materials
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Form Section */}
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    value={noteTitle}
-                    onChange={(e) => setNoteTitle(e.target.value)}
-                    placeholder="e.g., CSE 101 - Programming Fundamentals Notes"
-                    className="w-full px-4 py-3 border-2 border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 transition-all duration-200"
-                  />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    value={noteDescription}
-                    onChange={(e) => setNoteDescription(e.target.value)}
-                    placeholder="Describe the contents, which course it's for, semester, etc."
-                    rows={4}
-                    className="w-full px-4 py-3 border-2 border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 transition-all duration-200 resize-none"
-                  />
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Notes Shared</span>
+                    <span className="font-semibold text-blue-600">47</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">
+                      Routines Updated
+                    </span>
+                    <span className="font-semibold text-green-600">12</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">
+                      Notices Posted
+                    </span>
+                    <span className="font-semibold text-purple-600">8</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <span className="text-yellow-500">⭐</span>
+                    <span className="text-sm font-medium text-gray-700">
+                      4.9/5.0
+                    </span>
+                  </div>
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs px-3 py-1 rounded-full">
+                    1,247 pts
+                  </div>
                 </div>
               </div>
 
-              {/* File Upload Section */}
-              <div className="space-y-4">
-                <label className="block">
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx,.ppt,.pptx"
-                    multiple
-                    onChange={(e) => handleFileUpload(e.target.files, "notes")}
-                    className="hidden"
-                  />
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-400 hover:bg-indigo-50/50 transition-all duration-200 cursor-pointer">
-                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-600">Click to upload files</p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      PDF, DOC, PPT up to 50MB each
-                    </p>
+              {/* Contributor 2 */}
+              <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <div className="absolute top-4 right-4 bg-gradient-to-r from-gray-400 to-gray-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                  🥈 #2
+                </div>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                    SK
                   </div>
-                </label>
-
-                {/* Selected Files List */}
-                {selectedFiles.length > 0 && (
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
-                    {selectedFiles.map((file, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between bg-gray-50 rounded-lg p-3"
-                      >
-                        <div className="flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-indigo-600" />
-                          <span className="text-sm text-gray-700 truncate">
-                            {file.name}
-                          </span>
-                        </div>
-                        <button
-                          onClick={() => removeFile(index)}
-                          className="text-red-500 hover:text-red-700 transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-800">
+                      Sadia Khan
+                    </h3>
+                    <p className="text-sm text-gray-600">BBA, Batch 2020</p>
                   </div>
-                )}
+                </div>
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Notes Shared</span>
+                    <span className="font-semibold text-blue-600">38</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">
+                      Routines Updated
+                    </span>
+                    <span className="font-semibold text-green-600">15</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">
+                      Notices Posted
+                    </span>
+                    <span className="font-semibold text-purple-600">6</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <span className="text-yellow-500">⭐</span>
+                    <span className="text-sm font-medium text-gray-700">
+                      4.8/5.0
+                    </span>
+                  </div>
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs px-3 py-1 rounded-full">
+                    1,089 pts
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="mt-6 pt-4 border-t border-gray-200">
-              <button className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
-                Submit Study Materials
-              </button>
+              {/* Contributor 3 */}
+              <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-400 to-red-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
+                  🥉 #3
+                </div>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                    MH
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-800">
+                      Mahir Hassan
+                    </h3>
+                    <p className="text-sm text-gray-600">EEE, Batch 2022</p>
+                  </div>
+                </div>
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Notes Shared</span>
+                    <span className="font-semibold text-blue-600">32</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">
+                      Routines Updated
+                    </span>
+                    <span className="font-semibold text-green-600">9</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">
+                      Notices Posted
+                    </span>
+                    <span className="font-semibold text-purple-600">11</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <span className="text-yellow-500">⭐</span>
+                    <span className="text-sm font-medium text-gray-700">
+                      4.7/5.0
+                    </span>
+                  </div>
+                  <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white text-xs px-3 py-1 rounded-full">
+                    967 pts
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

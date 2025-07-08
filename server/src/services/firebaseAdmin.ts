@@ -199,4 +199,46 @@ export class FirebaseAdminService {
       throw error;
     }
   }
+
+  // create notice in notices collection
+  static async createNotice(noticeData: any) {
+    try {
+      const docRef = await adminDb.collection("notices").add({
+        ...noticeData,
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+
+      return docRef.id;
+    } catch (error) {
+      console.error("💥 Error creating notice:", error);
+      throw error;
+    }
+  }
+
+  // Get all notices descriptions limit to 10
+  static async getNoticesInformation(limit: number = 10) {
+    try {
+      const now = new Date();
+      const noticeSnapshot = await adminDb
+        .collection("notices")
+        .select("information")
+        .limit(limit)
+        .get();
+
+      const bustimeSnapshot = await adminDb
+        .collection("bustimes")
+        .select("information")
+        .limit(1)
+        .get();
+
+      // Combine both snapshots
+      const combinedDocs = [...noticeSnapshot.docs, ...bustimeSnapshot.docs];
+
+      return combinedDocs.map((doc) => doc.data().information || "");
+    } catch (error) {
+      console.error("💥 Error getting notices:", error);
+      return [];
+    }
+  }
 }

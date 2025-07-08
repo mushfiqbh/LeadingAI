@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
+const openaiClient = new OpenAI({
   apiKey: process.env.OPENROUTER_API_KEY!,
   baseURL: "https://openrouter.ai/api/v1",
   defaultHeaders: {
@@ -9,4 +9,4 @@ const openai = new OpenAI({
   },
 });
 
-export default openai;
+export default openaiClient;

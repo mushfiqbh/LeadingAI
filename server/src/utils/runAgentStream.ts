@@ -1,8 +1,9 @@
-import openai from "./openaiClient";
+import openaiClient from "./openaiClient";
 import { tools } from "../mcp/tools";
 import { ChatCompletionMessageParam } from "openai/resources/index";
 import { getResult } from "../mcp/resultMCP";
 import { getUnifiedSystemPrompt } from "./systemPrompt";
+import { getNotice } from "../mcp/noticeMCP";
 
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4.1-nano";
 
@@ -14,7 +15,7 @@ export async function* runAgentStream(messages: ChatCompletionMessageParam[]) {
     content: getUnifiedSystemPrompt(),
   };
 
-  const toolCheck = await openai.chat.completions.create({
+  const toolCheck = await openaiClient.chat.completions.create({
     model: MODEL,
     messages: [systemPrompt, ...messages],
     tools,
@@ -32,9 +33,11 @@ export async function* runAgentStream(messages: ChatCompletionMessageParam[]) {
     let mcpResult;
     if (toolCall.function.name === "get_result") {
       mcpResult = await getResult(args.student_id, args.birthday);
+    } else if (toolCall.function.name === "get_university_notice") {
+      mcpResult = await getNotice();
     }
 
-    const stream = await openai.chat.completions.create({
+    const stream = await openaiClient.chat.completions.create({
       model: MODEL,
       messages: [
         systemPrompt,
@@ -57,7 +60,7 @@ export async function* runAgentStream(messages: ChatCompletionMessageParam[]) {
       if (delta) yield delta;
     }
   } else {
-    const stream = await openai.chat.completions.create({
+    const stream = await openaiClient.chat.completions.create({
       model: MODEL,
       messages: [systemPrompt, ...messages],
       stream: true,

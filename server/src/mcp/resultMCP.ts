@@ -24,16 +24,11 @@ export const getResult = async (student_id: string, birth_date?: string) => {
     );
 
     const result = response.data;
-    
-    return {
-      success: true,
-      student_id,
-      result,
-    };
+
+    return result;
   } catch (error: any) {
     console.error("Error fetching result:", error.message);
     return {
-      success: false,
       message: "Failed to fetch result from lus.ac.bd",
     };
   }
