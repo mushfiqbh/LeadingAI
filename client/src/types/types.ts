@@ -44,3 +44,17 @@ export interface UserProfile {
   birthdate?: string;
   isAdmin?: boolean;
 }
+
+export interface Notice {
+  id: string;
+  title: string;
+  image_url: string;
+  information: string;
+  contributor: {
+    uid: string;
+    fullName: string;
+  };
+  expire_date: string | null;
+  createdAt: Date | Timestamp;
+  updatedAt: Date | Timestamp;
+}

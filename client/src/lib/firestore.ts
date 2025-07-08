@@ -1,7 +1,13 @@
-import { doc, updateDoc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  getDoc,
+  collection,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 import { User } from "firebase/auth";
-import { UserProfile } from "@/types/types";
+import { Notice, UserProfile } from "@/types/types";
 
 export const getUserProfileFS = async (user: User) => {
   if (!user || !user.uid) {
@@ -50,5 +56,23 @@ export const updateUserProfileFS = async (
   } catch (error) {
     console.error("Error updating user profile:", error);
     return null;
+  }
+};
+
+// Get all notices from 'notices' collection
+export const getNoticesFS = async () => {
+  const noticesRef = collection(db, "notices");
+  try {
+    const noticesSnapshot = await getDocs(noticesRef);
+    if (noticesSnapshot.empty) {
+      console.warn("No notices found");
+      return [];
+    }
+    return noticesSnapshot.docs.map(
+      (doc) => ({ id: doc.id, ...doc.data() } as Notice)
+    );
+  } catch (error) {
+    console.error("Error fetching notices:", error);
+    return [];
   }
 };

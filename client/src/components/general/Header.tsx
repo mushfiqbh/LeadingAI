@@ -99,25 +99,6 @@ export default function Header() {
           {user && (
             <div className="flex items-center gap-2">
               <button
-                hidden
-                onClick={handleNewConversation}
-                name="new-conversation"
-                disabled={!user.emailVerified || isCreatingConversation}
-                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
-                  !user.emailVerified || isCreatingConversation
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-gray-100 hover:scale-105"
-                }`}
-                title="Start new conversation"
-              >
-                <MessageSquareDiff
-                  className={`w-5 h-5 text-gray-700 ${
-                    isCreatingConversation ? "animate-pulse" : ""
-                  }`}
-                />
-              </button>
-
-              <button
                 name="contribute"
                 onClick={() => {
                   if (!user.emailVerified) {

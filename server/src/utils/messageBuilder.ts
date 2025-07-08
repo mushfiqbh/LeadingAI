@@ -7,7 +7,6 @@ interface MessageBuilderParams {
   userProfile?: any;
 }
 
-
 export function buildMessagesWithContext({
   text,
   conversationMessages,
@@ -17,7 +16,11 @@ export function buildMessagesWithContext({
   // Build system message with user profile context
   let systemContent = `You are a helpful AI assistant. Today's date is ${
     new Date().toISOString().split("T")[0]
-  }. `;
+  }, and the current time is ${new Date().toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })}`;
 
   if (userProfile) {
     // Filter out excluded fields
