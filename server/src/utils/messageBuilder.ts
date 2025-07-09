@@ -14,13 +14,16 @@ export function buildMessagesWithContext({
   userProfile,
 }: MessageBuilderParams): ChatCompletionMessageParam[] {
   // Build system message with user profile context
-  let systemContent = `You are a helpful AI assistant. Today's date is ${
-    new Date().toISOString().split("T")[0]
-  }, and the current time is ${new Date().toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  })}`;
+  const now = new Date();
+  let systemContent = `You are a helpful AI assistant. 
+    Today's date is ${
+      now.toISOString().split("T")[0]
+    } (${now.toLocaleDateString("en-US", { weekday: "long" })}), 
+    and the current time is ${now.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })}.`;
 
   if (userProfile) {
     // Filter out excluded fields

@@ -3,7 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useToaster } from "@/context/ToasterContext";
 import { logout } from "@/lib/authFunctions";
-import { Check, CircleUser, MessageSquareDiff } from "lucide-react";
+import { Bot, Check, CircleUser, MessageSquareDiff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -84,7 +84,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-              <span className="text-white font-bold text-lg">AI</span>
+              <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">

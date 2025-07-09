@@ -1,14 +1,8 @@
 import { FirebaseAdminService } from "../services/firebaseAdmin";
 
-interface Notice {
-  image_url: string;
-  description: string;
-  expire_date: string | null;
-}
-
-export async function getNotice(): Promise<Notice[] | null> {
+export async function getNotice(category: string): Promise<string[] | null> {
   try {
-    return await FirebaseAdminService.getNoticesInformation(10);
+    return await FirebaseAdminService.getNoticesInformation(category);
   } catch (err: any) {
     console.error("Error in get_notice:", err.message);
     return [];

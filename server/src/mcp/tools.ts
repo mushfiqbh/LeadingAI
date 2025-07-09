@@ -30,47 +30,18 @@ export const tools: ChatCompletionTool[] = [
     function: {
       name: "get_university_notice",
       description:
-        "Fetch recent or upcoming university notices, bus schedule, announcements, or updates. Provides summaries and guidance on where to verify official information.",
+        "Fetch recent university notices, bus schedules, announcements, updates, exam notices, holiday notifications, or any university information.",
       parameters: {
         type: "object",
         properties: {
           category: {
             type: "string",
             description:
-              "Optional filter for the type of notice (e.g., 'academic', 'bus-schedule', 'events', 'exams', 'holidays').",
-          },
-          date: {
-            type: "string",
-            format: "date",
-            description:
-              "Optional filter for notices on or after a specific date (YYYY-MM-DD).",
+              "Category of notice to retrieve. Use 'bustime' for bus schedule, 'academic' for academic notices, 'event' for university events, or 'holiday' for holiday notifications.",
+            enum: ["bustime", "academic", "general"],
           },
         },
-        required: [],
-      },
-    },
-  },
-  {
-    type: "function",
-    function: {
-      name: "return_notice_text",
-      description:
-        "Extract all text from an image and return a relevant title and full content.",
-      parameters: {
-        type: "object",
-        properties: {
-          title: {
-            type: "string",
-            description:
-              "A short, meaningful title extracted or derived from the image content.",
-          },
-          information: {
-            type: "string",
-            description:
-              "All the text content extracted from the image without missing anything.",
-          },
-        },
-        required: ["title", "information"],
+        required: ["category"],
       },
     },
   },

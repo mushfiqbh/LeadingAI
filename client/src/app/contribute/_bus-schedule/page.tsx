@@ -3,17 +3,21 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Bus, Upload, X } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function BusScheduleForm() {
+  const { user } = useAuth();
   const [busScheduleImage, setBusScheduleImage] = useState<File | null>(null);
 
   const handleFileUpload = async () => {
     if (busScheduleImage) {
       const formData = new FormData();
       formData.append("image", busScheduleImage);
-      formData.append("type", "bustime");
+      formData.append("category", "bustime");
+      formData.append("userId", user?.uid || "");
+      formData.append("userName", user?.displayName || "Anonymous");
       formData.append(
-        "expire_date",
+        "expiryDate",
         new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
       );
 

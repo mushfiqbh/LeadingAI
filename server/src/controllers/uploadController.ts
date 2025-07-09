@@ -7,13 +7,8 @@ export const createNotice = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { expire_date, user_id, user_name } = req.body;
+  const { category, expiryDate, userId, userName } = req.body;
   const image = req.file as Express.Multer.File | undefined;
-
-  if (!expire_date) {
-    res.status(400).json({ error: "expire date is required" });
-    return;
-  }
 
   try {
     if (image) {
@@ -28,35 +23,59 @@ export const createNotice = async (
       const { title, information } = extracted;
 
       // Upload the image to Cloudinary
-      const image_url = await uploadToCloudinary(
+      const imageUrl = await uploadToCloudinary(
         image.buffer,
         "leadingai_notices"
       );
 
-      if (!image_url) {
+      if (!imageUrl) {
         res.status(500).json({ error: "Failed to upload image" });
         return;
       }
 
+      function resolveExpirationDate(expiryDate?: string): string | null {
+        if (expiryDate === "NO_EXPIRATION") {
+          return null;
+        }
+        if (expiryDate && expiryDate.trim() !== "") {
+          return expiryDate; // Use provided date
+        }
+        return new Date(
+          Date.now() + 4 * 30 * 24 * 60 * 60 * 1000
+        ).toISOString();
+      }
+
+      // Process the expiration date
+      const processedexpiryDate = resolveExpirationDate(expiryDate);
+
       // Create the notice object
-      const noticeData = {
+      const noticeData: any = {
+        category: category || "general",
         title,
-        image_url,
+        imageUrl,
         information,
-        expire_date,
         contributor: {
-          uid: user_id || "Anonymous",
-          fullName: user_name || "Anonymous",
+          uid: userId || "Anonymous",
+          fullName: userName || "Anonymous",
         },
       };
 
+      // Only add expiryDate if it's not null (null means no expiration)
+      if (processedexpiryDate !== null) {
+        noticeData.expiryDate = processedexpiryDate;
+      }
+
       const noticeId = await FirebaseAdminService.createNotice(noticeData);
-      res.status(201).json({ noticeId, noticeData });
+      res.status(201).json({
+        success: true,
+        message: "Notice created successfully",
+        noticeId,
+      });
     } else {
       res.status(400).json({ error: "Image file is required" });
     }
   } catch (error) {
-    console.error("💥 Error in chatController:", error);
+    console.error("💥 Error in createNotice:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

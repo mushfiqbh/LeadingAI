@@ -48,13 +48,14 @@ export interface UserProfile {
 export interface Notice {
   id: string;
   title: string;
-  image_url: string;
+  category: "bustime" | "general";
+  imageUrl: string;
   information: string;
   contributor: {
     uid: string;
     fullName: string;
   };
-  expire_date: string | null;
+  expiryDate: string | null;
   createdAt: Date | Timestamp;
   updatedAt: Date | Timestamp;
 }

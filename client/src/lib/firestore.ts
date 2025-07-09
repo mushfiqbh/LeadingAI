@@ -4,6 +4,11 @@ import {
   getDoc,
   collection,
   getDocs,
+  query,
+  orderBy,
+  limit as firestoreLimit,
+  startAfter,
+  DocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 import { User } from "firebase/auth";
@@ -59,20 +64,59 @@ export const updateUserProfileFS = async (
   }
 };
 
-// Get all notices from 'notices' collection
-export const getNoticesFS = async () => {
+// Get notices with pagination
+export const getNoticesWithPagination = async (
+  limitCount: number = 10,
+  lastDoc?: DocumentSnapshot
+) => {
   const noticesRef = collection(db, "notices");
+
   try {
-    const noticesSnapshot = await getDocs(noticesRef);
-    if (noticesSnapshot.empty) {
-      console.warn("No notices found");
-      return [];
+    let q;
+
+    if (lastDoc) {
+      q = query(
+        noticesRef,
+        orderBy("createdAt", "desc"),
+        startAfter(lastDoc),
+        firestoreLimit(limitCount)
+      );
+    } else {
+      q = query(
+        noticesRef,
+        orderBy("createdAt", "desc"),
+        firestoreLimit(limitCount)
+      );
     }
-    return noticesSnapshot.docs.map(
+
+    const noticesSnapshot = await getDocs(q);
+
+    if (noticesSnapshot.empty) {
+      return {
+        notices: [],
+        lastDoc: null,
+        hasMore: false,
+      };
+    }
+
+    const notices = noticesSnapshot.docs.map(
       (doc) => ({ id: doc.id, ...doc.data() } as Notice)
     );
+
+    const lastDocument = noticesSnapshot.docs[noticesSnapshot.docs.length - 1];
+    const hasMore = noticesSnapshot.docs.length === limitCount;
+
+    return {
+      notices,
+      lastDoc: lastDocument,
+      hasMore,
+    };
   } catch (error) {
-    console.error("Error fetching notices:", error);
-    return [];
+    console.error("Error fetching notices with pagination:", error);
+    return {
+      notices: [],
+      lastDoc: null,
+      hasMore: false,
+    };
   }
 };

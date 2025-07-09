@@ -1,7 +1,32 @@
-import { tools } from "../mcp/tools";
+import { ChatCompletionTool } from "openai/resources/index";
 import openaiClient from "../utils/openaiClient";
 
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4.1-nano";
+
+const tool: ChatCompletionTool = {
+  type: "function",
+  function: {
+    name: "return_notice_text",
+    description:
+      "Extract all text from an image and return a relevant title and full content.",
+    parameters: {
+      type: "object",
+      properties: {
+        title: {
+          type: "string",
+          description:
+            "A short, meaningful title extracted or derived from the image content.",
+        },
+        information: {
+          type: "string",
+          description:
+            "All the text content extracted from the image without missing anything.",
+        },
+      },
+      required: ["title", "information"],
+    },
+  },
+};
 
 export default async function extractImageText(
   image: Express.Multer.File
@@ -35,7 +60,7 @@ export default async function extractImageText(
           ],
         },
       ],
-      tools,
+      tools: [tool],
       tool_choice: {
         type: "function",
         function: { name: "return_notice_text" },
@@ -50,7 +75,7 @@ export default async function extractImageText(
       return null;
     }
 
-    const { title, information } = JSON.parse(args);
+    const { title, information, category } = JSON.parse(args);
 
     return {
       title: title || "Untitled",

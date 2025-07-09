@@ -55,7 +55,7 @@ export const MessageList: React.FC<MessageListProps> = ({
               } px-2`}
             >
               <div
-                className={`w-full md:max-w-[75%] ${
+                className={`max-w-[85%] ${
                   message.role === "user" ? "order-2" : "order-1"
                 }`}
               >

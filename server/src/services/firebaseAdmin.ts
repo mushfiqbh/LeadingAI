@@ -216,26 +216,40 @@ export class FirebaseAdminService {
     }
   }
 
-  // Get all notices descriptions limit to 10
-  static async getNoticesInformation(limit: number = 10) {
+  static async deleteExpiredNotices() {
     try {
       const now = new Date();
-      const noticeSnapshot = await adminDb
+      const snapshot = await adminDb
+        .collection("notices")
+        .where("expiryDate", "<", now)
+        .get();
+
+      const batch = adminDb.batch();
+      snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+      console.log("✅ Expired notices deleted successfully");
+    } catch (error) {
+      console.error("💥 Error deleting expired notices:", error);
+    }
+  }
+
+  static async getNoticesInformation(category: string): Promise<string[]> {
+    try {
+      const now = new Date();
+      const snapshot = await adminDb
         .collection("notices")
         .select("information")
-        .limit(limit)
+        .where("category", "==", category)
+        .where("expiryDate", ">=", now)
+        .orderBy("expiryDate", "asc")
+        .orderBy("createdAt", "desc")
+        .limit(10)
         .get();
 
-      const bustimeSnapshot = await adminDb
-        .collection("bustimes")
-        .select("information")
-        .limit(1)
-        .get();
-
-      // Combine both snapshots
-      const combinedDocs = [...noticeSnapshot.docs, ...bustimeSnapshot.docs];
-
-      return combinedDocs.map((doc) => doc.data().information || "");
+      return snapshot.docs.map((doc) => doc.data().information || "");
     } catch (error) {
       console.error("💥 Error getting notices:", error);
       return [];
