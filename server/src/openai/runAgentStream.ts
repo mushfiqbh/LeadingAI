@@ -1,4 +1,4 @@
-import openaiClient from "./openaiClient";
+import openaiClient from "../utils/openaiClient";
 import { tools } from "../mcp/tools";
 import { ChatCompletionMessageParam } from "openai/resources/index";
 import { getResult } from "../mcp/resultMCP";

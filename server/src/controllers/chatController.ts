@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { buildMessagesWithContext } from "../utils/messageBuilder";
-import { streamAgentResponse } from "../utils/sse";
+import { buildMessagesWithContext } from "../openai/messageBuilder";
+import { streamAgentResponse } from "../openai/sse";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
 
