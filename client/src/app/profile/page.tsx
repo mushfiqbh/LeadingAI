@@ -38,23 +38,23 @@ export default function Page() {
   // Helper function to parse birthdate and split into components
   const parseBirthdate = (birthdate: string | Date | null) => {
     if (!birthdate) return { year: "", month: "", day: "", formatted: "" };
-    
+
     let dateStr = "";
     if (typeof birthdate === "string") {
       dateStr = birthdate;
     } else if (birthdate instanceof Date) {
-      dateStr = birthdate.toISOString().split('T')[0];
+      dateStr = birthdate.toISOString().split("T")[0];
     } else {
       return { year: "", month: "", day: "", formatted: "" };
     }
-    
-    const parts = dateStr.split('-');
+
+    const parts = dateStr.split("-");
     if (parts.length === 3) {
       return {
         year: parts[0],
         month: parts[1],
         day: parts[2],
-        formatted: dateStr
+        formatted: dateStr,
       };
     }
     return { year: "", month: "", day: "", formatted: "" };
@@ -63,7 +63,7 @@ export default function Page() {
   // Helper function to format birthdate from separate parts
   const formatBirthdate = (year: string, month: string, day: string) => {
     if (!year || !month || !day) return "";
-    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   };
 
   // Auto-update profile with debouncing
@@ -80,7 +80,7 @@ export default function Page() {
         birthdateUI.month,
         birthdateUI.day
       );
-      
+
       const profileData = {
         ...formData,
         birthdate: formattedBirthdate,
@@ -111,7 +111,7 @@ export default function Page() {
     const fetchUserProfile = async () => {
       if (user) {
         try {
-          const profile = await getUserProfileFS(user);
+          const profile = await getUserProfileFS(user.uid);
           setUserProfile(profile);
           if (profile) {
             const birthdateParts = parseBirthdate(profile.birthdate || null);
@@ -326,12 +326,21 @@ export default function Page() {
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Year</label>
+                    <label className="block text-xs text-gray-500 mb-1">
+                      Year
+                    </label>
                     <select
                       value={birthdateUI.year}
                       onChange={(e) => {
-                        setBirthdateUI({ ...birthdateUI, year: e.target.value });
-                        const formatted = formatBirthdate(e.target.value, birthdateUI.month, birthdateUI.day);
+                        setBirthdateUI({
+                          ...birthdateUI,
+                          year: e.target.value,
+                        });
+                        const formatted = formatBirthdate(
+                          e.target.value,
+                          birthdateUI.month,
+                          birthdateUI.day
+                        );
                         setFormData({ ...formData, birthdate: formatted });
                       }}
                       className="w-full border-2 border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
@@ -347,24 +356,43 @@ export default function Page() {
                       })}
                     </select>
                   </div>
-                  
+
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Month</label>
+                    <label className="block text-xs text-gray-500 mb-1">
+                      Month
+                    </label>
                     <select
                       value={birthdateUI.month}
                       onChange={(e) => {
-                        setBirthdateUI({ ...birthdateUI, month: e.target.value });
-                        const formatted = formatBirthdate(birthdateUI.year, e.target.value, birthdateUI.day);
+                        setBirthdateUI({
+                          ...birthdateUI,
+                          month: e.target.value,
+                        });
+                        const formatted = formatBirthdate(
+                          birthdateUI.year,
+                          e.target.value,
+                          birthdateUI.day
+                        );
                         setFormData({ ...formData, birthdate: formatted });
                       }}
                       className="w-full border-2 border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
                     >
                       <option value="">MM</option>
                       {Array.from({ length: 12 }, (_, i) => {
-                        const month = (i + 1).toString().padStart(2, '0');
+                        const month = (i + 1).toString().padStart(2, "0");
                         const monthNames = [
-                          "January", "February", "March", "April", "May", "June",
-                          "July", "August", "September", "October", "November", "December"
+                          "January",
+                          "February",
+                          "March",
+                          "April",
+                          "May",
+                          "June",
+                          "July",
+                          "August",
+                          "September",
+                          "October",
+                          "November",
+                          "December",
                         ];
                         return (
                           <option key={month} value={month}>
@@ -374,21 +402,27 @@ export default function Page() {
                       })}
                     </select>
                   </div>
-                  
+
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Day</label>
+                    <label className="block text-xs text-gray-500 mb-1">
+                      Day
+                    </label>
                     <select
                       value={birthdateUI.day}
                       onChange={(e) => {
                         setBirthdateUI({ ...birthdateUI, day: e.target.value });
-                        const formatted = formatBirthdate(birthdateUI.year, birthdateUI.month, e.target.value);
+                        const formatted = formatBirthdate(
+                          birthdateUI.year,
+                          birthdateUI.month,
+                          e.target.value
+                        );
                         setFormData({ ...formData, birthdate: formatted });
                       }}
                       className="w-full border-2 border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
                     >
                       <option value="">DD</option>
                       {Array.from({ length: 31 }, (_, i) => {
-                        const day = (i + 1).toString().padStart(2, '0');
+                        const day = (i + 1).toString().padStart(2, "0");
                         return (
                           <option key={day} value={day}>
                             {day}

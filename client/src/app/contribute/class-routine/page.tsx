@@ -17,7 +17,7 @@ export default function ClassRoutineForm() {
     const formData = new FormData();
     formData.append("url", classRoutineUrl);
     formData.append(
-      "expire_date",
+      "expiryDate",
       new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days from now
     );
 
