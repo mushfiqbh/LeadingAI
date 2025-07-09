@@ -1,4 +1,4 @@
-import openaiClient from "./openaiClient";
+import openaiClient from "../utils/openaiClient";
 import { tools } from "../mcp/tools";
 import { ChatCompletionMessageParam } from "openai/resources/index";
 import { getResult } from "../mcp/resultMCP";
@@ -34,7 +34,10 @@ export async function* runAgentStream(messages: ChatCompletionMessageParam[]) {
     if (toolCall.function.name === "get_result") {
       mcpResult = await getResult(args.student_id, args.birthday);
     } else if (toolCall.function.name === "get_university_notice") {
-      mcpResult = await getNotice();
+      mcpResult = await getNotice(args.category);
+    } else {
+      console.warn(`⚠️ Unknown tool called: ${toolCall.function.name}`);
+      mcpResult = { error: `Unknown tool: ${toolCall.function.name}` };
     }
 
     const stream = await openaiClient.chat.completions.create({

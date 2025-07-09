@@ -4,18 +4,24 @@ import {
   getDoc,
   collection,
   getDocs,
+  query,
+  orderBy,
+  limit as firestoreLimit,
+  startAfter,
+  DocumentSnapshot,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 import { User } from "firebase/auth";
 import { Notice, UserProfile } from "@/types/types";
 
-export const getUserProfileFS = async (user: User) => {
-  if (!user || !user.uid) {
-    console.warn("No user or user ID provided");
+export const getUserProfileFS = async (uid: string) => {
+  if (!uid) {
+    console.warn("No user ID provided");
     return null;
   }
 
-  const userDocRef = doc(db, "users", user.uid);
+  const userDocRef = doc(db, "users", uid);
 
   try {
     const userDoc = await getDoc(userDocRef);
@@ -59,20 +65,77 @@ export const updateUserProfileFS = async (
   }
 };
 
-// Get all notices from 'notices' collection
-export const getNoticesFS = async () => {
+// Get notices with pagination
+export const getNoticesWithPagination = async (
+  limitCount: number = 10,
+  lastDoc?: DocumentSnapshot
+) => {
   const noticesRef = collection(db, "notices");
+
   try {
-    const noticesSnapshot = await getDocs(noticesRef);
-    if (noticesSnapshot.empty) {
-      console.warn("No notices found");
-      return [];
+    let q;
+
+    if (lastDoc) {
+      q = query(
+        noticesRef,
+        orderBy("createdAt", "desc"),
+        startAfter(lastDoc),
+        firestoreLimit(limitCount)
+      );
+    } else {
+      q = query(
+        noticesRef,
+        orderBy("createdAt", "desc"),
+        firestoreLimit(limitCount)
+      );
     }
-    return noticesSnapshot.docs.map(
+
+    const noticesSnapshot = await getDocs(q);
+
+    if (noticesSnapshot.empty) {
+      return {
+        notices: [],
+        lastDoc: null,
+        hasMore: false,
+      };
+    }
+
+    const notices = noticesSnapshot.docs.map(
       (doc) => ({ id: doc.id, ...doc.data() } as Notice)
     );
+
+    const lastDocument = noticesSnapshot.docs[noticesSnapshot.docs.length - 1];
+    const hasMore = noticesSnapshot.docs.length === limitCount;
+
+    return {
+      notices,
+      lastDoc: lastDocument,
+      hasMore,
+    };
   } catch (error) {
-    console.error("Error fetching notices:", error);
-    return [];
+    console.error("Error fetching notices with pagination:", error);
+    return {
+      notices: [],
+      lastDoc: null,
+      hasMore: false,
+    };
+  }
+};
+
+export const deleteNotice = async (noticeId: string) => {
+  if (!noticeId) {
+    console.warn("No notice ID provided");
+    return false;
+  }
+
+  const noticeDocRef = doc(db, "notices", noticeId);
+
+  try {
+    await deleteDoc(noticeDocRef);
+    console.log("Notice deleted successfully");
+    return true;
+  } catch (error) {
+    console.error("Error marking notice as deleted:", error);
+    return false;
   }
 };

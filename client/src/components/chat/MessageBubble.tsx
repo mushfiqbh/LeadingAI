@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { User, Bot, Copy, Check, X } from "lucide-react";
+import { Copy, Check, X } from "lucide-react";
 import { Message } from "../../types/types";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { TypingIndicator } from "./TypingIndicator";
@@ -43,14 +43,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   return (
     <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
-      {!isUser && (
-        <div className="flex-shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-            <Bot className="w-5 h-5 text-white" />
-          </div>
-        </div>
-      )}
-
       <div className={`max-w-4xl ${isUser ? "order-first" : ""}`}>
         <div
           className={`flex flex-col rounded-2xl px-3 py-1 ${
@@ -176,14 +168,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}
         </div>
       </div>
-
-      {isUser && (
-        <div className="flex-shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-emerald-500 to-blue-600 flex items-center justify-center shadow-lg">
-            <User className="w-5 h-5 text-white" />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

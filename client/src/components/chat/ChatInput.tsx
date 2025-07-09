@@ -21,7 +21,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [suggestions, setSuggestions] = useState([
     "রেজাল্ট চেক করো",
-    "নোটিশ",
+    "সর্বশেষ নোটিশ",
     "ক্লাস রুটিন তৈরি করো",
     "পরীক্ষার রুটিন তৈরি করো",
     "নোট বা পিডিএফ খুঁজে দাও",
@@ -30,7 +30,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const baseSuggestions = [
     "রেজাল্ট চেক করো",
-    "নোটিশ",
+    "সর্বশেষ নোটিশ",
     "ক্লাস রুটিন তৈরি করো",
     "পরীক্ষার রুটিন তৈরি করো",
     "নোট বা পিডিএফ খুঁজে দাও",

@@ -89,7 +89,7 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const confirm = (
+  const confirmer = (
     title: string,
     message?: string,
     onConfirm?: () => void,
@@ -121,7 +121,7 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
     info,
     warning,
     prompt,
-    confirm,
+    confirmer,
   };
 
   return (
