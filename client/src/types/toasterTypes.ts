@@ -44,7 +44,7 @@ export interface ToasterContextValue {
     onSubmit?: (value: string) => void,
     options?: Partial<ToastConfig>
   ) => string;
-  confirm: (
+  confirmer: (
     title: string,
     message?: string,
     onConfirm?: () => void,

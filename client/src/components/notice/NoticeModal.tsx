@@ -3,6 +3,9 @@
 import Image from "next/image";
 import { X } from "lucide-react";
 import { Notice } from "@/types/types";
+import { deleteNotice, getUserProfileFS } from "@/lib/firestore";
+import { useEffect, useState } from "react";
+import { UserProfile } from "@/types/types";
 
 export default function NoticeModal({
   notice,
@@ -11,6 +14,18 @@ export default function NoticeModal({
   notice: Notice;
   onClose: () => void;
 }) {
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (notice.contributor?.uid) {
+        const profile = await getUserProfileFS(notice.contributor.uid);
+        setUserProfile(profile);
+      }
+    };
+    fetchUserProfile();
+  }, [notice.contributor]);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
@@ -50,6 +65,26 @@ export default function NoticeModal({
               style={{ objectFit: "contain" }}
             />
           </div>
+          {userProfile?.isAdmin && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => {
+                  if (
+                    confirm(
+                      "Are you sure you want to delete this notice? This action cannot be undone."
+                    )
+                  ) {
+                    deleteNotice(notice.id).then(() => {
+                      onClose();
+                    });
+                  }
+                }}
+                className="px-4 py-2 text-red-500 rounded-lg underline cursor-pointer"
+              >
+                Delete this Notice as Admin
+              </button>
+            </div>
+          )}
           {notice.information && (
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <h4 className="font-bold text-lg text-center text-gray-800 mb-2">

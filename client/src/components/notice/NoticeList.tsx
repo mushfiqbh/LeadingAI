@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { ZoomIn, Bell } from "lucide-react";
 import { Notice } from "@/types/types";

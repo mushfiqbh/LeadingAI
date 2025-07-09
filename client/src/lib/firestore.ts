@@ -9,18 +9,19 @@ import {
   limit as firestoreLimit,
   startAfter,
   DocumentSnapshot,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 import { User } from "firebase/auth";
 import { Notice, UserProfile } from "@/types/types";
 
-export const getUserProfileFS = async (user: User) => {
-  if (!user || !user.uid) {
-    console.warn("No user or user ID provided");
+export const getUserProfileFS = async (uid: string) => {
+  if (!uid) {
+    console.warn("No user ID provided");
     return null;
   }
 
-  const userDocRef = doc(db, "users", user.uid);
+  const userDocRef = doc(db, "users", uid);
 
   try {
     const userDoc = await getDoc(userDocRef);
@@ -118,5 +119,23 @@ export const getNoticesWithPagination = async (
       lastDoc: null,
       hasMore: false,
     };
+  }
+};
+
+export const deleteNotice = async (noticeId: string) => {
+  if (!noticeId) {
+    console.warn("No notice ID provided");
+    return false;
+  }
+
+  const noticeDocRef = doc(db, "notices", noticeId);
+
+  try {
+    await deleteDoc(noticeDocRef);
+    console.log("Notice deleted successfully");
+    return true;
+  } catch (error) {
+    console.error("Error marking notice as deleted:", error);
+    return false;
   }
 };
