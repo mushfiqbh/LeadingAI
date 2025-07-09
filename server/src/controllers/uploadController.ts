@@ -34,9 +34,6 @@ export const createNotice = async (
       }
 
       function resolveExpirationDate(expiryDate?: string): string | null {
-        if (expiryDate === "NO_EXPIRATION") {
-          return null;
-        }
         if (expiryDate && expiryDate.trim() !== "") {
           return expiryDate; // Use provided date
         }

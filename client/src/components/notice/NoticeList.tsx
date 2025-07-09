@@ -49,9 +49,8 @@ export default function NoticeList({
               By {notice.contributor?.fullName || "Anonymous"}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              {notice.expiryDate && notice.expiryDate !== "NO_EXPIRATION"
-                ? `Expires: ${new Date(notice.expiryDate).toLocaleDateString()}`
-                : "Expires: Never"}
+              {notice.expiryDate &&
+                `Expires: ${new Date(notice.expiryDate).toLocaleDateString()}`}
             </p>
           </div>
         </li>

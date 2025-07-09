@@ -215,18 +215,12 @@ export default function NoticeUploadForm({
             </p>
           )}
 
-          {expirationOption && expirationOption !== "NO_EXPIRATION" && (
-            <p className="text-xs text-gray-500 mt-1">
+          {expirationOption && (
+            <p className="text-xs text-green-600 mt-1">
               Notice will expire on:{" "}
               {new Date(
                 calculateExpirationDate(expirationOption)
               ).toLocaleDateString()}
-            </p>
-          )}
-
-          {expirationOption === "NO_EXPIRATION" && (
-            <p className="text-xs text-green-600 mt-1">
-              Notice will remain active until manually removed
             </p>
           )}
         </div>

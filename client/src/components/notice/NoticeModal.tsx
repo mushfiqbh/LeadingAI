@@ -50,9 +50,8 @@ export default function NoticeModal({
               By {notice.contributor?.fullName || "Anonymous"}
             </p>
             <p className="text-sm text-gray-500 mt-1">
-              {notice.expiryDate && notice.expiryDate !== "NO_EXPIRATION"
-                ? `Expires: ${new Date(notice.expiryDate).toLocaleDateString()}`
-                : "No expiration date"}
+              {notice.expiryDate &&
+                `Expires: ${new Date(notice.expiryDate).toLocaleDateString()}`}
             </p>
           </div>
           <div className="flex justify-center">
@@ -85,6 +84,7 @@ export default function NoticeModal({
               </button>
             </div>
           )}
+          
           {notice.information && (
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
               <h4 className="font-bold text-lg text-center text-gray-800 mb-2">
