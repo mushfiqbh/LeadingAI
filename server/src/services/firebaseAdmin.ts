@@ -236,9 +236,12 @@ export class FirebaseAdminService {
     }
   }
 
-  static async getNoticesInformation(category: string): Promise<string[]> {
+  static async getNoticesInformation(
+    category: string = "general"
+  ): Promise<string[]> {
     try {
-      const now = new Date();
+      const now = new Date().toISOString();
+
       const snapshot = await adminDb
         .collection("notices")
         .select("information")
