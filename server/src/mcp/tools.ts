@@ -37,8 +37,8 @@ export const tools: ChatCompletionTool[] = [
           category: {
             type: "string",
             description:
-              "Category of notice to retrieve. Use 'bustime' for bus schedule, 'academic' for academic notices, 'event' for university events, or 'holiday' for holiday notifications.",
-            enum: ["bustime", "academic", "general"],
+              "Category of notice to retrieve. Use 'bus-schedule' for bus schedule, 'general' for other notifications.",
+            enum: ["bus-schedule", "general"],
           },
         },
         required: ["category"],

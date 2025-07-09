@@ -13,7 +13,7 @@ export default function BusScheduleForm() {
     if (busScheduleImage) {
       const formData = new FormData();
       formData.append("image", busScheduleImage);
-      formData.append("category", "bustime");
+      formData.append("category", "bus-schedule");
       formData.append("userId", user?.uid || "");
       formData.append("userName", user?.displayName || "Anonymous");
       formData.append(

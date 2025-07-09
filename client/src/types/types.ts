@@ -48,7 +48,7 @@ export interface UserProfile {
 export interface Notice {
   id: string;
   title: string;
-  category: "bustime" | "general";
+  category: "bus-schedule" | "general";
   imageUrl: string;
   information: string;
   contributor: {

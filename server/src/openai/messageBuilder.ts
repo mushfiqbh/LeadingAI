@@ -13,18 +13,7 @@ export function buildMessagesWithContext({
   image,
   userProfile,
 }: MessageBuilderParams): ChatCompletionMessageParam[] {
-  // Build system message with user profile context
-  const now = new Date();
-  let systemContent = `You are a helpful AI assistant. 
-    Today's date is ${
-      now.toISOString().split("T")[0]
-    } (${now.toLocaleDateString("en-US", { weekday: "long" })}), 
-    and the current time is ${now.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    })}.`;
-
+  let profilePrompt = "";
   if (userProfile) {
     // Filter out excluded fields
     const excludedFields = [
@@ -47,14 +36,14 @@ export function buildMessagesWithContext({
       .join(", ");
 
     if (profileData) {
-      systemContent += `User Profile: ${profileData}`;
+      profilePrompt += `User Profile: ${profileData}`;
     }
   }
 
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content: systemContent,
+      content: profilePrompt,
     },
   ];
 
