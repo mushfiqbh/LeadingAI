@@ -42,9 +42,6 @@ export const createNotice = async (
         ).toISOString();
       }
 
-      // Process the expiration date
-      const processedexpiryDate = resolveExpirationDate(expiryDate);
-
       // Create the notice object
       const noticeData: any = {
         category: category || "general",
@@ -55,12 +52,8 @@ export const createNotice = async (
           uid: userId || "Anonymous",
           fullName: userName || "Anonymous",
         },
+        expiryDate: resolveExpirationDate(expiryDate),
       };
-
-      // Only add expiryDate if it's not null (null means no expiration)
-      if (processedexpiryDate !== null) {
-        noticeData.expiryDate = processedexpiryDate;
-      }
 
       const noticeId = await FirebaseAdminService.createNotice(noticeData);
       res.status(201).json({

@@ -4,7 +4,7 @@ export interface ChatMessage {
   text: string;
   image?: File | null;
   imageUrl?: string;
-  uploadStatus?: "pending" | "sent" | "received" | "done" | "none" | "error";
+  uploadStatus?: "pending" | "sent" | "done" | "none" | "error";
 }
 
 export interface Message {
@@ -51,6 +51,22 @@ export interface Notice {
   category: "bus-schedule" | "general";
   imageUrl: string;
   information: string;
+  contributor: {
+    uid: string;
+    fullName: string;
+  };
+  expiryDate: string | null;
+  createdAt: Date | Timestamp;
+  updatedAt: Date | Timestamp;
+}
+
+export interface Routine {
+  id: string;
+  category: "class-routine" | "exam-routine";
+  title: string;
+  url: string;
+  status: "pending" | "sent" | "done" | "error";
+  content: string;
   contributor: {
     uid: string;
     fullName: string;

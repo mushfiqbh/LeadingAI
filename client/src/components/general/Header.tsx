@@ -79,7 +79,7 @@ export default function Header() {
   };
 
   return (
-    <div className="fixed top-0 w-full z-20 bg-white backdrop-blur-md shadow-sm">
+    <div className="fixed top-0 w-full z-20 bg-white backdrop-blur-md shadow-sm transition-colors">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
