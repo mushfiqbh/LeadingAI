@@ -80,12 +80,15 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
       showInput: true,
       showButton: true,
       buttonText: "Submit",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
       duration: 0, // Don't auto-close prompts
       onButtonClick: (inputValue) => {
         if (inputValue && onSubmit) {
           onSubmit(inputValue);
         }
       },
+      onCancel: options?.onCancel || (() => {}),
     });
   };
 
@@ -102,12 +105,15 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
       message,
       showButton: true,
       buttonText: "Confirm",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
       duration: 0, // Don't auto-close confirmations
       onButtonClick: () => {
         if (onConfirm) {
           onConfirm();
         }
       },
+      onCancel: options?.onCancel || (() => {}),
     });
   };
 

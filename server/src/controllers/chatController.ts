@@ -21,7 +21,7 @@ export const chatController = async (
   if (image) {
     await FirebaseAdminService.updateMessageById(userMessageId, {
       content: {
-        uploadStatus: "received",
+        uploadStatus: "sent",
       },
     });
   }

@@ -1,6 +1,5 @@
 import ProtectedRoute from "@/components/general/ProtectedRoute";
-import { FileText } from "lucide-react";
-import { Bell, Calendar, BookOpen } from "lucide-react";
+import { Bell, Calendar, FileText, Text } from "lucide-react";
 import Link from "next/link";
 
 const ContributePage = () => {
@@ -9,30 +8,30 @@ const ContributePage = () => {
       name: "Upload Notices",
       link: "notices",
       icon: Bell,
-      description: "Upload image of latest notice",
+      description: "Image of latest notice",
       color: "from-red-500 to-pink-500",
     },
     {
-      name: "Share Exam Routine",
-      link: "exam-routine",
+      name: "Class / Exam Routine",
+      link: "routines",
       icon: Calendar,
-      description: "Share google sheet url of exam routine",
+      description: "Share Google sheet url of the routine",
       color: "from-orange-500 to-yellow-500",
     },
     {
-      name: "Share Class Routine",
-      link: "class-routine",
-      icon: BookOpen,
-      description: "Share google sheet url of class routine",
-      color: "from-green-500 to-emerald-500",
-    },
-    {
-      name: "Upload Notes & PDFs",
+      name: "Upload PDFs",
       link: "notes",
       icon: FileText,
       description: "Upload study materials you have",
       color: "from-purple-500 to-indigo-500",
     },
+    {
+      name: "Paste Any Notes",
+      link: "notes",
+      icon: Text,
+      description: "Text content you want to share",
+      color: "from-blue-500 to-cyan-500",
+    }
     // {
     //   name: "Update Bus Schedule",
     //   link: "bus-schedule",
@@ -68,9 +67,9 @@ const ContributePage = () => {
                     <Link
                       key={form.link}
                       href={`/contribute/${form.link}`}
-                      className="group relative p-4 lg:p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 active:scale-95 border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                      className="group flex items-center relative p-4 lg:p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 active:scale-95 border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20"
                     >
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center gap-4">
                         <div
                           className={`flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center bg-gradient-to-r ${form.color} text-white shadow-lg`}
                         >

@@ -11,6 +11,9 @@ export interface ToastConfig {
   buttonText?: string;
   onButtonClick?: (inputValue?: string) => void;
   onClose?: () => void;
+  showCancelButton?: boolean;
+  cancelButtonText?: string;
+  onCancel?: () => void;
 }
 
 export interface ToasterContextValue {

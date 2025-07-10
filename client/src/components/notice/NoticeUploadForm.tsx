@@ -42,6 +42,7 @@ export default function NoticeUploadForm({
     const formData = new FormData();
     formData.append("image", noticeImage);
     formData.append("category", "general");
+    formData.append("status", "pending");
     formData.append("userId", user?.uid);
     formData.append("userName", user?.displayName || "Anonymous");
     formData.append("expiryDate", calculateExpirationDate(expirationOption));
@@ -96,7 +97,7 @@ export default function NoticeUploadForm({
           <h3 className="text-xl font-semibold text-gray-800">
             Upload University Notice
           </h3>
-          <p className="text-sm text-gray-600">Upload important notices</p>
+          <p className="text-sm text-gray-600">AI Model uses this for response</p>
         </div>
       </div>
 
@@ -250,7 +251,7 @@ export default function NoticeUploadForm({
 
       {/* Success Message */}
       {uploadStatus === "success" && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl">
+        <div className="bg-green-50 border border-green-200 text-green-700 mt-5 px-4 py-3 rounded-xl">
           <p className="text-sm">Notice uploaded successfully! 🎉</p>
         </div>
       )}

@@ -123,19 +123,30 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
             </div>
           )}
 
-          {/* Button */}
-          {toast.showButton && (
-            <div className="flex justify-end">
-              <button
-                onClick={handleButtonClick}
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
-              >
-                {toast.buttonText || "OK"}
-              </button>
+          {/* Button(s) */}
+          {(toast.showButton || toast.showCancelButton) && (
+            <div className="flex justify-end gap-2">
+              {toast.showCancelButton && (
+                <button
+                  onClick={() => {
+                    toast.onCancel?.();
+                    handleClose();
+                  }}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  {toast.cancelButtonText || "Cancel"}
+                </button>
+              )}
+              {toast.showButton && (
+                <button
+                  onClick={handleButtonClick}
+                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  {toast.buttonText || "OK"}
+                </button>
+              )}
             </div>
           )}
-
-          
         </div>
       </div>
     </div>
@@ -147,7 +158,7 @@ const Toaster: React.FC<ToasterProps> = ({ toasts, onRemoveToast }) => {
 
   return (
     <div className="fixed inset-0 z-40 pointer-events-none">
-      <div className="flex items-center justify-center min-h-screen p-4">
+      <div className="flex items-start justify-center min-h-screen p-4">
         <div className="w-full max-w-md space-y-4 pointer-events-auto">
           {toasts.map((toast) => (
             <ToastItem key={toast.id} toast={toast} onRemove={onRemoveToast} />

@@ -20,21 +20,21 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [suggestions, setSuggestions] = useState([
-    "রেজাল্ট চেক করো",
-    "সর্বশেষ নোটিশ",
-    "ক্লাস রুটিন তৈরি করো",
-    "পরীক্ষার রুটিন তৈরি করো",
-    "নোট বা পিডিএফ খুঁজে দাও",
-    "তুমি কি করতে পারো",
+    "Check results",
+    "Latest notice",
+    "Find notes or PDFs",
+    "What can you do",
+    "Any upcoming events?",
+    "What's the bus schedule?",
   ]);
 
   const baseSuggestions = [
-    "রেজাল্ট চেক করো",
-    "সর্বশেষ নোটিশ",
-    "ক্লাস রুটিন তৈরি করো",
-    "পরীক্ষার রুটিন তৈরি করো",
-    "নোট বা পিডিএফ খুঁজে দাও",
-    "তুমি কি করতে পারো",
+    "Check results",
+    "Latest notice",
+    "Find notes or PDFs",
+    "What can you do?",
+    "Any upcoming events?",
+    "What's the bus schedule?",
   ];
 
   // Shuffle function to randomize suggestions
@@ -125,7 +125,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               <button
                 key={index}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="px-4 py-2.5 text-sm bg-gradient-to-r from-blue-50 to-purple-50 text-gray-700 rounded-full hover:from-blue-100 hover:to-purple-100 transition-all duration-200 border border-blue-200/50 whitespace-nowrap flex-shrink-0 shadow-sm hover:shadow-md transform hover:scale-105"
+                className="px-4 py-2.5 text-xs bg-gradient-to-r from-blue-50 to-purple-50 text-gray-700 rounded-full hover:from-blue-100 hover:to-purple-100 transition-all duration-200 border border-blue-200/50 whitespace-nowrap flex-shrink-0 shadow-sm hover:shadow-md transform hover:scale-105"
                 type="button"
               >
                 {suggestion}

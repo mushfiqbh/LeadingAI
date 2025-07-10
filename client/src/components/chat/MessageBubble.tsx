@@ -99,14 +99,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                       </div>
                     </div>
                   )}
-                  {message.content.uploadStatus === "received" && (
-                    <div className="text-center text-green-600">
-                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <Check className="w-5 h-5" />
-                      </div>
-                      <div className="text-sm font-medium">Image Uploaded</div>
-                    </div>
-                  )}
                   {message.content.uploadStatus === "done" && (
                     <div className="text-center text-green-600">
                       <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
