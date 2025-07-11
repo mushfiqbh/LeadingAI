@@ -73,7 +73,7 @@ export const createRoutine = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { routineId, category } = req.body;
+  const { routineId, routineUrl } = req.body;
 
   try {
     if (!routineId) {
@@ -81,22 +81,15 @@ export const createRoutine = async (
       return;
     }
 
+    const content = await extractGoogleSheet(routineUrl);
+
     await FirebaseAdminService.updateRoutine(routineId, {
-      status: "sent",
+      content,
     });
 
     res.status(200).json({
       success: true,
       message: "Routine creation initiated",
-    });
-
-    const extracted = await extractGoogleSheet(routineId, category);
-    const { title, content } = extracted;
-
-    await FirebaseAdminService.updateRoutine(routineId, {
-      status: "done",
-      title,
-      content,
     });
   } catch (error) {
     console.error("💥 Error in createRoutine:", error);

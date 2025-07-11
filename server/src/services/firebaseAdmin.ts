@@ -274,4 +274,24 @@ export class FirebaseAdminService {
       throw error;
     }
   }
+
+  static async getAllRoutinesByCategory(category: string): Promise<any[]> {
+    try {
+      const snapshot = await adminDb
+        .collection("routines")
+        .select("title", "content")
+        .where("category", "==", category)
+        .orderBy("createdAt", "desc")
+        .limit(1)
+        .get();
+
+      return snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error) {
+      console.error("💥 Error getting routines by category:", error);
+      return [];
+    }
+  }
 }

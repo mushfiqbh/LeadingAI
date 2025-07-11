@@ -49,8 +49,8 @@ export default function RoutineUploadForm({
 
     const routineId = await createRoutineFS({
       url: routineUrl,
+      title: "Exam Routine Trial",
       category,
-      status: "pending",
       contributor: {
         uid: user?.uid || "Anonymous",
         name: user?.displayName || "Anonymous",
@@ -65,12 +65,13 @@ export default function RoutineUploadForm({
         }/upload/routine`,
         {
           method: "POST",
-          body: JSON.stringify({ routineId, category }),
+          body: JSON.stringify({ routineId, routineUrl }),
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
+
       if (!response.ok) {
         throw new Error("Failed to upload routine");
       }

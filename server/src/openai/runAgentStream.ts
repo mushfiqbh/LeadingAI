@@ -4,6 +4,7 @@ import { ChatCompletionMessageParam } from "openai/resources/index";
 import { getResult } from "../mcp/resultMCP";
 import { getUnifiedSystemPrompt } from "./systemPrompt";
 import { getNotice } from "../mcp/noticeMCP";
+import { getRoutine } from "../mcp/routineMCP";
 
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4.1-nano";
 
@@ -35,6 +36,8 @@ export async function* runAgentStream(messages: ChatCompletionMessageParam[]) {
       mcpResult = await getResult(args.student_id, args.birthday);
     } else if (toolCall.function.name === "get_university_notice") {
       mcpResult = await getNotice(args.category);
+    } else if (toolCall.function.name === "get_routine") {
+      mcpResult = await getRoutine(args.category);
     } else {
       console.warn(`⚠️ Unknown tool called: ${toolCall.function.name}`);
       mcpResult = { error: `Unknown tool: ${toolCall.function.name}` };
