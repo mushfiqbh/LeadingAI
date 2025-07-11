@@ -1,5 +1,14 @@
 import { Routine } from "@/types/types";
-import { DocumentSnapshot, collection, getDocs, query, orderBy, limit as firestoreLimit, startAfter } from "firebase/firestore";
+import {
+  DocumentSnapshot,
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit as firestoreLimit,
+  startAfter,
+  addDoc,
+} from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 
 export const getRoutinesWithPagination = async (
@@ -37,7 +46,8 @@ export const getRoutinesWithPagination = async (
     const routines = routinesSnapshot.docs.map(
       (doc) => ({ id: doc.id, ...doc.data() } as Routine)
     );
-    const lastDocument = routinesSnapshot.docs[routinesSnapshot.docs.length - 1];
+    const lastDocument =
+      routinesSnapshot.docs[routinesSnapshot.docs.length - 1];
     const hasMore = routinesSnapshot.docs.length === limitCount;
     return {
       routines,
@@ -51,5 +61,23 @@ export const getRoutinesWithPagination = async (
       lastDoc: null,
       hasMore: false,
     };
+  }
+};
+
+export const createRoutineFS = async (
+  routineData: Omit<Routine, "id" | "createdAt" | "updatedAt">
+) => {
+  try {
+    const routinesRef = collection(db, "routines");
+    const docRef = await addDoc(routinesRef, {
+      ...routineData,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating routine:", error);
+    throw error;
   }
 };

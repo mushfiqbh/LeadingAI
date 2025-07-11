@@ -91,7 +91,7 @@ export default function Header() {
                 Leading AI
               </h1>
               <p className="text-sm text-gray-500 font-medium">
-                GPT - 4.1 Nano
+                Limit 32768 Tokens
               </p>
             </div>
           </Link>

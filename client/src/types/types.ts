@@ -53,7 +53,7 @@ export interface Notice {
   information: string;
   contributor: {
     uid: string;
-    fullName: string;
+    name: string;
   };
   expiryDate: string | null;
   createdAt: Date | Timestamp;
@@ -61,17 +61,17 @@ export interface Notice {
 }
 
 export interface Routine {
-  id: string;
+  id?: string;
   category: "class-routine" | "exam-routine";
-  title: string;
+  title?: string;
   url: string;
   status: "pending" | "sent" | "done" | "error";
-  content: string;
+  content?: string;
   contributor: {
     uid: string;
-    fullName: string;
+    name: string;
   };
   expiryDate: string | null;
-  createdAt: Date | Timestamp;
-  updatedAt: Date | Timestamp;
+  createdAt?: Date | Timestamp;
+  updatedAt?: Date | Timestamp;
 }

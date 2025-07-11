@@ -47,7 +47,7 @@ export default function NoticeModal({
               {notice.title || "University Notice"}
             </h3>
             <p className="text-gray-600">
-              By {notice.contributor?.fullName || "Anonymous"}
+              By {notice.contributor?.name || "Anonymous"}
             </p>
             <p className="text-sm text-gray-500 mt-1">
               {notice.expiryDate &&

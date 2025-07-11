@@ -29,7 +29,7 @@ export default function RoutineModal({
               {routine.title || "Class Routine"}
             </h3>
             <p className="text-gray-600">
-              By {routine.contributor?.fullName || "Anonymous"}
+              By {routine.contributor?.name || "Anonymous"}
             </p>
             <p className="text-sm text-gray-500 mt-1">
               {routine.expiryDate &&
