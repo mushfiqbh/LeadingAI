@@ -45,4 +45,24 @@ export const tools: ChatCompletionTool[] = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get_routine",
+      description:
+        "Retrieve the latest routine for a specific category, such as 'exam' or 'class'.",
+      parameters: {
+        type: "object",
+        properties: {
+          category: {
+            type: "string",
+            description:
+              "Category of routine to retrieve, such as 'exam-routine' or 'class-routine'.",
+            enum: ["exam-routine", "class-routine"],
+          },
+        },
+        required: ["category"],
+      },
+    },
+  },
 ];

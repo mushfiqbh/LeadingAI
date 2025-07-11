@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import Header from "@/components/general/Header";
 
 export const metadata: Metadata = {
-  title: "Zen AI Agent",
+  title: "Leading AI Agent",
   description: "Agentic AI for Leading University Students",
 };
 

@@ -65,7 +65,6 @@ export interface Routine {
   category: "class-routine" | "exam-routine";
   title?: string;
   url: string;
-  status: "pending" | "sent" | "done" | "error";
   content?: string;
   contributor: {
     uid: string;
