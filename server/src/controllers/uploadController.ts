@@ -2,6 +2,14 @@ import { Request, Response } from "express";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
 import extractImageText from "../services/extractImageText";
+import extractGoogleSheet from "../services/extractGoogleSheet";
+
+function resolveExpirationDate(expiryDate?: string): string | null {
+  if (expiryDate && expiryDate.trim() !== "") {
+    return expiryDate; // Use provided date
+  }
+  return new Date(Date.now() + 4 * 30 * 24 * 60 * 60 * 1000).toISOString();
+}
 
 export const createNotice = async (
   req: Request,
@@ -33,15 +41,6 @@ export const createNotice = async (
         return;
       }
 
-      function resolveExpirationDate(expiryDate?: string): string | null {
-        if (expiryDate && expiryDate.trim() !== "") {
-          return expiryDate; // Use provided date
-        }
-        return new Date(
-          Date.now() + 4 * 30 * 24 * 60 * 60 * 1000
-        ).toISOString();
-      }
-
       // Create the notice object
       const noticeData: any = {
         category: category || "general",
@@ -50,7 +49,7 @@ export const createNotice = async (
         information,
         contributor: {
           uid: userId || "Anonymous",
-          fullName: userName || "Anonymous",
+          name: userName || "Anonymous",
         },
         expiryDate: resolveExpirationDate(expiryDate),
       };
@@ -66,6 +65,41 @@ export const createNotice = async (
     }
   } catch (error) {
     console.error("💥 Error in createNotice:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const createRoutine = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { routineId, category } = req.body;
+
+  try {
+    if (!routineId) {
+      res.status(400).json({ error: "Routine ID is required" });
+      return;
+    }
+
+    await FirebaseAdminService.updateRoutine(routineId, {
+      status: "sent",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Routine creation initiated",
+    });
+
+    const extracted = await extractGoogleSheet(routineId, category);
+    const { title, content } = extracted;
+
+    await FirebaseAdminService.updateRoutine(routineId, {
+      status: "done",
+      title,
+      content,
+    });
+  } catch (error) {
+    console.error("💥 Error in createRoutine:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

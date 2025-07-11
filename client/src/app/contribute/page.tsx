@@ -60,12 +60,12 @@ const ContributePage = () => {
             {/* Navigation Cards Section */}
             <div className="mb-12 lg:mb-16">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                {forms.map((form) => {
+                {forms.map((form, index) => {
                   const IconComponent = form.icon;
 
                   return (
                     <Link
-                      key={form.link}
+                      key={index}
                       href={`/contribute/${form.link}`}
                       className="group flex items-center relative p-4 lg:p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 active:scale-95 border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20"
                     >

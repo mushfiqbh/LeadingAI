@@ -88,9 +88,12 @@ export default function ClassRoutinePage() {
   }, [fetchRoutines, hasMore, loadingMore, fetchStatus, loadMoreRoutines]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto py-8">
+    <div className="w-full md:w-1/2 mx-auto py-6">
       <RoutineUploadForm onUploadSuccess={() => fetchRoutines(true)} />
-      <div className="mt-8">
+      <div className="mt-8 px-6">
+        <h4 className="font-semibold text-lg text-gray-800 mb-4">
+          Recent Routines
+        </h4>
         <RoutineList routines={routines} onSelect={setSelectedRoutine} />
       </div>
       {selectedRoutine && (

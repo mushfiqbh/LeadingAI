@@ -258,4 +258,20 @@ export class FirebaseAdminService {
       return [];
     }
   }
+
+  static async updateRoutine(
+    routineId: string,
+    routineData: any
+  ): Promise<void> {
+    try {
+      const routineRef = adminDb.collection("routines").doc(routineId);
+      await routineRef.update({
+        ...routineData,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+    } catch (error) {
+      console.error("💥 Error updating routine:", error);
+      throw error;
+    }
+  }
 }
