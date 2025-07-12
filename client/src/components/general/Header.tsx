@@ -9,12 +9,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useChatStore } from "@/hooks/useChatStore";
+import TokenManager from "./TokenManager";
 
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
+  const [showManager, setShowManager] = useState(false);
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
+  const { user, userProfile, loading } = useAuth();
   const router = useRouter();
   const { createConversationInFirebase, selectConversation } = useChatStore();
   const { prompt } = useToaster();
@@ -90,9 +92,19 @@ export default function Header() {
               <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
                 Leading AI
               </h1>
-              <p className="text-sm text-gray-500 font-medium">
-                Limit 32768 Tokens
-              </p>
+              {loading ? (
+                <p className="text-xs text-gray-500 animate-pulse">
+                  Loading...
+                </p>
+              ) : (
+                <p className="text-xs text-gray-500">
+                  <span className="text-blue-600 font-semibold">
+                    {Number(userProfile?.tokens) -
+                      Number(userProfile?.usedTokens)}
+                  </span>{" "}
+                  Tokens Left
+                </p>
+              )}
             </div>
           </Link>
 
@@ -130,6 +142,10 @@ export default function Header() {
                   )}
                 </button>
 
+                {showManager && (
+                  <TokenManager setShowManager={setShowManager} />
+                )}
+
                 {showMenu && (
                   <div
                     ref={menuRef}
@@ -164,6 +180,26 @@ export default function Header() {
                         <CircleUser className="w-4 h-4" />
                         <span className="font-medium">Profile</span>
                       </Link>
+
+                      <button
+                        onClick={() => setShowManager(true)}
+                        className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-green-600 hover:text-green-700"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                          />
+                        </svg>
+                        <span className="font-medium">Buy Token</span>
+                      </button>
 
                       {window.location.pathname !== "/" && (
                         <Link
@@ -202,26 +238,6 @@ export default function Header() {
                         <MessageSquareDiff className="w-4 h-4" />
                         <span className="font-medium">New Chat</span>
                       </button>
-
-                      <Link
-                        href="/contribute"
-                        className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-green-600 hover:text-green-700"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                          />
-                        </svg>
-                        <span className="font-medium">Contribute</span>
-                      </Link>
 
                       <Link
                         href="/report"

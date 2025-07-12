@@ -1,5 +1,5 @@
 import { auth, db } from "@/lib/firebaseClient";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -37,6 +37,8 @@ export const signUpWithEmail = async (
       fullName,
       createdAt: serverTimestamp(),
       emailVerified: user.emailVerified,
+      tokes: 32000,
+      usedTokens: 0,
     });
 
     // Send verification email and wait for it to complete
@@ -89,19 +91,36 @@ export const signInWithGoogle = async () => {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    // Create / update Firestore user profile
-    await setDoc(
-      doc(db, "users", user.uid),
-      {
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      // Update Firestore user profile
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          uid: user.uid,
+          email: user.email,
+          fullName: user.displayName,
+          photoURL: user.photoURL,
+          lastLogin: serverTimestamp(),
+          emailVerified: user.emailVerified,
+        },
+        { merge: true }
+      );
+    } else {
+      // Create Firestore user profile
+      await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         email: user.email,
         fullName: user.displayName,
         photoURL: user.photoURL,
         lastLogin: serverTimestamp(),
         emailVerified: user.emailVerified,
-      },
-      { merge: true }
-    );
+        tokens: 32000,
+        usedTokens: 0,
+      });
+    }
 
     return { user };
   } catch (error: unknown) {

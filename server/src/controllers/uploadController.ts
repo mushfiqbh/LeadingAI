@@ -73,7 +73,7 @@ export const createRoutine = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { routineId, routineUrl } = req.body;
+  const { routineId, routineUrl, category } = req.body;
 
   try {
     if (!routineId) {
@@ -81,7 +81,7 @@ export const createRoutine = async (
       return;
     }
 
-    const content = await extractGoogleSheet(routineUrl);
+    const content = await extractGoogleSheet(routineUrl, category);
 
     await FirebaseAdminService.updateRoutine(routineId, {
       content,

@@ -1,5 +1,5 @@
 import { ChatCompletionTool } from "openai/resources/index";
-import openaiClient from "../utils/openaiClient";
+import openaiClient from "../openai/openaiClient";
 
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4.1-nano";
 

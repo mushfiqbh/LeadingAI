@@ -27,6 +27,8 @@ export interface Conversation {
 
 export interface UserProfile {
   uid: string;
+  tokens: number;
+  usedTokens: number;
   fullName: string;
   email: string;
   emailVerified: boolean;

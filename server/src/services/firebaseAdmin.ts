@@ -45,6 +45,44 @@ if (apps.length === 0) {
 export const adminDb = getFirestore();
 
 export class FirebaseAdminService {
+  static async updateUserTokens({
+    userId,
+    tokens,
+    usedTokens,
+  }: {
+    userId: string;
+    tokens?: number;
+    usedTokens?: number;
+  }) {
+    const userProfile = await adminDb.collection("users").doc(userId).get();
+
+    if (!userProfile.exists) {
+      throw new Error(`User profile ${userId} not found`);
+    }
+
+    const userData = userProfile.data() || {};
+    const currentTokens = userData.tokens || 0;
+    const currentUsedTokens = userData.usedTokens || 0;
+
+    if (tokens && tokens > 0) {
+      await adminDb
+        .collection("users")
+        .doc(userId)
+        .update({
+          tokens: currentTokens + tokens,
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+    } else if (usedTokens && usedTokens > 0) {
+      await adminDb
+        .collection("users")
+        .doc(userId)
+        .update({
+          usedTokens: currentUsedTokens + usedTokens,
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+    }
+  }
+
   // Create a new conversation
   static async createConversation(conversationData: any) {
     try {

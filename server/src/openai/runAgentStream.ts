@@ -1,14 +1,19 @@
-import openaiClient from "../utils/openaiClient";
+import openaiClient from "./openaiClient";
 import { tools } from "../mcp/tools";
 import { ChatCompletionMessageParam } from "openai/resources/index";
 import { getResult } from "../mcp/resultMCP";
 import { getUnifiedSystemPrompt } from "./systemPrompt";
 import { getNotice } from "../mcp/noticeMCP";
 import { getRoutine } from "../mcp/routineMCP";
+import { FirebaseAdminService } from "../services/firebaseAdmin";
+import countTokens from "../utils/countTokens"; // hypothetical helper
 
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4.1-nano";
 
-export async function* runAgentStream(messages: ChatCompletionMessageParam[]) {
+export async function* runAgentStream(
+  userId: string,
+  messages: ChatCompletionMessageParam[]
+) {
   yield "__thinking__";
 
   const systemPrompt: ChatCompletionMessageParam = {
@@ -16,6 +21,11 @@ export async function* runAgentStream(messages: ChatCompletionMessageParam[]) {
     content: getUnifiedSystemPrompt(),
   };
 
+  // === Token accounting ===
+  let usedInputTokens = countTokens([systemPrompt, ...messages]);
+  let usedOutputTokens = 0;
+
+  // === Check for tool usage ===
   const toolCheck = await openaiClient.chat.completions.create({
     model: MODEL,
     messages: [systemPrompt, ...messages],
@@ -63,9 +73,13 @@ export async function* runAgentStream(messages: ChatCompletionMessageParam[]) {
 
     for await (const chunk of stream) {
       const delta = chunk.choices?.[0]?.delta?.content;
-      if (delta) yield delta;
+      if (delta) {
+        usedOutputTokens += countTokens(delta);
+        yield delta;
+      }
     }
   } else {
+    // === No tool, direct stream ===
     const stream = await openaiClient.chat.completions.create({
       model: MODEL,
       messages: [systemPrompt, ...messages],
@@ -74,7 +88,17 @@ export async function* runAgentStream(messages: ChatCompletionMessageParam[]) {
 
     for await (const chunk of stream) {
       const delta = chunk.choices?.[0]?.delta?.content;
-      if (delta) yield delta;
+      if (delta) {
+        usedOutputTokens += countTokens(delta);
+        yield delta;
+      }
     }
   }
+
+  // === Update Firestore after streaming ===
+  const usedTokens = usedInputTokens + usedOutputTokens;
+  await FirebaseAdminService.updateUserTokens({
+    userId,
+    usedTokens,
+  });
 }
