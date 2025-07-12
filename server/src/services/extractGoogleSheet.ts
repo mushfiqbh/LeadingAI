@@ -1,30 +1,31 @@
-import fetchSheetData from "../utils/fetchGoogleSheet";
+import {
+  fetchClassRoutineSheet,
+  fetchExamRoutineSheet,
+} from "../utils/fetchGoogleSheet";
 
-type Schedule = Record<string, any>;
-
-function filterSchedules(data: Schedule[]): Schedule[] {
-  return data
-    .filter((item) => "Batch" in item && "Section" in item)
-    .map((item) => {
-      const cleaned: Schedule = {};
-      for (const [key, value] of Object.entries(item)) {
-        if (typeof value === "string" && value.length === 1) continue;
-        cleaned[key] = value;
-      }
-      return cleaned;
-    });
-}
-
-export default async function extractGoogleSheet(url: string): Promise<string> {
+export default async function extractGoogleSheet(
+  url: string,
+  category: string
+): Promise<string> {
   try {
-    const data = await fetchSheetData(url);
+    // Extract the spreadsheet ID from the URL
+    const regex = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
+    const match = url.match(regex);
+    if (!match) {
+      throw new Error("Invalid Google Sheets URL");
+    }
+    const spreadsheetId = match[1];
+
+    const data =
+      category === "class-routine"
+        ? await fetchClassRoutineSheet(spreadsheetId)
+        : await fetchExamRoutineSheet(spreadsheetId);
+
     if (!data || data.length === 0) {
       throw new Error("No data found in the Google Sheet");
     }
-    const cleanedData = filterSchedules(data);
-    const content = JSON.stringify(cleanedData, null, 2);
 
-    return content;
+    return JSON.stringify(data, null, 2);
   } catch (error) {
     console.error("Error fetching data from Google Sheets:", error);
     throw new Error("Failed to extract data from Google Sheets.");
