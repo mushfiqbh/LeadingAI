@@ -2,23 +2,31 @@
 
 import { createContext, useState, useEffect, useContext } from "react";
 import { auth, db } from "@/lib/firebaseClient";
-import type { User } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import type { User } from "firebase/auth";
+import type { UserProfile } from "@/types/types";
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   isEmailVerified: boolean;
+  userProfile: UserProfile | null;
+  setUserProfile: (profile: UserProfile | null) => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   isEmailVerified: false,
+  userProfile: null,
+  setUserProfile: () => {
+    throw new Error("setUserProfile function not implemented");
+  },
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
@@ -31,11 +39,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(firebaseUser);
           setIsEmailVerified(firebaseUser.emailVerified);
 
+          const userDocRef = doc(db, "users", firebaseUser.uid);
+          const userSnap = await getDoc(userDocRef);
+
+          if (userSnap.exists()) {
+            const data = userSnap.data() as UserProfile;
+            setUserProfile(data);
+          } else {
+            console.log("User document does not exist");
+            setUserProfile(null);
+          }
+
           if (firebaseUser.emailVerified) {
             try {
-              const userDocRef = doc(db, "users", firebaseUser.uid);
-              const userSnap = await getDoc(userDocRef);
-
               if (userSnap.exists()) {
                 const data = userSnap.data();
                 if (data.emailVerified !== true) {
@@ -82,6 +98,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         user,
         loading,
         isEmailVerified,
+        userProfile,
+        setUserProfile,
       }}
     >
       {children}

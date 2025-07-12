@@ -70,7 +70,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     <div>
                       <MarkdownRenderer content={message.content.text} />
                       {isStreaming && message.content.text && (
-                        <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse rounded-sm" />
+                        <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />
                       )}
                     </div>
                   )}

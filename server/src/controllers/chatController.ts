@@ -87,6 +87,7 @@ export const chatController = async (
 
     // Start AI response streaming with completion callback
     streamAgentResponse({
+      userId,
       messages,
       aiMessageId,
       conversationId,

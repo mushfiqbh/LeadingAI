@@ -4,6 +4,7 @@ import { runAgentStream } from "./runAgentStream";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
 
 interface StreamAgentParams {
+  userId: string;
   messages: ChatCompletionMessageParam[];
   aiMessageId: string;
   conversationId: string;
@@ -12,6 +13,7 @@ interface StreamAgentParams {
 }
 
 export async function streamAgentResponse({
+  userId,
   messages,
   aiMessageId,
   conversationId,
@@ -27,7 +29,7 @@ export async function streamAgentResponse({
   let accumulatedText = "";
 
   try {
-    for await (const chunk of runAgentStream(messages)) {
+    for await (const chunk of runAgentStream(userId, messages)) {
       if (chunk === "__thinking__" || chunk === "__calling_mcp__") {
         res.write(`data: ${chunk}\n\n`);
         continue;
