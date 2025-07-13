@@ -17,7 +17,6 @@ export default function RoutineUploadForm({
   onUploadSuccess,
 }: RoutineUploadFormProps) {
   const { user } = useAuth();
-  const [title, setTitle] = useState("");
   const [routineUrl, setRoutineUrl] = useState("");
   const [expirationOption, setExpirationOption] = useState<string>("");
   const [category, setCategory] = useState<"class-routine" | "exam-routine">(
@@ -31,7 +30,6 @@ export default function RoutineUploadForm({
   const isFormValid = () => {
     return (
       user &&
-      title.trim() !== "" &&
       routineUrl &&
       category &&
       expirationOption !== "" &&
@@ -51,7 +49,6 @@ export default function RoutineUploadForm({
 
     const routineId = await createRoutineFS({
       url: routineUrl,
-      title,
       category,
       contributor: {
         uid: user?.uid || "Anonymous",
@@ -142,19 +139,6 @@ export default function RoutineUploadForm({
               {opt.label}
             </button>
           ))}
-        </div>
-
-        <label className="block text-sm font-medium text-gray-700">
-          Informative Title
-        </label>
-        <div className="relative">
-          <input
-            type="url"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="CSE Summar-25 Mid Term Exam"
-            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all duration-200"
-          />
         </div>
 
         <label className="block text-sm font-medium text-gray-700">

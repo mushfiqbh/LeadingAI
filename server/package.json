@@ -1,6 +1,6 @@
 {
   "name": "leadingai-server",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
@@ -17,7 +17,6 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.1",
     "axios": "^1.10.0",
-    "cheerio": "^1.1.0",
     "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
     "csv-parse": "^6.0.0",
@@ -25,12 +24,13 @@
     "express": "^5.1.0",
     "firebase-admin": "^13.4.0",
     "googleapis": "^152.0.0",
-    "gpt-3-encoder": "^1.1.4",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.1",
+    "node-fetch": "^3.3.2",
     "openai": "^5.6.0",
     "public-google-sheets-parser": "^1.5.4",
-    "streamifier": "^0.1.1"
+    "streamifier": "^0.1.1",
+    "tiktoken": "^1.0.21"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

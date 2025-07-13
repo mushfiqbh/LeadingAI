@@ -1,23 +1,28 @@
-import { encode } from "gpt-3-encoder";
+import { encoding_for_model, get_encoding, TiktokenModel } from "tiktoken";
 import { ChatCompletionMessageParam } from "openai/resources/index";
 
-export default function countTokens(
-  input: string | ChatCompletionMessageParam[]
-) {
-  if (typeof input === "string") {
-    return encode(input).length;
-  }
-  // if it's an array of messages
-  return input.reduce((sum, msg) => {
-    let content: string = "";
-    if (typeof msg.content === "string") {
-      content = msg.content;
-    } else if (Array.isArray(msg.content)) {
-      // Join all text parts if content is an array
-      content = msg.content
-        .map((part: any) => (typeof part === "string" ? part : part.text || ""))
-        .join("");
+export function countTokens(
+  messages: ChatCompletionMessageParam[],
+  model: TiktokenModel = "gpt-4.1-nano"
+): number {
+  // gpt-4.1-nano likely uses cl100k_base like other OpenAI-compatible models
+  const encoding = encoding_for_model(model) ?? get_encoding("cl100k_base");
+
+  let tokensPerMessage = 3;
+  let tokensPerName = 1;
+  let totalTokens = 0;
+
+  for (const message of messages) {
+    totalTokens += tokensPerMessage;
+    for (const [key, value] of Object.entries(message)) {
+      totalTokens += encoding.encode(value || "").length;
+      if (key === "name") {
+        totalTokens += tokensPerName;
+      }
     }
-    return sum + encode(content).length;
-  }, 0);
+  }
+
+  // every reply is primed with <|start|>assistant<|message|>
+  totalTokens += 3;
+  return totalTokens;
 }

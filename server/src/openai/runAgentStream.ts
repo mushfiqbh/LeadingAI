@@ -5,8 +5,9 @@ import { getResult } from "../mcp/resultMCP";
 import { getUnifiedSystemPrompt } from "./systemPrompt";
 import { getNotice } from "../mcp/noticeMCP";
 import { getRoutine } from "../mcp/routineMCP";
+import { countTokens } from "../utils/countTokens";
+import { TiktokenModel } from "tiktoken";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
-import countTokens from "../utils/countTokens"; // hypothetical helper
 
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4.1-nano";
 
@@ -20,10 +21,6 @@ export async function* runAgentStream(
     role: "system",
     content: getUnifiedSystemPrompt(),
   };
-
-  // === Token accounting ===
-  let usedInputTokens = countTokens([systemPrompt, ...messages]);
-  let usedOutputTokens = 0;
 
   // === Check for tool usage ===
   const toolCheck = await openaiClient.chat.completions.create({
@@ -74,7 +71,6 @@ export async function* runAgentStream(
     for await (const chunk of stream) {
       const delta = chunk.choices?.[0]?.delta?.content;
       if (delta) {
-        usedOutputTokens += countTokens(delta);
         yield delta;
       }
     }
@@ -89,16 +85,28 @@ export async function* runAgentStream(
     for await (const chunk of stream) {
       const delta = chunk.choices?.[0]?.delta?.content;
       if (delta) {
-        usedOutputTokens += countTokens(delta);
         yield delta;
       }
     }
   }
 
-  // === Update Firestore after streaming ===
-  const usedTokens = usedInputTokens + usedOutputTokens;
-  await FirebaseAdminService.updateUserTokens({
-    userId,
-    usedTokens,
-  });
+  // === Check token limits ===
+  try {
+    const totalTokenCount = countTokens(
+      [systemPrompt, ...messages],
+      "gpt-4.1-nano" as TiktokenModel
+    );
+
+    console.log(`Total tokens used: ${totalTokenCount}`);
+
+    // Update user tokens in Firebase (don't await to avoid blocking stream)
+    FirebaseAdminService.updateUserTokens({
+      userId,
+      usedTokens: totalTokenCount,
+    }).catch((error) => {
+      console.error("Error updating user tokens:", error);
+    });
+  } catch (error) {
+    console.error("Error counting tokens:", error);
+  }
 }
