@@ -1,9 +1,8 @@
 import PublicGoogleSheetsParser from "public-google-sheets-parser";
-import downloadAndParseSheet from "./downloadAndParseSheet";
 
 type Schedule = Record<string, any>;
 
-export async function fetchClassRoutineSheet(
+export default async function fetchClassRoutineSheet(
   spreadsheetId: string
 ): Promise<Schedule[]> {
   const parser = new PublicGoogleSheetsParser(spreadsheetId);
@@ -29,27 +28,6 @@ export async function fetchClassRoutineSheet(
       }
       return cleaned;
     });
-
-  return data;
-}
-
-export async function fetchExamRoutineSheet(
-  spreadsheetId: string
-): Promise<Schedule[]> {
-  const items = await downloadAndParseSheet(spreadsheetId, "Sheet1");
-
-  if (!items || items.length === 0) {
-    return [];
-  }
-
-  // Filter and clean the data
-  const data = items.map((item) => {
-    const cleaned: Schedule = {};
-    for (const [key, value] of Object.entries(item)) {
-      cleaned[key] = value;
-    }
-    return cleaned;
-  });
 
   return data;
 }

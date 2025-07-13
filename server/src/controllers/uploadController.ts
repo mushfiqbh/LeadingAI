@@ -81,10 +81,13 @@ export const createRoutine = async (
       return;
     }
 
-    const content = await extractGoogleSheet(routineUrl, category);
+    const data = await extractGoogleSheet(routineUrl, category);
 
     await FirebaseAdminService.updateRoutine(routineId, {
-      content,
+      title: data.title,
+      department: data.department,
+      semester: data.semester,
+      content: JSON.stringify(data),
     });
 
     res.status(200).json({
