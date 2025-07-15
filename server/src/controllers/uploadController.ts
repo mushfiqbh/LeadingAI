@@ -1,8 +1,10 @@
+import { ExamRoutineData, ClassRoutineData } from "./../types/types";
 import { Request, Response } from "express";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
 import extractImageText from "../services/extractImageText";
-import extractGoogleSheet from "../services/extractGoogleSheet";
+import extractClassRoutineSheet from "../services/gsheet/extractClassSheet";
+import extractExamRoutineSheet from "../services/gsheet/extractExamSheet";
 
 function resolveExpirationDate(expiryDate?: string): string | null {
   if (expiryDate && expiryDate.trim() !== "") {
@@ -73,7 +75,7 @@ export const createRoutine = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { routineId, routineUrl, category } = req.body;
+  const { routineId, sheetUrl, category } = req.body;
 
   try {
     if (!routineId) {
@@ -81,13 +83,36 @@ export const createRoutine = async (
       return;
     }
 
-    const data = await extractGoogleSheet(routineUrl, category);
+    // Extract the spreadsheet ID from the URL
+    const regex = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
+    const match = sheetUrl.match(regex);
+    if (!match) {
+      throw new Error("Invalid Google Sheets URL");
+    }
+    const spreadsheetId = match[1];
+
+    let data: ExamRoutineData | ClassRoutineData | null = {
+      title: "",
+      department: "",
+      semester: "",
+      schedules: [],
+    };
+
+    if (category === "class-routine") {
+      data = await extractClassRoutineSheet(spreadsheetId);
+    } else if (category === "exam-routine") {
+      data = await extractExamRoutineSheet(spreadsheetId);
+    }
+
+    if (!data) {
+      throw new Error("No data found in the Google Sheet");
+    }
 
     await FirebaseAdminService.updateRoutine(routineId, {
       title: data.title,
       department: data.department,
       semester: data.semester,
-      content: JSON.stringify(data),
+      content: JSON.stringify(data.schedules),
     });
 
     res.status(200).json({

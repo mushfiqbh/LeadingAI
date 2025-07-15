@@ -1,0 +1,148 @@
+import { ExamRoutineData, ExamSchedule } from "../../types/types";
+import { RowIdentifier, csvParser } from "./helperFunctions";
+
+/**
+ * Parses raw table data and generates a single, merged JSON schedule in one pass.
+ * @param parsedData - The 2D string array representing the raw schedule data.
+ * @returns A single, merged object in the final JSON format, or null if input is invalid.
+ */
+export default async function extractExamRoutineSheet(
+  spreadsheetId: string
+): Promise<ExamRoutineData | null> {
+  const parsedData = await csvParser(spreadsheetId, "Sheet1");
+
+  if (!parsedData || parsedData.length === 0) {
+    return null;
+  }
+
+  // --- State for the entire process ---
+  let title: string = "";
+  let department: string = "";
+  let semester: string = "";
+  const mergedSchedules = new Map<string, ExamSchedule>();
+
+  // --- State for tracking the current table being parsed ---
+  let tableIndex = -1;
+  const tableHeaders: {
+    dates: string[];
+    times: string[];
+    weekDays: string[];
+  }[] = [];
+  let currentBatch: string | null = null;
+  const processedBatchesPerTable = new Set<string>();
+
+  for (const row of parsedData) {
+    if (row.every((cell) => cell.trim() === "")) continue;
+    const firstCell = row.find((cell) => cell.trim() !== "") || "";
+
+    // Capture titles and semester only from the first table
+    if (tableIndex < 0) {
+      if (RowIdentifier.isTitle(firstCell)) {
+        const trimmedTitle = firstCell.trim();
+        if (trimmedTitle.includes("Department of")) {
+          department = trimmedTitle;
+        } else {
+          title = trimmedTitle;
+        }
+        continue;
+      }
+      if (RowIdentifier.isSemester(firstCell)) {
+        semester = firstCell.trim();
+        continue;
+      }
+    }
+
+    const contentCells = row.slice(2);
+
+    // A date row signifies the start of a new table's headers
+    if (contentCells.some((c) => RowIdentifier.isDate(c))) {
+      tableIndex++;
+      tableHeaders[tableIndex] = {
+        dates: contentCells.filter((c) => c.trim() !== ""),
+        times: [],
+        weekDays: [],
+      };
+      processedBatchesPerTable.clear(); // Reset for the new table
+      continue;
+    }
+
+    if (tableIndex > -1 && contentCells.some((c) => RowIdentifier.isTime(c))) {
+      const timeCells = contentCells.filter((c) => c.trim() !== "");
+      tableHeaders[tableIndex].times = timeCells;
+      continue;
+    }
+    if (
+      tableIndex > -1 &&
+      contentCells.some((c) => RowIdentifier.isWeekday(c))
+    ) {
+      tableHeaders[tableIndex].weekDays = contentCells.filter(
+        (c) => c.trim() !== ""
+      );
+      continue;
+    }
+
+    // Process course rows
+    const potentialBatch = row[0]?.trim() || "";
+    const potentialSection = row[1]?.trim() || "";
+
+    if (RowIdentifier.isBatch(potentialBatch)) {
+      currentBatch = potentialBatch;
+    }
+
+    if (
+      tableIndex > -1 &&
+      currentBatch &&
+      RowIdentifier.isSection(potentialSection)
+    ) {
+      const shift = tableIndex === 0 ? "Morning" : "Evening";
+      const headers = tableHeaders[tableIndex];
+
+      // Get or create the main entry for this batch
+      if (!mergedSchedules.has(currentBatch)) {
+        mergedSchedules.set(currentBatch, {
+          batch: currentBatch,
+          sections: [],
+          exams: [],
+        });
+      }
+      const batchEntry = mergedSchedules.get(currentBatch)!;
+
+      // Add the section if it's not already listed for this batch
+      if (!batchEntry.sections.includes(potentialSection)) {
+        batchEntry.sections.push(potentialSection);
+      }
+
+      // Only parse exams for a batch once per table (morning/evening)
+      if (!processedBatchesPerTable.has(currentBatch)) {
+        const courseEntries = row.slice(2);
+        courseEntries.forEach((course, index) => {
+          if (RowIdentifier.isCourseCode(course.trim())) {
+            batchEntry.exams.push({
+              subject: course.trim(),
+              date: headers.dates[index] || null,
+              time: headers.times[index] || null,
+              weekday: headers.weekDays[index] || null,
+              shift: shift,
+            });
+          }
+        });
+        processedBatchesPerTable.add(currentBatch);
+      }
+    }
+  }
+
+  // Convert map to a sorted array for the final output
+  const finalSchedules = Array.from(mergedSchedules.values())
+    .map((schedule) => {
+      schedule.sections.sort(); // Sort sections alphabetically
+      return schedule;
+    })
+    .sort((a, b) => Number(b.batch) - Number(a.batch)); // Sort schedules by batch number
+
+  return {
+    title,
+    department,
+    semester,
+    schedules: finalSchedules,
+  };
+}

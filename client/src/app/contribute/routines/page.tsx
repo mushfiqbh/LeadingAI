@@ -3,7 +3,7 @@
 import RoutineUploadForm from "@/components/routine/RoutineUploadForm";
 import RoutineList from "@/components/routine/RoutineList";
 import RoutineModal from "@/components/routine/RoutineModal";
-import { getRoutinesWithPagination } from "@/lib/routine";
+import { getRoutinesWithPagination } from "@/lib/firestore";
 import { Routine } from "@/types/types";
 import { DocumentSnapshot } from "firebase/firestore";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -91,7 +91,7 @@ export default function ClassRoutinePage() {
     <div className="w-full md:w-1/2 mx-auto py-6">
       <RoutineUploadForm onUploadSuccess={() => fetchRoutines(true)} />
       <div className="mt-8 px-6">
-        <h4 className="font-semibold text-lg text-gray-800 mb-4">
+        <h4 className="font-semibold text-lg text-green-500 mb-4">
           Recent Routines
         </h4>
         <RoutineList routines={routines} onSelect={setSelectedRoutine} />

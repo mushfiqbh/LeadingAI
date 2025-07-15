@@ -156,7 +156,7 @@ export default function Page() {
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-green-400/10 to-blue-400/10 rounded-full blur-3xl"></div>
 
-          <div className="relative flex flex-col items-center py-16 px-6">
+          <div className="relative flex flex-col items-center p-6">
             <div className="relative group">
               {user?.photoURL ? (
                 <Image
@@ -225,22 +225,22 @@ export default function Page() {
         </div>
 
         {/* Status Messages */}
-        <div className="max-w-2xl mx-auto px-6 pt-6">
+        <div className="w-fit px-6 pt-6 fixed z-40 top-20 right-20">
           {saveStatus === "saving" && (
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+            <div className="bg-blue-500 border text-white rounded-xl p-4 mb-6">
               <div className="flex items-center gap-3">
                 <div className="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                <span className="text-blue-700 font-medium">
+                <span className="text-white font-medium">
                   Auto-saving your changes...
                 </span>
               </div>
             </div>
           )}
           {saveStatus === "saved" && (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+            <div className="bg-blue-500 rounded-xl p-4 mb-6">
               <div className="flex items-center gap-3">
                 <svg
-                  className="w-5 h-5 text-green-600"
+                  className="w-5 h-5 text-white"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -250,7 +250,7 @@ export default function Page() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="text-green-700 font-medium">
+                <span className="text-white font-medium">
                   Profile saved automatically
                 </span>
               </div>
@@ -260,7 +260,7 @@ export default function Page() {
 
         {/* Form Section */}
         <div className="max-w-2xl mx-auto px-6 pb-20">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-8">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-4">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
               Personal Information
             </h2>
@@ -488,32 +488,20 @@ export default function Page() {
                       }
                       className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
                     >
-                      <option value="">Select Department</option>
-                      <option value="CSE">
-                        Computer Science and Engineering
-                      </option>
-                      <option value="ECE">
-                        Electronics and Communication Engineering
-                      </option>
-                      <option value="EEE">
-                        Electrical and Electronics Engineering
-                      </option>
-                      <option value="ME">Mechanical Engineering</option>
-                      <option value="CE">Civil Engineering</option>
-                      <option value="IT">Information Technology</option>
-                      <option value="BBA">
-                        Bachelor of Business Administration
-                      </option>
-                      <option value="MBA">
-                        Master of Business Administration
-                      </option>
-                      <option value="BCA">
-                        Bachelor of Computer Applications
-                      </option>
-                      <option value="MCA">
-                        Master of Computer Applications
-                      </option>
-                      <option value="Other">Other</option>
+                      {[
+                        {
+                          dept: "",
+                          label: "Select Department",
+                        },
+                        {
+                          dept: "CSE",
+                          label: "Computer Science and Engineering",
+                        },
+                      ].map((item) => (
+                        <option key={item.dept} value={item.dept}>
+                          {item.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>

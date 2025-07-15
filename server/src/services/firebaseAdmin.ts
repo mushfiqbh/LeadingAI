@@ -45,14 +45,14 @@ if (apps.length === 0) {
 export const adminDb = getFirestore();
 
 export class FirebaseAdminService {
-  static async updateUserTokens({
+  static async updateUserCredits({
     userId,
-    tokens,
-    usedTokens,
+    credits,
+    usedCredits,
   }: {
     userId: string;
-    tokens?: number;
-    usedTokens?: number;
+    credits?: number;
+    usedCredits?: number;
   }) {
     const userProfile = await adminDb.collection("users").doc(userId).get();
 
@@ -61,23 +61,23 @@ export class FirebaseAdminService {
     }
 
     const userData = userProfile.data() || {};
-    const currentTokens = userData.tokens || 0;
-    const currentUsedTokens = userData.usedTokens || 0;
+    const currentCredits = userData.credits || 0;
+    const currentusedCredits = userData.usedCredits || 0;
 
-    if (tokens && tokens > 0) {
+    if (credits && credits > 0) {
       await adminDb
         .collection("users")
         .doc(userId)
         .update({
-          tokens: currentTokens + tokens,
+          credits: currentCredits + credits,
           updatedAt: FieldValue.serverTimestamp(),
         });
-    } else if (usedTokens && usedTokens > 0) {
+    } else if (usedCredits && usedCredits > 0) {
       await adminDb
         .collection("users")
         .doc(userId)
         .update({
-          usedTokens: currentUsedTokens + usedTokens,
+          usedCredits: currentusedCredits + usedCredits,
           updatedAt: FieldValue.serverTimestamp(),
         });
     }

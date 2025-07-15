@@ -27,8 +27,8 @@ export interface Conversation {
 
 export interface UserProfile {
   uid: string;
-  tokens: number;
-  usedTokens: number;
+  credits: number;
+  usedCredits: number;
   fullName: string;
   email: string;
   emailVerified: boolean;
@@ -64,9 +64,11 @@ export interface Notice {
 
 export interface Routine {
   id?: string;
-  category: "class-routine" | "exam-routine";
+  category: "class-routine" | "exam-routine" | "unset";
   title?: string;
-  url: string;
+  sheetUrl: string;
+  semester?: string;
+  department?: string;
   content?: string;
   contributor: {
     uid: string;

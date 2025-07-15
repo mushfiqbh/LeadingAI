@@ -37,8 +37,8 @@ export const signUpWithEmail = async (
       fullName,
       createdAt: serverTimestamp(),
       emailVerified: user.emailVerified,
-      tokes: 32000,
-      usedTokens: 0,
+      credits: 100,
+      usedCredits: 0,
     });
 
     // Send verification email and wait for it to complete
@@ -117,8 +117,8 @@ export const signInWithGoogle = async () => {
         photoURL: user.photoURL,
         lastLogin: serverTimestamp(),
         emailVerified: user.emailVerified,
-        tokens: 32000,
-        usedTokens: 0,
+        credits: 100,
+        usedCredits: 0,
       });
     }
 

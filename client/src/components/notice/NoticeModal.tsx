@@ -87,7 +87,7 @@ export default function NoticeModal({
           
           {notice.information && (
             <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-bold text-lg text-center text-gray-800 mb-2">
+              <h4 className="font-bold text-lg text-center text-green-400 mb-2">
                 Transcribed Information by AI
               </h4>
               <p className="text-gray-700 whitespace-pre-wrap">

@@ -22,41 +22,49 @@ export default function NoticesForm() {
 
   const NOTICES_PER_PAGE = 1;
 
-  const fetchNotices = useCallback(async (reset: boolean = false) => {
-    if (reset) {
-      setFetchStatus("loading");
-      setNotices([]);
-      setLastDoc(null);
-      setHasMore(true);
-    } else {
-      setLoadingMore(true);
-    }
-
-    try {
-      const response = await getNoticesWithPagination(
-        NOTICES_PER_PAGE,
-        reset ? undefined : lastDoc || undefined
-      );
-
+  const fetchNotices = useCallback(
+    async (reset: boolean = false) => {
       if (reset) {
-        setNotices(response.notices);
+        setFetchStatus("loading");
+        setNotices([]);
+        setLastDoc(null);
+        setHasMore(true);
       } else {
-        setNotices(prev => [...prev, ...response.notices]);
+        setLoadingMore(true);
       }
 
-      setLastDoc(response.lastDoc);
-      setHasMore(response.hasMore);
-      setFetchStatus("idle");
-    } catch (err) {
-      console.error("Error fetching notices:", err);
-      setFetchStatus("error");
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [lastDoc]); // Keep dependency but we'll optimize the loadMoreNotices callback
+      try {
+        const response = await getNoticesWithPagination(
+          NOTICES_PER_PAGE,
+          reset ? undefined : lastDoc || undefined
+        );
+
+        if (reset) {
+          setNotices(response.notices);
+        } else {
+          setNotices((prev) => [...prev, ...response.notices]);
+        }
+
+        setLastDoc(response.lastDoc);
+        setHasMore(response.hasMore);
+        setFetchStatus("idle");
+      } catch (err) {
+        console.error("Error fetching notices:", err);
+        setFetchStatus("error");
+      } finally {
+        setLoadingMore(false);
+      }
+    },
+    [lastDoc]
+  ); // Keep dependency but we'll optimize the loadMoreNotices callback
 
   const loadMoreNotices = useCallback(() => {
-    if (!loadingMore && hasMore && fetchStatus === "idle" && !loadingRef.current) {
+    if (
+      !loadingMore &&
+      hasMore &&
+      fetchStatus === "idle" &&
+      !loadingRef.current
+    ) {
       loadingRef.current = true;
       fetchNotices(false).finally(() => {
         loadingRef.current = false;
@@ -101,7 +109,10 @@ export default function NoticesForm() {
   }, [selectedNotice]);
 
   return (
-    <div id="notices-form" className="flex flex-col items-center justify-center min-h-screen py-8">
+    <div
+      id="notices-form"
+      className="flex flex-col items-center justify-center min-h-screen py-8"
+    >
       {selectedNotice && (
         <NoticeModal
           notice={selectedNotice}
@@ -125,25 +136,31 @@ export default function NoticesForm() {
             </div>
           ) : fetchStatus === "error" ? (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
-              <p className="text-sm">Failed to load notices. Please refresh the page to try again.</p>
+              <p className="text-sm">
+                Failed to load notices. Please refresh the page to try again.
+              </p>
             </div>
           ) : (
             <>
               <NoticeList notices={notices} onSelect={setSelectedNotice} />
-              
+
               {/* Loading more indicator for infinite scroll */}
               {loadingMore && (
                 <div className="flex items-center justify-center py-4 mt-6">
                   <div className="flex items-center gap-3">
                     <div className="w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-gray-600">Loading more notices...</span>
+                    <span className="text-gray-600">
+                      Loading more notices...
+                    </span>
                   </div>
                 </div>
               )}
-              
+
               {!hasMore && notices.length > 0 && (
                 <div className="mt-6 text-center py-4">
-                  <p className="text-gray-500 text-sm">You&apos;ve reached the end of all notices</p>
+                  <p className="text-gray-500 text-sm">
+                    You&apos;ve reached the end of all notices
+                  </p>
                 </div>
               )}
             </>
