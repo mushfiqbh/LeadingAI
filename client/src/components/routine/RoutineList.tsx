@@ -30,7 +30,7 @@ export default function RoutineList({
           className="group cursor-pointer bg-white/90 rounded-2xl transition-all duration-200 hover:-translate-y-1"
         >
           <Link
-            href={routine.url}
+            href={routine.sheetUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex flex-col md:flex-row items-center gap-4"
@@ -41,14 +41,23 @@ export default function RoutineList({
                 {routine.title}
               </h5>
 
-              <p className="w-fit text-xs px-2 py-1 rounded-full bg-blue-100 text-slate-400 font-semibold">
-                {routine.category.replace("-", " ").toUpperCase()}
-              </p>
-
-              <div className="flex gap-2 items-center my-2">
+              <div className="flex flex-wrap gap-2 items-center my-2">
                 <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
                   By {routine.contributor?.name || "Anonymous"}
                 </span>
+
+                {routine.semester && (
+                  <span className="text-xs px-2 py-1 rounded-full bg-orange-100 text-orange-700">
+                    {routine.semester}
+                  </span>
+                )}
+
+                {routine.department && (
+                  <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700">
+                    {routine.department}
+                  </span>
+                )}
+
                 {routine.expiryDate && (
                   <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
                     Expires: {new Date(routine.expiryDate).toLocaleDateString()}

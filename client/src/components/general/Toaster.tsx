@@ -85,7 +85,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
       }`}
     >
       <div
-        className={`relative w-full max-w-md mx-auto p-4 rounded-xl shadow-lg backdrop-blur-sm ${getColors()}`}
+        className={`relative w-full max-w-md mx-auto p-4 rounded-xl shadow-lg ${getColors()}`}
       >
         {/* Close Button */}
         <button
@@ -157,7 +157,7 @@ const Toaster: React.FC<ToasterProps> = ({ toasts, onRemoveToast }) => {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 z-40 pointer-events-none">
+    <div className="fixed inset-0 z-40 pointer-events-none bg-transparent backdrop-blur-sm">
       <div className="flex items-start justify-center min-h-screen p-4">
         <div className="w-full max-w-md space-y-4 pointer-events-auto">
           {toasts.map((toast) => (

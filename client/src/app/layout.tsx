@@ -21,7 +21,7 @@ export default function RootLayout({
         <AuthProvider>
           <ToasterProvider>
             <Header />
-            <main className="w-full min-h-[calc(100dvh-70px)] mt-[68px] bg-white text-black/80">
+            <main className="w-full min-h-[calc(100dvh-70px)] mt-[70px] bg-white text-black/80">
               {children}
             </main>
           </ToasterProvider>

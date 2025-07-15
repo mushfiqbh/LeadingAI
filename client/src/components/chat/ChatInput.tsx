@@ -20,21 +20,23 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [suggestions, setSuggestions] = useState([
-    "Check my results",
+    "Check results",
+    "Whats my CGPA",
     "Latest notice",
     "Find notes or PDFs",
     "What can you do",
-    "Any upcoming events?",
-    "What's the bus schedule?",
+    "Any upcoming events",
+    "What's the bus schedule",
   ]);
 
   const baseSuggestions = [
     "Check my results",
+    "Whats my CGPA",
     "Latest notice",
     "Find notes or PDFs",
-    "What can you do?",
-    "Any upcoming events?",
-    "What's the bus schedule?",
+    "What can you do",
+    "Any upcoming events",
+    "What's the bus schedule",
   ];
 
   // Shuffle function to randomize suggestions

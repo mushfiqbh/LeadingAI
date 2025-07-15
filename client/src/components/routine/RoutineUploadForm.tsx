@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, ChevronDown, Link } from "lucide-react";
+import { Calendar, ChevronDown, Link, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
   calculateExpirationDate,
   expirationOptions,
 } from "@/utils/noticeUtils";
-import { createRoutineFS } from "@/lib/routine";
+import { createRoutineFS } from "@/lib/firestore";
 
 interface RoutineUploadFormProps {
   onUploadSuccess?: () => void;
@@ -17,11 +17,11 @@ export default function RoutineUploadForm({
   onUploadSuccess,
 }: RoutineUploadFormProps) {
   const { user } = useAuth();
-  const [routineUrl, setRoutineUrl] = useState("");
+  const [sheetUrl, setSheetUrl] = useState("");
   const [expirationOption, setExpirationOption] = useState<string>("");
-  const [category, setCategory] = useState<"class-routine" | "exam-routine">(
-    "class-routine"
-  );
+  const [category, setCategory] = useState<
+    "class-routine" | "exam-routine" | "unset"
+  >("unset");
   const [uploadStatus, setUploadStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
@@ -30,10 +30,11 @@ export default function RoutineUploadForm({
   const isFormValid = () => {
     return (
       user &&
-      routineUrl &&
+      sheetUrl &&
       category &&
+      category !== "unset" &&
       expirationOption !== "" &&
-      routineUrl.trim().includes("docs.google.com/spreadsheets")
+      sheetUrl.trim().includes("docs.google.com/spreadsheets")
     );
   };
 
@@ -48,7 +49,7 @@ export default function RoutineUploadForm({
     setErrorMessage("");
 
     const routineId = await createRoutineFS({
-      url: routineUrl,
+      sheetUrl: sheetUrl,
       category,
       contributor: {
         uid: user?.uid || "Anonymous",
@@ -64,7 +65,7 @@ export default function RoutineUploadForm({
         }/upload/routine`,
         {
           method: "POST",
-          body: JSON.stringify({ routineId, routineUrl, category }),
+          body: JSON.stringify({ routineId, sheetUrl, category }),
           headers: {
             "Content-Type": "application/json",
           },
@@ -75,8 +76,8 @@ export default function RoutineUploadForm({
         throw new Error("Failed to upload routine");
       }
 
-      setRoutineUrl("");
-      setCategory("class-routine");
+      setSheetUrl("");
+      setCategory("unset");
       setUploadStatus("success");
       setExpirationOption("");
       setErrorMessage("");
@@ -88,25 +89,46 @@ export default function RoutineUploadForm({
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-6">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
           <Calendar className="w-6 h-6 text-white" />
         </div>
         <div>
           <h3 className="text-xl font-semibold text-gray-800">
-            Upload Routine
+            Share Google Sheet URL
           </h3>
           <p className="text-sm text-gray-600">
-            Share your class or exam routine via Google Sheets
+            Rest will be processed automatically
           </p>
         </div>
       </div>
       <div className="space-y-3">
         <label className="block text-sm font-medium text-gray-700">
-          Select Category
+          Google Sheets URL <span className="text-red-500">*</span>
         </label>
-        <div className="flex gap-4 mb-4">
+        <div className="relative">
+          <input
+            type="url"
+            value={sheetUrl}
+            onChange={(e) => setSheetUrl(e.target.value)}
+            placeholder="https://docs.google.com/spreadsheets/..."
+            disabled={uploadStatus === "loading"}
+            className={`w-full pl-10 pr-4 py-3 border-2 border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all duration-200 ${
+              uploadStatus === "loading" ? "opacity-50" : ""
+            }`}
+          />
+          <Link className={`absolute left-3 top-3.5 w-4 h-4 ${
+            uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
+          }`} />
+        </div>
+
+        <label className="block text-sm font-medium text-gray-700">
+          Select Category <span className="text-red-500">*</span>
+        </label>
+        <div className={`flex gap-4 mb-4 transition-opacity duration-200 ${
+          uploadStatus === "loading" ? "opacity-50" : "opacity-100"
+        }`}>
           {[
             {
               value: "class-routine",
@@ -122,6 +144,7 @@ export default function RoutineUploadForm({
             <button
               key={opt.value}
               type="button"
+              disabled={uploadStatus === "loading"}
               onClick={() =>
                 setCategory(opt.value as "class-routine" | "exam-routine")
               }
@@ -141,27 +164,13 @@ export default function RoutineUploadForm({
           ))}
         </div>
 
-        <label className="block text-sm font-medium text-gray-700">
-          Google Sheets URL
-        </label>
-        <div className="relative">
-          <input
-            type="url"
-            value={routineUrl}
-            onChange={(e) => setRoutineUrl(e.target.value)}
-            placeholder="https://docs.google.com/spreadsheets/..."
-            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all duration-200"
-          />
-          <Link className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
-        </div>
-
         <div
           className={`transition-opacity duration-200 ${
             uploadStatus === "loading" ? "opacity-50" : "opacity-100"
           }`}
         >
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Notice Expiration Period <span className="text-red-500">*</span>
+            Expiration Period <span className="text-red-500">*</span>
           </label>
 
           <div className="relative">
@@ -179,7 +188,7 @@ export default function RoutineUploadForm({
               value={expirationOption}
               onChange={(e) => setExpirationOption(e.target.value)}
               disabled={uploadStatus === "loading"}
-              className={`w-full pl-10 pr-10 py-3 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors appearance-none bg-white disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`w-full pl-10 pr-10 py-3 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors appearance-none bg-white disabled:opacity-50 ${
                 expirationOption === ""
                   ? "border-red-300 text-gray-500"
                   : "border-gray-300 text-gray-900"
@@ -217,8 +226,11 @@ export default function RoutineUploadForm({
         <button
           onClick={handleSubmit}
           disabled={uploadStatus === "loading" || !isFormValid()}
-          className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:opacity-60"
+          className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
+          {uploadStatus === "loading" && (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          )}
           {uploadStatus === "loading" ? "Uploading..." : "Submit Routine"}
         </button>
       </div>

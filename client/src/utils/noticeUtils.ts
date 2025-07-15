@@ -4,6 +4,7 @@ export const expirationOptions = [
   { value: "", label: "Select expiration period" },
   { value: "NO_EXPIRATION", label: "No Expiration" },
   { value: "1_WEEK", label: "1 Week" },
+  { value: "2_WEEKS", label: "2 Weeks" },
   { value: "1_MONTH", label: "1 Month" },
   { value: "4_MONTHS", label: "4 Months" },
   { value: "6_MONTHS", label: "6 Months" },
@@ -15,6 +16,8 @@ export const calculateExpirationDate = (option: string): string => {
   switch (option) {
     case "1_WEEK":
       return new Date(now.setDate(now.getDate() + 7)).toISOString();
+    case "2_WEEKS":
+      return new Date(now.setDate(now.getDate() + 14)).toISOString();
     case "1_MONTH":
       return new Date(now.setMonth(now.getMonth() + 1)).toISOString();
     case "4_MONTHS":

@@ -38,7 +38,7 @@ export default function RoutineModal({
           </div>
           <div className="flex flex-col items-center gap-4">
             <a
-              href={routine.url}
+              href={routine.sheetUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg"

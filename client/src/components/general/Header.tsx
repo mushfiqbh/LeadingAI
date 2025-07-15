@@ -9,7 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useChatStore } from "@/hooks/useChatStore";
-import TokenManager from "./TokenManager";
+import CreditsManager from "./CreditsManager";
 
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
@@ -81,7 +81,7 @@ export default function Header() {
   };
 
   return (
-    <div className="fixed top-0 w-full z-20 bg-white backdrop-blur-md shadow-sm transition-colors">
+    <div className="w-full min-h-[70px] fixed top-0 z-20 bg-white backdrop-blur-md shadow-sm transition-colors">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
@@ -92,18 +92,24 @@ export default function Header() {
               <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
                 Leading AI
               </h1>
+
               {loading ? (
                 <p className="text-xs text-gray-500 animate-pulse">
                   Loading...
                 </p>
               ) : (
-                <p className="text-xs text-gray-500">
-                  <span className="text-blue-600 font-semibold">
-                    {Number(userProfile?.tokens) -
-                      Number(userProfile?.usedTokens)}
-                  </span>{" "}
-                  Tokens Left
-                </p>
+                user && (
+                  <p
+                    onClick={() => setShowManager(true)}
+                    className="text-xs text-gray-500"
+                  >
+                    <span className="text-blue-600 font-semibold">
+                      {Number(userProfile?.credits) -
+                        Number(userProfile?.usedCredits)}
+                    </span>{" "}
+                    Credits Left
+                  </p>
+                )
               )}
             </div>
           </Link>
@@ -143,7 +149,7 @@ export default function Header() {
                 </button>
 
                 {showManager && (
-                  <TokenManager setShowManager={setShowManager} />
+                  <CreditsManager setShowManager={setShowManager} />
                 )}
 
                 {showMenu && (
@@ -198,10 +204,10 @@ export default function Header() {
                             d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                           />
                         </svg>
-                        <span className="font-medium">Buy Token</span>
+                        <span className="font-medium">Manage Credits</span>
                       </button>
 
-                      {window.location.pathname !== "/" && (
+                      {window.location.pathname !== "/" ? (
                         <Link
                           href="/"
                           className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
@@ -209,6 +215,14 @@ export default function Header() {
                           <MessageSquareDiff className="w-4 h-4" />
                           <span className="font-medium">Back to Chat</span>
                         </Link>
+                      ) : (
+                        <button
+                          onClick={handleNewConversation}
+                          className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                        >
+                          <MessageSquareDiff className="w-4 h-4" />
+                          <span className="font-medium">New Chat</span>
+                        </button>
                       )}
 
                       <Link
@@ -230,14 +244,6 @@ export default function Header() {
                         </svg>
                         <span className="font-medium">History</span>
                       </Link>
-
-                      <button
-                        onClick={handleNewConversation}
-                        className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
-                      >
-                        <MessageSquareDiff className="w-4 h-4" />
-                        <span className="font-medium">New Chat</span>
-                      </button>
 
                       <Link
                         href="/report"

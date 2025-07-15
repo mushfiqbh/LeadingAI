@@ -50,6 +50,8 @@ export async function* runAgentStream(
       mcpResult = { error: `Unknown tool: ${toolCall.function.name}` };
     }
 
+    yield "__thinking__";
+
     const stream = await openaiClient.chat.completions.create({
       model: MODEL,
       messages: [
@@ -97,16 +99,14 @@ export async function* runAgentStream(
       "gpt-4.1-nano" as TiktokenModel
     );
 
-    console.log(`Total tokens used: ${totalTokenCount}`);
-
-    // Update user tokens in Firebase (don't await to avoid blocking stream)
-    FirebaseAdminService.updateUserTokens({
+    // Update user Credits in Firebase (don't await to avoid blocking stream)
+    FirebaseAdminService.updateUserCredits({
       userId,
-      usedTokens: totalTokenCount,
+      usedCredits: Math.round(totalTokenCount / 1000), // 1 credit per 1000 tokens
     }).catch((error) => {
-      console.error("Error updating user tokens:", error);
+      console.error("Error updating user Credits:", error);
     });
   } catch (error) {
-    console.error("Error counting tokens:", error);
+    console.error("Error counting Credits:", error);
   }
 }
