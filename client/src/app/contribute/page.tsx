@@ -1,5 +1,5 @@
 import ProtectedRoute from "@/components/general/ProtectedRoute";
-import { Bell, Calendar, FileText, Text } from "lucide-react";
+import { Bell, Calendar, FolderOpen, Text } from "lucide-react";
 import Link from "next/link";
 
 const ContributePage = () => {
@@ -19,10 +19,10 @@ const ContributePage = () => {
       color: "from-orange-500 to-yellow-500",
     },
     {
-      name: "Upload PDFs",
-      link: "notes",
-      icon: FileText,
-      description: "Upload study materials you have",
+      name: "Upload PDF Files",
+      link: "drive",
+      icon: FolderOpen,
+      description: "Study materials you have",
       color: "from-purple-500 to-indigo-500",
     },
     {

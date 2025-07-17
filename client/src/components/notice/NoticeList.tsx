@@ -42,7 +42,7 @@ export default function NoticeList({
             </div>
           </div>
           <div className="flex-1 min-w-0 text-left">
-            <h5 className="text-sm font-semibold text-gray-800 mb-1">
+            <h5 className="text-md font-semibold text-gray-800 mb-1">
               {notice.title || "University Notice"}
             </h5>
             <div className="flex flex-wrap gap-2 items-center mb-1">

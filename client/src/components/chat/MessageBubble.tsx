@@ -43,7 +43,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   return (
     <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`max-w-4xl ${isUser ? "order-first" : ""}`}>
+      <div className={`overflow-x-auto max-w-4xl ${isUser ? "order-first" : ""}`}>
         <div
           className={`flex flex-col rounded-2xl px-3 py-1 ${
             isUser

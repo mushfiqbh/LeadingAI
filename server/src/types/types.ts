@@ -1,17 +1,3 @@
-export interface Exam {
-  subject: string;
-  weekday: string | null;
-  time: string | null;
-  date: string | null;
-  shift: "Morning" | "Evening";
-}
-
-export interface ExamSchedule {
-  batch: string;
-  sections: string[];
-  exams: Exam[];
-}
-
 export interface RoutineMetadata {
   title: string;
   department: string;
@@ -36,14 +22,24 @@ export interface WeeklyDaySchedule {
   classes: Class[];
 }
 
-export interface SectionSchedule {
-  section: string;
-  weeklySchedule: WeeklyDaySchedule[];
+export interface Exam {
+  subject: string;
+  weekday: string | null;
+  time: string | null;
+  date: string | null;
+  shift: "Morning" | "Evening";
 }
 
-export interface BatchSchedule {
+export interface ExamSchedule {
   batch: string;
-  sections: SectionSchedule[];
+  sections: string[];
+  exams: Exam[];
+}
+
+export interface FlatSchedule {
+  batch: string;
+  section: string;
+  content: string;
 }
 
 // This file defines the types used in the application for routines, schedules, and metadata.
@@ -51,7 +47,8 @@ export interface ClassRoutineData {
   title: string;
   department: string;
   semester: string;
-  schedules: BatchSchedule[];
+  times: string[];
+  schedules: FlatSchedule[];
 }
 
 // This interface is used to represent the data structure for exam routines.
@@ -59,5 +56,6 @@ export interface ExamRoutineData {
   title: string;
   department: string;
   semester: string;
-  schedules: ExamSchedule[];
+  times: string[];
+  schedules: FlatSchedule[];
 }

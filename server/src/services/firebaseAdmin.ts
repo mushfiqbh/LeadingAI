@@ -47,11 +47,11 @@ export const adminDb = getFirestore();
 export class FirebaseAdminService {
   static async updateUserCredits({
     userId,
-    credits,
+    totalCredits,
     usedCredits,
   }: {
     userId: string;
-    credits?: number;
+    totalCredits?: number;
     usedCredits?: number;
   }) {
     const userProfile = await adminDb.collection("users").doc(userId).get();
@@ -61,15 +61,15 @@ export class FirebaseAdminService {
     }
 
     const userData = userProfile.data() || {};
-    const currentCredits = userData.credits || 0;
+    const currentCredits = userData.totalCredits || 0;
     const currentusedCredits = userData.usedCredits || 0;
 
-    if (credits && credits > 0) {
+    if (totalCredits && totalCredits > 0) {
       await adminDb
         .collection("users")
         .doc(userId)
         .update({
-          credits: currentCredits + credits,
+          totalCredits: currentCredits + totalCredits,
           updatedAt: FieldValue.serverTimestamp(),
         });
     } else if (usedCredits && usedCredits > 0) {
@@ -313,12 +313,16 @@ export class FirebaseAdminService {
     }
   }
 
-  static async getAllRoutinesByCategory(category: string): Promise<any[]> {
+  static async getRoutinesByCategory(category: string): Promise<any[]> {
     try {
+      const now = new Date().toISOString();
+
       const snapshot = await adminDb
         .collection("routines")
-        .select("title", "content")
+        .select("title", "semester", "department", "schedules")
         .where("category", "==", category)
+        .where("expiryDate", ">=", now)
+        .orderBy("expiryDate", "asc")
         .orderBy("createdAt", "desc")
         .limit(1)
         .get();

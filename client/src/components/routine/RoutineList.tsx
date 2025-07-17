@@ -2,13 +2,7 @@ import { Routine } from "@/types/types";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
 
-export default function RoutineList({
-  routines,
-  onSelect,
-}: {
-  routines: Routine[];
-  onSelect: (routine: Routine) => void;
-}) {
+export default function RoutineList({ routines }: { routines: Routine[] }) {
   if (routines.length === 0) {
     return (
       <div className="text-center py-8">
@@ -26,7 +20,6 @@ export default function RoutineList({
       {routines.map((routine) => (
         <li
           key={routine.id}
-          onClick={() => onSelect(routine)}
           className="group cursor-pointer bg-white/90 rounded-2xl transition-all duration-200 hover:-translate-y-1"
         >
           <Link
@@ -37,7 +30,7 @@ export default function RoutineList({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex-1 min-w-0 text-left">
-              <h5 className="font-semibold text-lg text-gray-800 mb-1">
+              <h5 className="font-semibold text-md text-gray-800 mb-1">
                 {routine.title}
               </h5>
 

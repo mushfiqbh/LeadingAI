@@ -45,7 +45,7 @@ export const MessageList: React.FC<MessageListProps> = ({
           // Only pass statusMessage to the current streaming message
           const currentStatusMessage = isCurrentStreamingMessage
             ? statusMessage
-            : "✋ Please wait";
+            : "🌐 Just a moment";
 
           return (
             <div

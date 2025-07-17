@@ -89,7 +89,7 @@ export default function RoutineUploadForm({
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-6">
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
           <Calendar className="w-6 h-6 text-white" />

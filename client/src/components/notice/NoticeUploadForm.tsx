@@ -97,7 +97,7 @@ export default function NoticeUploadForm({
           <h3 className="text-xl font-semibold text-gray-800">
             Upload University Notice
           </h3>
-          <p className="text-sm text-gray-600">AI Model uses this for response</p>
+          <p className="text-sm text-gray-600">AI uses this to generate responses</p>
         </div>
       </div>
 

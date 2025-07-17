@@ -1,8 +1,7 @@
 import {
-  BatchSchedule,
   ClassRoutineData,
+  FlatSchedule,
   RoutineMetadata,
-  SectionSchedule,
   WeeklyDaySchedule,
 } from "../../types/types";
 import {
@@ -38,7 +37,6 @@ export default async function extractClassRoutineSheet(
   const batchMap = new Map<string, Map<string, WeeklyDaySchedule[]>>();
 
   for (const day of days) {
-    console.log(`-> Processing ${day}...`);
     const parsedData = await csvParser(spreadsheetId, day);
 
     if (
@@ -53,10 +51,6 @@ export default async function extractClassRoutineSheet(
 
     if (!masterMetadata) {
       masterMetadata = extractMetadata(parsedData);
-      if (masterMetadata)
-        console.log(
-          `   Master metadata found in ${day}'s sheet. This will be used as a fallback.`
-        );
     }
 
     if (!masterMetadata) {
@@ -92,29 +86,25 @@ export default async function extractClassRoutineSheet(
     return null;
   }
 
-  const schedules: BatchSchedule[] = [];
-  for (const [batch, sectionMap] of batchMap.entries()) {
-    const sections: SectionSchedule[] = [];
-    for (const [section, weeklySchedule] of sectionMap.entries()) {
-      sections.push({ section, weeklySchedule });
-    }
-    sections.sort((a, b) => a.section.localeCompare(b.section));
-    schedules.push({ batch, sections });
-  }
-  schedules.sort((a, b) =>
-    a.batch.localeCompare(b.batch, undefined, { numeric: true })
-  );
-
-  console.log(
-    `\n--- Finished parsing. Found routines for ${schedules.length} batches. ---`
-  );
-
   const { title, department, semester } = masterMetadata;
+
+  // Flatten the map into the final array structure
+  const finalSchedules: FlatSchedule[] = [];
+  for (const [batch, sectionMap] of batchMap.entries()) {
+    for (const [section, weeklySchedule] of sectionMap.entries()) {
+      finalSchedules.push({
+        batch: batch,
+        section: section,
+        content: JSON.stringify(weeklySchedule),
+      });
+    }
+  }
 
   return {
     title,
     department,
     semester,
-    schedules,
+    times: masterMetadata.times,
+    schedules: finalSchedules,
   };
 }

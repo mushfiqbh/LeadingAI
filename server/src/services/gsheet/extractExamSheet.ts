@@ -1,10 +1,10 @@
-import { ExamRoutineData, ExamSchedule } from "../../types/types";
+import { ExamRoutineData, ExamSchedule, FlatSchedule } from "../../types/types";
 import { RowIdentifier, csvParser } from "./helperFunctions";
 
 /**
  * Parses raw table data and generates a single, merged JSON schedule in one pass.
- * @param parsedData - The 2D string array representing the raw schedule data.
- * @returns A single, merged object in the final JSON format, or null if input is invalid.
+ * @param {string} spreadsheetId - The ID of the Google Sheet.
+ * @return {Promise<ExamRoutineData | null>} A promise that resolves to the final routine data.
  */
 export default async function extractExamRoutineSheet(
   spreadsheetId: string
@@ -118,7 +118,7 @@ export default async function extractExamRoutineSheet(
         courseEntries.forEach((course, index) => {
           if (RowIdentifier.isCourseCode(course.trim())) {
             batchEntry.exams.push({
-              subject: course.trim(),
+              subject: course.trim().split(" ")[0],
               date: headers.dates[index] || null,
               time: headers.times[index] || null,
               weekday: headers.weekDays[index] || null,
@@ -131,18 +131,21 @@ export default async function extractExamRoutineSheet(
     }
   }
 
-  // Convert map to a sorted array for the final output
-  const finalSchedules = Array.from(mergedSchedules.values())
-    .map((schedule) => {
-      schedule.sections.sort(); // Sort sections alphabetically
-      return schedule;
-    })
-    .sort((a, b) => Number(b.batch) - Number(a.batch)); // Sort schedules by batch number
+  // Flatten the map into the final array structure
+  const finalSchedules: FlatSchedule[] = [];
+  for (const [batch, schedule] of mergedSchedules.entries()) {
+    finalSchedules.push({
+      batch: schedule.batch,
+      section: "All Sections",
+      content: JSON.stringify(schedule.exams),
+    });
+  }
 
   return {
     title,
     department,
     semester,
+    times: Array.from(new Set(tableHeaders.flatMap((header) => header.times))),
     schedules: finalSchedules,
   };
 }
