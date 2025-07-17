@@ -60,8 +60,17 @@ export const tools: ChatCompletionTool[] = [
               "Category of routine to retrieve, such as 'exam-routine' or 'class-routine'.",
             enum: ["exam-routine", "class-routine"],
           },
+          batch: {
+            type: "string",
+            description: "The batch for which to retrieve the routine.",
+          },
+          section: {
+            type: "string",
+            description:
+              "The section for which to retrieve the routine, required for class routines. Not required for exam routines.",
+          },
         },
-        required: ["category"],
+        required: ["category", "batch"],
       },
     },
   },

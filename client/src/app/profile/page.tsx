@@ -35,6 +35,49 @@ export default function Page() {
   const [initialLoad, setInitialLoad] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | null>(null);
 
+  const departments = [
+    {
+      dept: "",
+      label: "Select Department",
+    },
+    {
+      dept: "CSE",
+      label: "CSE",
+    },
+    {
+      dept: "BBA",
+      label: "BBA",
+    },
+    {
+      dept: "EEE",
+      label: "EEE",
+    },
+    {
+      dept: "Civil",
+      label: "Civil Engineering",
+    },
+    {
+      dept: "Architecture",
+      label: "Architecture",
+    },
+    {
+      dept: "LAW",
+      label: "Law",
+    },
+    {
+      dept: "English",
+      label: "English",
+    },
+    {
+      dept: "Islamic Studies",
+      label: "Islamic Studies",
+    },
+    {
+      dept: "THM",
+      label: "Tourism and Hospitality Management",
+    },
+  ];
+
   // Helper function to parse birthdate and split into components
   const parseBirthdate = (birthdate: string | Date | null) => {
     if (!birthdate) return { year: "", month: "", day: "", formatted: "" };
@@ -225,37 +268,12 @@ export default function Page() {
         </div>
 
         {/* Status Messages */}
-        <div className="w-fit px-6 pt-6 fixed z-40 top-20 right-20">
-          {saveStatus === "saving" && (
-            <div className="bg-blue-500 border text-white rounded-xl p-4 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                <span className="text-white font-medium">
-                  Auto-saving your changes...
-                </span>
-              </div>
-            </div>
-          )}
-          {saveStatus === "saved" && (
-            <div className="bg-blue-500 rounded-xl p-4 mb-6">
-              <div className="flex items-center gap-3">
-                <svg
-                  className="w-5 h-5 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="text-white font-medium">
-                  Profile saved automatically
-                </span>
-              </div>
-            </div>
-          )}
+        <div className="w-fit mx-auto rounded-xl mb-6 font-medium text-green-500">
+          {saveStatus === "saved"
+            ? "Profile saved successfully!"
+            : saveStatus === "saving"
+            ? "Saving profile..."
+            : "Changes will be saved automatically"}
         </div>
 
         {/* Form Section */}
@@ -488,17 +506,8 @@ export default function Page() {
                       }
                       className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
                     >
-                      {[
-                        {
-                          dept: "",
-                          label: "Select Department",
-                        },
-                        {
-                          dept: "CSE",
-                          label: "Computer Science and Engineering",
-                        },
-                      ].map((item) => (
-                        <option key={item.dept} value={item.dept}>
+                      {departments.map((item, index) => (
+                        <option key={index} value={item.dept}>
                           {item.label}
                         </option>
                       ))}

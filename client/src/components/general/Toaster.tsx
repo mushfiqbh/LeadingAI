@@ -158,7 +158,7 @@ const Toaster: React.FC<ToasterProps> = ({ toasts, onRemoveToast }) => {
 
   return (
     <div className="fixed inset-0 z-40 pointer-events-none bg-transparent backdrop-blur-sm">
-      <div className="flex items-start justify-center min-h-screen p-4">
+      <div className="flex items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-md space-y-4 pointer-events-auto">
           {toasts.map((toast) => (
             <ToastItem key={toast.id} toast={toast} onRemove={onRemoveToast} />

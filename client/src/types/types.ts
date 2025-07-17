@@ -27,7 +27,7 @@ export interface Conversation {
 
 export interface UserProfile {
   uid: string;
-  credits: number;
+  totalCredits: number;
   usedCredits: number;
   fullName: string;
   email: string;

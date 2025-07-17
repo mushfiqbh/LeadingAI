@@ -21,18 +21,22 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [suggestions, setSuggestions] = useState([
     "Check results",
-    "Whats my CGPA",
     "Latest notice",
+    "Create class routine",
+    "Create exam routine",
     "Find notes or PDFs",
     "What can you do",
     "Any upcoming events",
     "What's the bus schedule",
+    "Whats my CGPA",
   ]);
 
   const baseSuggestions = [
     "Check my results",
     "Whats my CGPA",
     "Latest notice",
+    "Create class routine",
+    "Create exam routine",
     "Find notes or PDFs",
     "What can you do",
     "Any upcoming events",

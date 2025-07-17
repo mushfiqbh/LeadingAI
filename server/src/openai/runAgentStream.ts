@@ -44,13 +44,11 @@ export async function* runAgentStream(
     } else if (toolCall.function.name === "get_university_notice") {
       mcpResult = await getNotice(args.category);
     } else if (toolCall.function.name === "get_routine") {
-      mcpResult = await getRoutine(args.category);
+      mcpResult = await getRoutine(args.category, args.batch, args.section);
     } else {
       console.warn(`⚠️ Unknown tool called: ${toolCall.function.name}`);
       mcpResult = { error: `Unknown tool: ${toolCall.function.name}` };
     }
-
-    yield "__thinking__";
 
     const stream = await openaiClient.chat.completions.create({
       model: MODEL,
@@ -102,7 +100,7 @@ export async function* runAgentStream(
     // Update user Credits in Firebase (don't await to avoid blocking stream)
     FirebaseAdminService.updateUserCredits({
       userId,
-      usedCredits: Math.round(totalTokenCount / 1000), // 1 credit per 1000 tokens
+      usedCredits: Math.round(totalTokenCount / 100), // 1 credit per 100 tokens
     }).catch((error) => {
       console.error("Error updating user Credits:", error);
     });

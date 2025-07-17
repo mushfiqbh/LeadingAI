@@ -95,6 +95,7 @@ export const createRoutine = async (
       title: "",
       department: "",
       semester: "",
+      times: [],
       schedules: [],
     };
 
@@ -112,7 +113,8 @@ export const createRoutine = async (
       title: data.title,
       department: data.department,
       semester: data.semester,
-      content: JSON.stringify(data.schedules),
+      times: data.times,
+      schedules: data.schedules,
     });
 
     res.status(200).json({

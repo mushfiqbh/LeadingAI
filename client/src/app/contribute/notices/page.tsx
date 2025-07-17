@@ -111,20 +111,13 @@ export default function NoticesForm() {
   return (
     <div
       id="notices-form"
-      className="flex flex-col items-center justify-center min-h-screen py-8"
+      className="flex flex-col items-center justify-center min-h-screen"
     >
-      {selectedNotice && (
-        <NoticeModal
-          notice={selectedNotice}
-          onClose={() => setSelectedNotice(null)}
-        />
-      )}
-
       <div className="w-full md:w-1/2 mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50">
         <NoticeUploadForm onUploadSuccess={() => fetchNotices(true)} />
 
         <div className="mt-8">
-          <h4 className="text-lg font-semibold text-gray-800 mt-6 mb-3">
+          <h4 className="text-lg font-semibold opacity-50 mt-6 mb-3">
             Recent Notices
           </h4>
           {fetchStatus === "loading" ? (
@@ -167,6 +160,13 @@ export default function NoticesForm() {
           )}
         </div>
       </div>
+      
+      {selectedNotice && (
+        <NoticeModal
+          notice={selectedNotice}
+          onClose={() => setSelectedNotice(null)}
+        />
+      )}
     </div>
   );
 }

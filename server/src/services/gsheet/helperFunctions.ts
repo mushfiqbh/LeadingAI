@@ -56,7 +56,8 @@ export const RowIdentifier = {
     /^\d+$/.test(row[1]) &&
     typeof row[2] === "string" &&
     /^[A-Z]/.test(row[2]),
-  isDate: (s: string): boolean => /^\d{2}\/\d{2}\/\d{4}$/.test(s.trim()),
+  isDate: (s: string): boolean =>
+    /^\d{1,2}\/\d{1,2}\/(\d{4}|\d{2})$/.test(s.trim()),
   isTime: (s: string): boolean =>
     /^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/.test(s.trim()),
   isWeekday: (s: string): boolean => {
@@ -78,7 +79,7 @@ export const RowIdentifier = {
   isTitle: (s: string): boolean =>
     s.includes("Department of") || s.includes("Examination Routine"),
   isSemester: (s: string): boolean =>
-    /^(Summer|Fall|Spring)'\d{2}$/.test(s.trim()),
+    /^(Summer|SUMMER|Fall|FALL|Spring|SPRING)'\d{2}$/.test(s.trim()),
   isEmpty: (row: any[]): boolean => row.every((cell) => cell === ""),
 };
 

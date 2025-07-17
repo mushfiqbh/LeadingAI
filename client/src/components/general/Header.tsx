@@ -104,10 +104,10 @@ export default function Header() {
                     className="text-xs text-gray-500"
                   >
                     <span className="text-blue-600 font-semibold">
-                      {Number(userProfile?.credits) -
+                      {Number(userProfile?.totalCredits) -
                         Number(userProfile?.usedCredits)}
                     </span>{" "}
-                    Credits Left
+                    Credits Remaining
                   </p>
                 )
               )}
@@ -156,7 +156,7 @@ export default function Header() {
                   <div
                     ref={menuRef}
                     onClick={() => setShowMenu(false)}
-                    className="absolute top-12 right-0 w-56 bg-white rounded-2xl shadow-2xl border border-gray-200/50 backdrop-blur-sm z-50 overflow-hidden"
+                    className="absolute top-12 right-0 w-56 bg-white rounded-2xl shadow-2xl border border-gray-200/50 backdrop-blur-sm z-40 overflow-hidden"
                   >
                     <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200/50">
                       <div className="flex items-center gap-3">
@@ -204,7 +204,7 @@ export default function Header() {
                             d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                           />
                         </svg>
-                        <span className="font-medium">Manage Credits</span>
+                        <span className="font-medium">Credits</span>
                       </button>
 
                       {window.location.pathname !== "/" ? (

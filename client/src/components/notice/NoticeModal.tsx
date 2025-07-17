@@ -28,25 +28,26 @@ export default function NoticeModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
       onClick={onClose}
     >
       <div
-        className="relative max-w-4xl max-h-full p-4"
+        className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute -top-0 -right-0 z-10 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors shadow-lg"
+          className="absolute top-4 right-4 z-10 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition-colors shadow-lg"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
-        <div className="bg-white rounded-2xl p-4 max-h-[90vh] overflow-y-auto shadow-2xl">
-          <div className="text-center mb-4">
-            <h3 className="font-bold text-gray-800 mb-2">
+
+        <div className="p-6 max-h-[90vh] overflow-y-scroll scroll-smooth">
+          <div className="text-center mb-6">
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">
               {notice.title || "University Notice"}
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 font-medium">
               By {notice.contributor?.name || "Anonymous"}
             </p>
             <p className="text-sm text-gray-500 mt-1">
@@ -54,18 +55,33 @@ export default function NoticeModal({
                 `Expires: ${new Date(notice.expiryDate).toLocaleDateString()}`}
             </p>
           </div>
-          <div className="flex justify-center">
-            <Image
-              width={800}
-              height={600}
-              src={notice.imageUrl}
-              alt={notice.title || "Notice"}
-              className="max-w-full h-auto rounded-lg shadow-lg"
-              style={{ objectFit: "contain" }}
-            />
+
+          <div className="flex justify-center mb-6">
+            <div className="relative max-w-full">
+              <Image
+                width={800}
+                height={450}
+                src={notice.imageUrl}
+                alt={notice.title || "Notice"}
+                className="rounded-lg shadow-lg"
+                style={{ objectFit: "contain" }}
+              />
+            </div>
           </div>
+
+          {notice.information && (
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-bold text-lg text-center text-teal-600 mb-3">
+                📋 Transcribed Information by AI
+              </h4>
+              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                {notice.information}
+              </p>
+            </div>
+          )}
+
           {userProfile?.isAdmin && (
-            <div className="mt-4 text-center">
+            <div className="text-center pt-4 border-t border-gray-200">
               <button
                 onClick={() => {
                   if (
@@ -78,21 +94,10 @@ export default function NoticeModal({
                     });
                   }
                 }}
-                className="px-4 py-2 text-red-500 rounded-lg underline cursor-pointer"
+                className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
               >
-                Delete this Notice as Admin
+                🗑️ Delete Notice (Admin)
               </button>
-            </div>
-          )}
-          
-          {notice.information && (
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-bold text-lg text-center text-green-400 mb-2">
-                Transcribed Information by AI
-              </h4>
-              <p className="text-gray-700 whitespace-pre-wrap">
-                {notice.information}
-              </p>
             </div>
           )}
         </div>
