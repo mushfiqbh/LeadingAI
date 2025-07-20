@@ -1,7 +1,10 @@
 import { Exam, RoutineOptions } from "../../types/types";
-import { createCanvas } from "canvas";
+import { createCanvas, registerFont } from "canvas";
 import { wrapText } from "./helperFunctions";
 import refineDepartmentName from "../../utils/refineDepartmentName";
+
+registerFont("./fonts/Arial-Regular.ttf", { family: "Arial" });
+registerFont("./fonts/Lobster-Regular.ttf", { family: "Lobster" });
 
 export default function examRoutineImageCreator({
   department,
@@ -21,7 +24,7 @@ export default function examRoutineImageCreator({
     });
   }
   const padding = 60;
-  const tableColWidths = [200, 200, 200]; // Date, Course, Time & Shift
+  const tableColWidths = [200, 200, 200];
   const rowHeight = 70;
   const tableWidth = tableColWidths.reduce((a, b) => a + b, 0);
 
@@ -47,7 +50,7 @@ export default function examRoutineImageCreator({
 
   // Header text in dark gray
   ctx.fillStyle = "#4a5568";
-  ctx.font = "bold 26px Georgia";
+  ctx.font = "bold 26px Lobster";
   ctx.textAlign = "center";
   ctx.fillText("LEADING UNIVERSITY", canvasWidth / 2, dynamicPadding + 30);
 
@@ -152,7 +155,7 @@ export default function examRoutineImageCreator({
 
   // Signature section
   const signatureY = canvasHeight - dynamicPadding - 10;
-  ctx.font = "16px Brush Script MT, cursive";
+  ctx.font = "16px Lobster";
   ctx.fillStyle = "#666666";
   ctx.textAlign = "right";
   ctx.fillText("Made by LeadingAI", canvasWidth - padding, signatureY);
