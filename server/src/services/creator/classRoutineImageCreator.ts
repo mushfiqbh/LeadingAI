@@ -1,7 +1,10 @@
-import { createCanvas } from "canvas";
+import { createCanvas, registerFont } from "canvas";
 import { wrapText } from "./helperFunctions";
 import refineDepartmentName from "../../utils/refineDepartmentName";
 import { RoutineOptions, WeeklyDaySchedule } from "../../types/types";
+
+registerFont("./fonts/Arial-Regular.ttf", { family: "Arial" });
+registerFont("./fonts/Lobster-Regular.ttf", { family: "Lobster" });
 
 export default function classRoutineImageCreator({
   department,
@@ -47,7 +50,7 @@ export default function classRoutineImageCreator({
 
   // Header text in dark gray
   ctx.fillStyle = "#4a5568";
-  ctx.font = "bold 26px Georgia";
+  ctx.font = "bold 26px Arial";
   ctx.textAlign = "center";
   ctx.fillText("LEADING UNIVERSITY", canvasWidth / 2, dynamicPadding + 30);
 
@@ -155,7 +158,7 @@ export default function classRoutineImageCreator({
 
   // Add signature at the bottom
   const signatureY = startY + rowHeight * (usedDays.length + 1) + 30;
-  ctx.font = "16px Brush Script MT, cursive";
+  ctx.font = "16px Lobster";
   ctx.fillStyle = "#666666";
   ctx.textAlign = "right";
   ctx.fillText("Made by LeadingAI", canvasWidth - padding, signatureY);
