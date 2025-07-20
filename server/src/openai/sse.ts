@@ -29,8 +29,8 @@ export async function streamAgentResponse({
   let accumulatedText = "";
 
   try {
-    for await (const chunk of runAgentStream(userId, messages)) {
-      if (chunk === "__thinking__" || chunk === "__calling_mcp__") {
+    for await (const chunk of runAgentStream(userId, messages, aiMessageId)) {
+      if (chunk === "__thinking__" || chunk.includes("__calling_")) {
         res.write(`data: ${chunk}\n\n`);
         continue;
       }
@@ -41,7 +41,8 @@ export async function streamAgentResponse({
 
     if (accumulatedText) {
       await FirebaseAdminService.updateMessageById(aiMessageId, {
-        content: { text: accumulatedText, image: null },
+        "content.text": accumulatedText,
+        "content.image": null,
         timestamp: new Date(),
       });
 

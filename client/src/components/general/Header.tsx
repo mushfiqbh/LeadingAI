@@ -13,10 +13,9 @@ import CreditsManager from "./CreditsManager";
 
 export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
-  const [showManager, setShowManager] = useState(false);
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { user, userProfile, loading } = useAuth();
+  const { user, userProfile, loading, showManager, setShowManager } = useAuth();
   const router = useRouter();
   const { createConversationInFirebase, selectConversation } = useChatStore();
   const { prompt } = useToaster();
@@ -148,9 +147,7 @@ export default function Header() {
                   )}
                 </button>
 
-                {showManager && (
-                  <CreditsManager setShowManager={setShowManager} />
-                )}
+                {showManager && <CreditsManager />}
 
                 {showMenu && (
                   <div

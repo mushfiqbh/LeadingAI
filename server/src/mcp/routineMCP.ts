@@ -1,46 +1,41 @@
+import routineCreatorWorker from "../services/creator/routineCreatorWorker";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
+import { FlatSchedule } from "../types/types";
+import refineDepartmentName from "../utils/refineDepartmentName";
 
 export async function getRoutine(
+  aiMessageId: string,
   category: string,
+  department: string,
   batch: string,
   section?: string
-): Promise<string[] | null> {
+): Promise<string> {
   try {
-    const routines = await FirebaseAdminService.getRoutinesByCategory(category);
+    const refinedDept = refineDepartmentName(department);
 
-    if (!routines || routines.length === 0) {
-      console.log(`No routines found for category: ${category}`);
-      return null;
+    const routine = await FirebaseAdminService.getRoutineByCategory(
+      category,
+      refinedDept
+    );
+
+    if (!routine?.schedules) {
+      return "Routine not found. Please contribute to add new routines.";
     }
 
-    // Filter routines for schedules that match the batch and section
-    const matchedContent: string[] = [];
+    const schedule = routine.schedules.find(
+      (s: FlatSchedule) =>
+        s.batch === batch && (section ? s.section.includes(section) : true)
+    );
 
-    routines.forEach((routine) => {
-      if (Array.isArray(routine.schedules)) {
-        routine.schedules.forEach((schedule: any) => {
-          if (
-            String(schedule.batch) === String(batch) &&
-            String(schedule.section).includes(String(section || "All Sections"))
-          ) {
-            if (schedule.content) {
-              matchedContent.push(
-                JSON.stringify({
-                  batch: schedule.batch,
-                  section: schedule.section,
-                  times: routine.times,
-                  schedule: schedule.content,
-                })
-              );
-            }
-          }
-        });
-      }
-    });
+    if (schedule) {
+      // Don't wait for the worker to finish. Let it run in the background.
+      routineCreatorWorker(category, aiMessageId, schedule, routine);
+      return "Your routine image is being created and will be sent with the response.";
+    }
 
-    return matchedContent.length > 0 ? matchedContent : null;
+    return "No matching routine found for the specified batch and section.";
   } catch (err: any) {
     console.error("Error in getRoutine:", err.message);
-    return [];
+    return "Error fetching routine data.";
   }
 }

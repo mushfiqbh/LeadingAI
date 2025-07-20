@@ -4,13 +4,12 @@ import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 
-export default function CreditsManager({
-  setShowManager,
-}: {
-  setShowManager: (value: boolean) => void;
-}) {
-  const { userProfile } = useAuth();
+export default function CreditsManager() {
+  const { userProfile, setShowManager } = useAuth();
   const managerRef = useRef<HTMLDivElement>(null);
+  const CREDITS_BALANCE =
+    Number(userProfile?.totalCredits || 0) -
+    Number(userProfile?.usedCredits || 0);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -64,16 +63,19 @@ export default function CreditsManager({
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Credits Balance
+                {CREDITS_BALANCE > 0
+                  ? `Credits Balance: ${CREDITS_BALANCE}`
+                  : "No Credits Available"}
               </h3>
               <p className="text-xs text-gray-500">
-                Available credits for AI interactions
+                {CREDITS_BALANCE > 0
+                  ? "You can use these credits for AI interactions."
+                  : "Please purchase credits to continue."}
               </p>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
-                {Number(userProfile?.totalCredits || 0) -
-                  Number(userProfile?.usedCredits || 0)}
+                {CREDITS_BALANCE}
               </div>
               <p className="text-xs text-gray-500">remaining</p>
             </div>

@@ -1,4 +1,5 @@
 import { ExamRoutineData, ExamSchedule, FlatSchedule } from "../../types/types";
+import refineDepartmentName from "../../utils/refineDepartmentName";
 import { RowIdentifier, csvParser } from "./helperFunctions";
 
 /**
@@ -25,7 +26,7 @@ export default async function extractExamRoutineSheet(
   let tableIndex = -1;
   const tableHeaders: {
     dates: string[];
-    times: string[];
+    timeSlots: string[];
     weekDays: string[];
   }[] = [];
   let currentBatch: string | null = null;
@@ -40,7 +41,7 @@ export default async function extractExamRoutineSheet(
       if (RowIdentifier.isTitle(firstCell)) {
         const trimmedTitle = firstCell.trim();
         if (trimmedTitle.includes("Department of")) {
-          department = trimmedTitle;
+          department = refineDepartmentName(trimmedTitle);
         } else {
           title = trimmedTitle;
         }
@@ -59,7 +60,7 @@ export default async function extractExamRoutineSheet(
       tableIndex++;
       tableHeaders[tableIndex] = {
         dates: contentCells.filter((c) => c.trim() !== ""),
-        times: [],
+        timeSlots: [],
         weekDays: [],
       };
       processedBatchesPerTable.clear(); // Reset for the new table
@@ -68,7 +69,7 @@ export default async function extractExamRoutineSheet(
 
     if (tableIndex > -1 && contentCells.some((c) => RowIdentifier.isTime(c))) {
       const timeCells = contentCells.filter((c) => c.trim() !== "");
-      tableHeaders[tableIndex].times = timeCells;
+      tableHeaders[tableIndex].timeSlots = timeCells;
       continue;
     }
     if (
@@ -120,7 +121,7 @@ export default async function extractExamRoutineSheet(
             batchEntry.exams.push({
               subject: course.trim().split(" ")[0],
               date: headers.dates[index] || null,
-              time: headers.times[index] || null,
+              time: headers.timeSlots[index] || null,
               weekday: headers.weekDays[index] || null,
               shift: shift,
             });
@@ -136,7 +137,7 @@ export default async function extractExamRoutineSheet(
   for (const [batch, schedule] of mergedSchedules.entries()) {
     finalSchedules.push({
       batch: schedule.batch,
-      section: "All Sections",
+      section: "All-Sections",
       content: JSON.stringify(schedule.exams),
     });
   }
@@ -145,7 +146,9 @@ export default async function extractExamRoutineSheet(
     title,
     department,
     semester,
-    times: Array.from(new Set(tableHeaders.flatMap((header) => header.times))),
+    timeSlots: Array.from(
+      new Set(tableHeaders.flatMap((header) => header.timeSlots))
+    ),
     schedules: finalSchedules,
   };
 }

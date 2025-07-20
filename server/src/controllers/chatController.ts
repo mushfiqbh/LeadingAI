@@ -27,6 +27,26 @@ export const chatController = async (
   }
 
   try {
+    // Get user profile for context
+    let userProfile: {
+      uid: string;
+      totalCredits?: number;
+      usedCredits?: number;
+    } | null = null;
+    try {
+      userProfile = await FirebaseAdminService.getUserProfile(userId);
+
+      const creditsBalance =
+        Number(userProfile?.totalCredits) - Number(userProfile?.usedCredits);
+
+      if (creditsBalance <= 0) {
+        res.status(403).json({ error: "Insufficient credits" });
+        return;
+      }
+    } catch (error) {
+      console.log("User profile not found, continuing without profile context");
+    }
+
     const conversation = await FirebaseAdminService.getConversationById(
       conversationId
     );
@@ -37,16 +57,6 @@ export const chatController = async (
 
     const conversationMessages =
       await FirebaseAdminService.getMessagesByConversationId(conversationId);
-
-    // Get user profile for context
-    let userProfile = null;
-    try {
-      userProfile = await FirebaseAdminService.getUserProfile(userId);
-    } catch (error) {
-      console.log(
-        "ℹ️ User profile not found, continuing without profile context"
-      );
-    }
 
     const messages = buildMessagesWithContext({
       text,

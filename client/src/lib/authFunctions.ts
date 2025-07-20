@@ -37,7 +37,7 @@ export const signUpWithEmail = async (
       fullName,
       createdAt: serverTimestamp(),
       emailVerified: user.emailVerified,
-      totalCredits: 100,
+      totalCredits: 1000,
       usedCredits: 0,
     });
 
@@ -117,7 +117,7 @@ export const signInWithGoogle = async () => {
         photoURL: user.photoURL,
         lastLogin: serverTimestamp(),
         emailVerified: user.emailVerified,
-        totalCredits: 100,
+        totalCredits: 1000,
         usedCredits: 0,
       });
     }

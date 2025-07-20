@@ -14,7 +14,7 @@ export default function DriveForm() {
 
   // Your shared Google Drive folder URL
   const SHARED_DRIVE_URL =
-    "https://drive.google.com/drive/folders/1KFpim2vo9_Z3ZItZw62vrZONLlXb4mBg";
+    "https://drive.google.com/drive/folders/1NW-dGv0h5JMFWAVof5GpXOCBhD5fQATY";
 
   const handleRedirectToDrive = () => {
     setIsRedirecting(true);
@@ -26,16 +26,16 @@ export default function DriveForm() {
 
   const filenameExamples = [
     {
-      bad: "notes.pdf",
-      good: "CSE1201_Data_Structures_Lecture_1_4th_Semester.pdf",
-    },
-    {
       bad: "book.pdf",
       good: "DataStructures_Algorithms_Cormen_3rdEdition_Complete.pdf",
     },
     {
-      bad: "assignment.docx",
-      good: "CSE3111_OOP_Assignment3_InheritancePolymorphism_5th_Semester.docx",
+      bad: "notes.docx",
+      good: "CSE1201_Data_Structures_Lecture_1_4th_Semester.docx",
+    },
+    {
+      bad: "questionpaper.pdf",
+      good: "4th_Semester_Summer_25_Mid_Term_Question_Paper.pdf",
     },
   ];
 

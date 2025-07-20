@@ -15,7 +15,7 @@ const Chat: React.FC = () => {
   const { user } = useAuth();
   const { selectedConversationId, messages: storeMessages } = useChatStore();
 
-  // TTFB testing - track message send times
+  // TTFB testing - track message send timeSlots
   const messageTimestamps = useRef<Map<string, number>>(new Map());
   const lastStreamingState = useRef<boolean>(false);
 

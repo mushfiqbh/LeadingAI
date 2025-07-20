@@ -62,7 +62,7 @@ export default async function extractClassRoutineSheet(
 
     for (const row of parsedData) {
       if (RowIdentifier.isSchedule(row)) {
-        const dailySchedule = parseDailySchedule(row, masterMetadata.times);
+        const dailySchedule = parseDailySchedule(row, masterMetadata.timeSlots);
         if (dailySchedule && dailySchedule.classes.length > 0) {
           const { batch, section, classes } = dailySchedule;
 
@@ -104,7 +104,7 @@ export default async function extractClassRoutineSheet(
     title,
     department,
     semester,
-    times: masterMetadata.times,
+    timeSlots: masterMetadata.timeSlots,
     schedules: finalSchedules,
   };
 }

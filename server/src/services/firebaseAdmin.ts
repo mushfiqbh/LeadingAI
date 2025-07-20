@@ -1,5 +1,6 @@
 import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
+import { ClassRoutineData, FlatSchedule } from "../types/types";
 
 // Initialize Firebase Admin SDK
 let isFirebaseInitialized = false;
@@ -123,6 +124,7 @@ export class FirebaseAdminService {
         .collection("messages")
         .where("conversationId", "==", conversationId)
         .orderBy("timestamp", "asc")
+        .limit(5)
         .get();
 
       return messagesSnapshot.docs.map((doc) => ({
@@ -154,13 +156,7 @@ export class FirebaseAdminService {
   // Update an existing message by ID (used for streaming updates)
   static async updateMessageById(messageId: string, updateData: any) {
     try {
-      await adminDb
-        .collection("messages")
-        .doc(messageId)
-        .update({
-          ...updateData, // Avoid overwriting the timestamp (Important for streaming)
-        });
-      // Message updated
+      await adminDb.collection("messages").doc(messageId).update(updateData);
     } catch (error) {
       console.error("💥 Error updating message:", error);
       throw error;
@@ -213,7 +209,7 @@ export class FirebaseAdminService {
         throw new Error(`User profile ${userId} not found`);
       }
 
-      return { id: doc.id, ...doc.data() };
+      return { uid: doc.id, ...doc.data() };
     } catch (error) {
       console.error("💥 Error getting user profile:", error);
       throw error;
@@ -287,7 +283,7 @@ export class FirebaseAdminService {
         .where("expiryDate", ">=", now)
         .orderBy("expiryDate", "asc")
         .orderBy("createdAt", "desc")
-        .limit(10)
+        .limit(5)
         .get();
 
       return snapshot.docs.map((doc) => doc.data().information || "");
@@ -313,27 +309,36 @@ export class FirebaseAdminService {
     }
   }
 
-  static async getRoutinesByCategory(category: string): Promise<any[]> {
+  static async getRoutineByCategory(
+    category: string,
+    department: string
+  ): Promise<ClassRoutineData | null> {
     try {
       const now = new Date().toISOString();
 
       const snapshot = await adminDb
         .collection("routines")
-        .select("title", "semester", "department", "schedules")
+        .select("title", "semester", "department", "timeSlots", "schedules")
         .where("category", "==", category)
+        .where("department", "==", department)
         .where("expiryDate", ">=", now)
         .orderBy("expiryDate", "asc")
         .orderBy("createdAt", "desc")
         .limit(1)
         .get();
 
-      return snapshot.docs.map((doc) => ({
+      if (snapshot.empty) {
+        return null;
+      }
+
+      const doc = snapshot.docs[0];
+      return {
         id: doc.id,
-        ...doc.data(),
-      }));
+        ...(doc.data() as ClassRoutineData),
+      };
     } catch (error) {
       console.error("💥 Error getting routines by category:", error);
-      return [];
+      return null;
     }
   }
 }

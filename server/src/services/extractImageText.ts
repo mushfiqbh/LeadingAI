@@ -75,11 +75,13 @@ export default async function extractImageText(
       return null;
     }
 
-    const { title, information, category } = JSON.parse(args);
+    const { title, information } = JSON.parse(args);
 
     return {
       title: title || "Untitled",
-      information: information || "",
+      information:
+        information ||
+        "Could not extract text. Please re-upload a clear image!",
     };
   } catch (err: any) {
     console.error("❌ Failed to extract image text:", err.message);

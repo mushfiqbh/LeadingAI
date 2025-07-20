@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Send, X, ImageUp } from "lucide-react";
 import { ChatMessage } from "../../types/types";
+import { useAuth } from "@/context/AuthContext";
 
 interface ChatInputProps {
   onSendMessage: (messages: ChatMessage) => void;
@@ -14,6 +15,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   isLoading,
 }) => {
+  const { userProfile, setShowManager } = useAuth();
   const [input, setInput] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -66,6 +68,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     e.preventDefault();
 
     if (!input.trim() && !image) return;
+
+    const creditsBalance =
+      Number(userProfile?.totalCredits) - Number(userProfile?.usedCredits);
+
+    if (creditsBalance <= 0) {
+      setShowManager(true);
+      return;
+    }
 
     const message: ChatMessage = {
       text: input.trim(),

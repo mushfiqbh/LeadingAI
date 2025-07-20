@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Copy, Check, X } from "lucide-react";
 import { Message } from "../../types/types";
 import MarkdownRenderer from "./MarkdownRenderer";
@@ -11,18 +12,17 @@ import { formatTime } from "@/utils/formatFirebaseTimestamp";
 interface MessageBubbleProps {
   message: Message;
   isStreaming?: boolean;
-  statusMessage?: string; // NEW: Accept status message
+  statusMessage?: string;
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
   message,
   isStreaming = false,
-  statusMessage = "", // NEW: Default to empty string
+  statusMessage = "",
 }) => {
   const [copied, setCopied] = React.useState(false);
   const isUser = message.role === "user";
 
-  // ... (handleCopy and formatTime functions are the same)
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -43,7 +43,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   return (
     <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`overflow-x-auto max-w-4xl ${isUser ? "order-first" : ""}`}>
+      <div
+        className={`overflow-x-auto max-w-4xl ${isUser ? "order-first" : ""}`}
+      >
         <div
           className={`flex flex-col rounded-2xl px-3 py-1 ${
             isUser
@@ -63,17 +65,22 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 </div>
               ) : (
                 <div className="relative">
-                  {statusMessage && !message.content.text ? (
-                    <TypingIndicator statusMessage={statusMessage} />
-                  ) : (
-                    // Never style this div as "whitespace-pre-wrap break-words", MarkdownRenderer will handle it
-                    <div>
-                      <MarkdownRenderer content={message.content.text} />
-                      {isStreaming && message.content.text && (
-                        <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />
-                      )}
-                    </div>
-                  )}
+                  {
+                    // FIX: Show TypingIndicator only when a status exists AND there's no text or image yet.
+                    statusMessage &&
+                    !message.content.text &&
+                    !message.content.imageUrl ? (
+                      <TypingIndicator statusMessage={statusMessage} />
+                    ) : message.content.text ? (
+                      // Render text if it exists.
+                      <div>
+                        <MarkdownRenderer content={message.content.text} />
+                        {isStreaming && (
+                          <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />
+                        )}
+                      </div>
+                    ) : null // Render nothing if there's no text (e.g., for an image-only message).
+                  }
                 </div>
               )}
             </div>
@@ -120,18 +127,26 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 </div>
               )}
 
-            {/* Actual image - show when upload is complete or for assistant messages */}
+            {/* Actual image - show when available */}
             {message.content.imageUrl && (
-              <div className="mt-4 h-[120px] w-[180px] border border-gray-200 rounded-xl overflow-hidden bg-gray-50 shadow-sm">
-                <Image
-                  width={300}
-                  height={200}
-                  src={message.content.imageUrl}
-                  alt="Shared image"
-                  className="w-full h-full object-contain"
-                  loading="lazy"
-                />
-              </div>
+              <Link
+                href={`${
+                  message.content.imageUrl.split("upload/")[0]
+                }upload/fl_attachment:${message.content?.filename}/${
+                  message.content.imageUrl.split("upload/")[1]
+                }`}
+              >
+                <div className="my-2 h-[180px] w-[180px] border border-gray-200 rounded-xl overflow-hidden bg-gray-50 shadow-sm transition-transform hover:scale-105">
+                  <Image
+                    width={300}
+                    height={300}
+                    src={message.content.imageUrl}
+                    alt="Shared image"
+                    className="w-full h-full object-contain"
+                    loading="lazy"
+                  />
+                </div>
+              </Link>
             )}
           </div>
         </div>

@@ -13,7 +13,8 @@ const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4.1-nano";
 
 export async function* runAgentStream(
   userId: string,
-  messages: ChatCompletionMessageParam[]
+  messages: ChatCompletionMessageParam[],
+  aiMessageId: string
 ) {
   yield "__thinking__";
 
@@ -34,17 +35,23 @@ export async function* runAgentStream(
   const toolCall = choice?.message?.tool_calls?.[0];
 
   if (toolCall?.type === "function") {
-    yield "__calling_mcp__";
+    yield `__calling_${toolCall.function.name}_mcp__`;
 
     const args = JSON.parse(toolCall.function.arguments || "{}");
 
     let mcpResult;
     if (toolCall.function.name === "get_result") {
       mcpResult = await getResult(args.student_id, args.birthday);
-    } else if (toolCall.function.name === "get_university_notice") {
+    } else if (toolCall.function.name === "get_notice") {
       mcpResult = await getNotice(args.category);
     } else if (toolCall.function.name === "get_routine") {
-      mcpResult = await getRoutine(args.category, args.batch, args.section);
+      mcpResult = await getRoutine(
+        aiMessageId,
+        args.category,
+        args.department,
+        args.batch,
+        args.section
+      );
     } else {
       console.warn(`⚠️ Unknown tool called: ${toolCall.function.name}`);
       mcpResult = { error: `Unknown tool: ${toolCall.function.name}` };
