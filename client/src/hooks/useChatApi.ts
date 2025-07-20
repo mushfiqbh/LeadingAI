@@ -89,8 +89,18 @@ export const useChatApi = () => {
             continue;
           }
 
-          if (data === "__calling_mcp__") {
-            setStatusMessage("🔗 Calling MCP Server");
+          if (data === "__calling_get_result_mcp__") {
+            setStatusMessage("🔗 Fetching from LUS.AC.BD");
+            continue;
+          }
+
+          if (data === "__calling_get_notice_mcp__") {
+            setStatusMessage("🔗 Calling Notice MCP Server");
+            continue;
+          }
+
+          if (data === "__calling_get_routine_mcp__") {
+            setStatusMessage("🔗 Creating Your Routine");
             continue;
           }
 

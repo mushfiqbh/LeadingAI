@@ -32,13 +32,6 @@ const ContributePage = () => {
       description: "Text content you want to share",
       color: "from-blue-500 to-cyan-500",
     }
-    // {
-    //   name: "Update Bus Schedule",
-    //   link: "bus-schedule",
-    //   icon: Bus,
-    //   description: "Update image of bus schedule",
-    //   color: "from-blue-500 to-cyan-500",
-    // },
   ];
 
   return (

@@ -2,7 +2,7 @@ export interface RoutineMetadata {
   title: string;
   department: string;
   semester: string;
-  times: string[];
+  timeSlots: string[];
 }
 
 export interface Class {
@@ -40,14 +40,17 @@ export interface FlatSchedule {
   batch: string;
   section: string;
   content: string;
+  imageUrl?: string;
+  filename?: string;
 }
 
 // This file defines the types used in the application for routines, schedules, and metadata.
 export interface ClassRoutineData {
+  id?: string;
   title: string;
   department: string;
   semester: string;
-  times: string[];
+  timeSlots: string[];
   schedules: FlatSchedule[];
 }
 
@@ -56,6 +59,14 @@ export interface ExamRoutineData {
   title: string;
   department: string;
   semester: string;
-  times: string[];
+  timeSlots: string[];
   schedules: FlatSchedule[];
+}
+
+export interface RoutineOptions {
+  department: string;
+  semester: string;
+  batch: number;
+  section: string;
+  timeSlots: string[];
 }

@@ -95,7 +95,7 @@ export const createRoutine = async (
       title: "",
       department: "",
       semester: "",
-      times: [],
+      timeSlots: [],
       schedules: [],
     };
 
@@ -113,7 +113,7 @@ export const createRoutine = async (
       title: data.title,
       department: data.department,
       semester: data.semester,
-      times: data.times,
+      timeSlots: data.timeSlots,
       schedules: data.schedules,
     });
 

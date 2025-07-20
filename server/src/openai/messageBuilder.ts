@@ -4,7 +4,7 @@ interface MessageBuilderParams {
   text: string;
   conversationMessages: any[];
   image?: Express.Multer.File;
-  userProfile?: any;
+  userProfile: any | null;
 }
 
 export function buildMessagesWithContext({
@@ -17,15 +17,16 @@ export function buildMessagesWithContext({
   if (userProfile) {
     // Filter out excluded fields
     const excludedFields = [
-      "id",
       "uid",
-      "photourl",
+      "photoURL",
       "lastLogin",
       "lastUpdated",
       "createdAt",
       "updatedAt",
       "emailVerified",
       "isAdmin",
+      "totalCredits",
+      "usedCredits",
     ];
     const profileData = Object.entries(userProfile)
       .filter(([key]) => !excludedFields.includes(key))
@@ -53,9 +54,16 @@ export function buildMessagesWithContext({
     .filter((msg) => !(msg.role === "user" && msg.content.text === text));
 
   for (const msg of recentMessages) {
+    let content = msg.content.text;
+
+    // Truncate assistant messages to prevent excessive token usage
+    if (msg.role === "assistant" && content.length > 50) {
+      content = content.substring(0, 50) + "... [message truncated]";
+    }
+
     messages.push({
       role: msg.role === "user" ? "user" : "assistant",
-      content: msg.content.text,
+      content: content,
     });
   }
 

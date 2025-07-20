@@ -1,3 +1,6 @@
+import Image from "next/image";
+import FigJam from "./LeadingAIFigJam.webp";
+
 export default function Landing({
   setShowLanding,
 }: {
@@ -12,7 +15,7 @@ export default function Landing({
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-green-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
 
-        <div className="relative max-w-4xl mx-auto px-4 py-20 text-center">
+        <div className="relative max-w-4xl mx-auto min-h-[calc(100dvh-70px)] px-4 flex flex-col justify-center text-center">
           <div className="animate-fade-in">
             <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
               Leading AI
@@ -96,7 +99,7 @@ export default function Landing({
                 📅
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-3">
-                Class Routines
+                Routines Creation
               </h3>
               <p className="text-gray-600 text-sm leading-relaxed">
                 Generate personalized class schedules and exam routines based on
@@ -122,195 +125,25 @@ export default function Landing({
         </div>
       </div>
 
-      {/* Top Contributors Section */}
-      <div className="relative py-20 px-4 bg-gradient-to-r from-gray-50 to-blue-50">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 via-purple-100/20 to-indigo-100/20"></div>
-        <div className="relative max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Top Contributors
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Meet the amazing students who are helping build our academic
-              community by sharing valuable resources
-            </p>
-          </div>
-
-          {/* Contributors Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {/* Contributor 1 */}
-            <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                🏆 #1
-              </div>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                  AR
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800">
-                    Ahmed Rahman
-                  </h3>
-                  <p className="text-sm text-gray-600">CSE, Batch 2021</p>
-                </div>
-              </div>
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Notes Shared</span>
-                  <span className="font-semibold text-blue-600">47</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">
-                    Routines Updated
-                  </span>
-                  <span className="font-semibold text-green-600">12</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Notices Posted</span>
-                  <span className="font-semibold text-purple-600">8</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <span className="text-yellow-500">⭐</span>
-                  <span className="text-sm font-medium text-gray-700">
-                    4.9/5.0
-                  </span>
-                </div>
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs px-3 py-1 rounded-full">
-                  1,247 pts
-                </div>
-              </div>
-            </div>
-
-            {/* Contributor 2 */}
-            <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-gray-400 to-gray-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                🥈 #2
-              </div>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                  SK
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800">
-                    Sadia Khan
-                  </h3>
-                  <p className="text-sm text-gray-600">BBA, Batch 2020</p>
-                </div>
-              </div>
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Notes Shared</span>
-                  <span className="font-semibold text-blue-600">38</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">
-                    Routines Updated
-                  </span>
-                  <span className="font-semibold text-green-600">15</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Notices Posted</span>
-                  <span className="font-semibold text-purple-600">6</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <span className="text-yellow-500">⭐</span>
-                  <span className="text-sm font-medium text-gray-700">
-                    4.8/5.0
-                  </span>
-                </div>
-                <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs px-3 py-1 rounded-full">
-                  1,089 pts
-                </div>
-              </div>
-            </div>
-
-            {/* Contributor 3 */}
-            <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-400 to-red-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                🥉 #3
-              </div>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                  MH
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800">
-                    Mahir Hassan
-                  </h3>
-                  <p className="text-sm text-gray-600">EEE, Batch 2022</p>
-                </div>
-              </div>
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Notes Shared</span>
-                  <span className="font-semibold text-blue-600">32</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">
-                    Routines Updated
-                  </span>
-                  <span className="font-semibold text-green-600">9</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Notices Posted</span>
-                  <span className="font-semibold text-purple-600">11</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <span className="text-yellow-500">⭐</span>
-                  <span className="text-sm font-medium text-gray-700">
-                    4.7/5.0
-                  </span>
-                </div>
-                <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white text-xs px-3 py-1 rounded-full">
-                  967 pts
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Call to Action for Contributors */}
-          <div className="text-center">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-8 shadow-2xl">
-              <h3 className="text-2xl font-bold mb-4">
-                Want to be a Top Contributor?
-              </h3>
-              <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-                Share your knowledge, help fellow students, and climb the
-                leaderboard! Every contribution earns you points and
-                recognition.
-              </p>
-              <button
-                onClick={() => setShowLanding(false)}
-                className="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 shadow-lg"
-              >
-                <span>Start Contributing</span>
-                <svg
-                  className="ml-2 w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
+      <div className="relative py-10 px-4 bg-gradient-to-r from-gray-50 to-blue-50">
+        <div className="text-center mb-10">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            How It Works?
+          </h2>
+        </div>
+        <div className="flex flex-col items-center">
+          <Image
+            src={FigJam}
+            alt="How it works illustration"
+            width={800}
+            height={363}
+            className="h-auto"
+          />
         </div>
       </div>
 
       {/* CTA Section */}
-      <div className="relative py-20 px-4">
+      <div className="relative py-10 px-4">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-5"></div>
         <div className="relative max-w-4xl mx-auto text-center">
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border border-white/20">

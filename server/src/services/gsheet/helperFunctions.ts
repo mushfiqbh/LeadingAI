@@ -1,4 +1,5 @@
 import { Class, DailySchedule, RoutineMetadata } from "../../types/types";
+import refineDepartmentName from "../../utils/refineDepartmentName";
 
 /**
  * Fetches data from a public Google Sheet and parses it as a 2D array.
@@ -86,12 +87,12 @@ export const RowIdentifier = {
 /**
  * Parses a single schedule row into a structured DailySchedule object.
  * @param {any[]} row - A single row identified as a 'schedule' type.
- * @param {string[]} times - The array of time strings from the header.
+ * @param {string[]} timeSlots - The array of time strings from the header.
  * @returns {DailySchedule | null} A structured schedule object or null if parsing fails.
  */
 export const parseDailySchedule = (
   row: any[],
-  times: string[]
+  timeSlots: string[]
 ): DailySchedule | null => {
   try {
     const batch = String(row[1]);
@@ -99,10 +100,11 @@ export const parseDailySchedule = (
     const classes: Class[] = [];
     const courseCells = row.slice(3);
 
-    times.forEach((time, index) => {
-      const course = courseCells[index]
+    timeSlots.forEach((time, index) => {
+      const cellValue = courseCells[index]
         ? String(courseCells[index]).trim()
-        : null;
+        : "";
+      const course = cellValue.length >= 5 ? cellValue : null;
       if (course) {
         classes.push({ course, time, slot: index + 1 });
       }
@@ -116,7 +118,7 @@ export const parseDailySchedule = (
 };
 
 /**
- * Extracts metadata (title, department, times, etc.) from a sheet's raw data.
+ * Extracts metadata (title, department, timeSlots, etc.) from a sheet's raw data.
  * @param data The 2D array of a sheet's data.
  * @returns An object with the metadata, or null if not found.
  */
@@ -126,20 +128,21 @@ export const extractMetadata = (
   let title = "",
     department = "",
     semester = "",
-    times: string[] = [];
+    timeSlots: string[] = [];
 
   for (const row of data) {
-    if (RowIdentifier.isDepartment(row)) department = String(row[0]).trim();
+    if (RowIdentifier.isDepartment(row))
+      department = refineDepartmentName(String(row[0]).trim());
     else if (RowIdentifier.isHeader(row)) {
       title = String(row[0]).trim();
       const semesterAndDay = String(row[1]).split(" ");
       semester = semesterAndDay[0];
-      times = row.slice(4).map((time) => String(time).trim());
+      timeSlots = row.slice(4).map((time) => String(time).trim());
     }
   }
 
-  if (title && department && semester && times.length > 0) {
-    return { title, department, semester, times };
+  if (title && department && semester && timeSlots.length > 0) {
+    return { title, department, semester, timeSlots };
   }
   return null;
 };

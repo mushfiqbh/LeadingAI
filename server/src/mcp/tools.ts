@@ -28,7 +28,7 @@ export const tools: ChatCompletionTool[] = [
   {
     type: "function",
     function: {
-      name: "get_university_notice",
+      name: "get_notice",
       description:
         "Fetch recent university notices, bus schedules, announcements, updates, exam notices, holiday notifications, or any university information.",
       parameters: {
@@ -60,6 +60,10 @@ export const tools: ChatCompletionTool[] = [
               "Category of routine to retrieve, such as 'exam-routine' or 'class-routine'.",
             enum: ["exam-routine", "class-routine"],
           },
+          department: {
+            type: "string",
+            description: "The department for which to retrieve the routine.",
+          },
           batch: {
             type: "string",
             description: "The batch for which to retrieve the routine.",
@@ -70,7 +74,7 @@ export const tools: ChatCompletionTool[] = [
               "The section for which to retrieve the routine, required for class routines. Not required for exam routines.",
           },
         },
-        required: ["category", "batch"],
+        required: ["category", "department", "batch"],
       },
     },
   },

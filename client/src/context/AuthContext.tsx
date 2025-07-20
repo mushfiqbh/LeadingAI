@@ -12,6 +12,8 @@ type AuthContextType = {
   isEmailVerified: boolean;
   userProfile: UserProfile | null;
   setUserProfile: (profile: UserProfile | null) => void;
+  showManager: boolean;
+  setShowManager: (value: boolean) => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -19,9 +21,9 @@ export const AuthContext = createContext<AuthContextType>({
   loading: true,
   isEmailVerified: false,
   userProfile: null,
-  setUserProfile: () => {
-    throw new Error("setUserProfile function not implemented");
-  },
+  setUserProfile: () => {},
+  showManager: false,
+  setShowManager: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -29,6 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [showManager, setShowManager] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
@@ -100,6 +103,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isEmailVerified,
         userProfile,
         setUserProfile,
+        showManager,
+        setShowManager,
       }}
     >
       {children}
