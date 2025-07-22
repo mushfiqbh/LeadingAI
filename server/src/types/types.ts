@@ -11,19 +11,20 @@ export interface Class {
   slot: number;
 }
 
+// Required when parsing class schedules
 export interface DailySchedule {
   batch: string;
   section: string;
   classes: Class[];
 }
 
-export interface WeeklyDaySchedule {
+export interface ClassSchedule {
   day: string;
   classes: Class[];
 }
 
 export interface Exam {
-  subject: string;
+  course: string;
   weekday: string | null;
   time: string | null;
   date: string | null;
@@ -44,18 +45,8 @@ export interface FlatSchedule {
   filename?: string;
 }
 
-// This file defines the types used in the application for routines, schedules, and metadata.
-export interface ClassRoutineData {
+export interface RoutineData {
   id?: string;
-  title: string;
-  department: string;
-  semester: string;
-  timeSlots: string[];
-  schedules: FlatSchedule[];
-}
-
-// This interface is used to represent the data structure for exam routines.
-export interface ExamRoutineData {
   title: string;
   department: string;
   semester: string;

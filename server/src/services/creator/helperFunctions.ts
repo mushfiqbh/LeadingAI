@@ -6,7 +6,7 @@ export function wrapText(
   x: number,
   y: number,
   lineHeight: number,
-  font: string = "14px Arial"
+  font: string
 ): number {
   // Set the font before measuring text
   ctx.font = font;
@@ -14,6 +14,10 @@ export function wrapText(
   // Handle empty or null text
   if (!text || typeof text !== "string") {
     return y;
+  }
+
+  if (text === "WEDNESDAY") {
+    ctx.font = "bold 14px ArialBold";
   }
 
   // Split by spaces and write each part on a new line

@@ -15,7 +15,14 @@ export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { user, userProfile, loading, showManager, setShowManager } = useAuth();
+  const {
+    user,
+    userProfile,
+    loading,
+    showManager,
+    setShowManager,
+    setShowHistory,
+  } = useAuth();
   const router = useRouter();
   const { createConversationInFirebase, selectConversation } = useChatStore();
   const { prompt } = useToaster();
@@ -51,7 +58,10 @@ export default function Header() {
           const newConversationData = {
             title: title.trim(),
             participants: [user.uid],
-            lastMessage: null,
+            lastMessage: {
+              text: "",
+              senderId: "",
+            },
           };
 
           const conversationId = await createConversationInFirebase(
@@ -222,9 +232,12 @@ export default function Header() {
                         </button>
                       )}
 
-                      <Link
-                        href="/history"
-                        className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                      <button
+                        onClick={() => {
+                          router.push("/");
+                          setShowHistory(true);
+                        }}
+                        className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
                       >
                         <svg
                           className="w-4 h-4"
@@ -239,8 +252,8 @@ export default function Header() {
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                           />
                         </svg>
-                        <span className="font-medium">History</span>
-                      </Link>
+                        <span className="font-medium">Conversations</span>
+                      </button>
 
                       <Link
                         href="/report"

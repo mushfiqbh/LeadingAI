@@ -31,6 +31,23 @@ export const createConversationInFirebase = async (
   }
 };
 
+// Update a conversation in Firestore
+export const updateConversationInFirebase = async (
+  conversationId: string,
+  updates: Partial<Omit<Conversation, "id" | "createdAt" | "updatedAt">>
+): Promise<void> => {
+  try {
+    const conversationRef = doc(db, "conversations", conversationId);
+    await updateDoc(conversationRef, {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error("Error updating conversation:", error);
+    throw error;
+  }
+};
+
 // Add a message to Firestore
 export const addMessageToFirebase = async (
   message: Omit<Message, "id" | "timestamp">
@@ -44,14 +61,12 @@ export const addMessageToFirebase = async (
     const docRef = await addDoc(collection(db, "messages"), messageData);
 
     // Update the conversation's lastMessage and updatedAt
-    if (message.conversationId) {
+    if (message.conversationId && message.senderId) {
       await updateConversationLastMessage(message.conversationId, {
-        ...message,
-        id: docRef.id, // Use the actual Firebase-generated ID
-        timestamp: new Date(), // Use current date for the lastMessage
+        senderId: message.senderId,
+        text: message.content.text,
       });
     }
-
 
     return docRef.id;
   } catch (error) {
@@ -63,7 +78,10 @@ export const addMessageToFirebase = async (
 // Update conversation's last message and updatedAt
 export const updateConversationLastMessage = async (
   conversationId: string,
-  lastMessage: Message
+  lastMessage: {
+    senderId: string;
+    text: string;
+  }
 ): Promise<void> => {
   try {
     // Updating conversation with last message
@@ -72,7 +90,6 @@ export const updateConversationLastMessage = async (
       lastMessage,
       updatedAt: serverTimestamp(),
     });
-
   } catch (error) {
     console.error("Error updating conversation:", conversationId, error);
     throw error;
@@ -91,7 +108,6 @@ export const updateMessageInFirebase = async (
       content,
       updatedAt: serverTimestamp(),
     });
-
   } catch (error) {
     console.error("❌ Error updating message:", messageId, error);
     throw error;

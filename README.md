@@ -5,6 +5,7 @@ LeadingAI is a comprehensive AI-powered chat platform designed specifically for 
 ## 🚀 Key Features
 
 ### 💬 AI Chat Assistant
+
 - Real-time chat with intelligent AI assistant
 - Streaming responses for optimal user experience
 - OpenAI-compatible message formatting
@@ -12,24 +13,28 @@ LeadingAI is a comprehensive AI-powered chat platform designed specifically for 
 - Suggested prompts for quick interactions
 
 ### 👤 User Profile Management
+
 - Complete student profile with automatic saving
 - Birthdate field with intuitive date picker
 - Real-time profile sync with status indicators
 - Context-aware AI responses based on user profile
 
 ### � Academic Resources
+
 - Class routine and exam schedule integration
 - Bus schedule and notice board
 - PDF note uploads and sharing
 - Collaborative resource contribution system
 
 ### 🔐 Authentication & Security
+
 - Firebase Authentication integration
 - Email verification system
 - Secure user session management
 - Protected routes and API endpoints
 
 ### 📱 Modern UI/UX
+
 - Responsive design with glassmorphism effects
 - Gradient-based modern interface
 - Dark/light theme support
@@ -38,12 +43,14 @@ LeadingAI is a comprehensive AI-powered chat platform designed specifically for 
 ## 🛠️ Technical Stack
 
 ### Frontend
+
 - **Next.js 14** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Utility-first CSS framework
 - **Firebase Client SDK** - Real-time database and authentication
 
 ### Backend
+
 - **Express.js** - Node.js web framework
 - **TypeScript** - Server-side type safety
 - **Firebase Admin SDK** - Server-side Firebase operations
@@ -51,6 +58,7 @@ LeadingAI is a comprehensive AI-powered chat platform designed specifically for 
 - **Cloudinary** - Image upload and management
 
 ### Database & Storage
+
 - **Firestore** - NoSQL document database
 - **Firebase Storage** - File storage solution
 - **Cloudinary** - Image optimization and CDN
@@ -58,6 +66,7 @@ LeadingAI is a comprehensive AI-powered chat platform designed specifically for 
 ## 🎯 Core Functionalities
 
 ### Chat System
+
 - Real-time message synchronization
 - Image upload with background processing
 - Message history persistence
@@ -65,18 +74,21 @@ LeadingAI is a comprehensive AI-powered chat platform designed specifically for 
 - Typing indicators and status updates
 
 ### Profile Management
+
 - Auto-save functionality with debounce
 - Profile completion tracking
 - Academic information integration
 - Privacy-focused data handling
 
 ### Resource Sharing
+
 - Google Sheets integration for schedules
 - Multi-file PDF upload support
 - Image upload for notices and announcements
 - Community contribution tracking
 
 ### Analytics & Reporting
+
 - Chat interaction analytics
 - User engagement metrics
 - Performance monitoring
@@ -114,6 +126,7 @@ LeadingAI/
 ## 🎓 About LeadingAI
 
 LeadingAI is designed to enhance the academic experience at Leading University by providing:
+
 - Personalized AI assistance for academic queries
 - Centralized access to university resources
 - Collaborative platform for knowledge sharing
@@ -123,4 +136,4 @@ The platform leverages cutting-edge AI technology to understand student needs an
 
 ---
 
-*Empowering Leading University students with AI-driven academic assistance.*
+_Empowering Leading University students with AI-driven academic assistance._

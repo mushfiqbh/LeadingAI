@@ -21,7 +21,11 @@ export interface Conversation {
   id: string;
   title: string;
   participants: string[];
-  lastMessage: Message | null;
+  lastMessage: {
+    text: string;
+    senderId: string;
+  };
+  deleted?: boolean;
   createdAt: Date | Timestamp;
   updatedAt: Date | Timestamp;
 }

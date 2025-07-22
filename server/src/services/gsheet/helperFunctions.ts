@@ -96,15 +96,15 @@ export const parseDailySchedule = (
 ): DailySchedule | null => {
   try {
     const batch = String(row[1]);
-    const section = String(row[2]);
     const classes: Class[] = [];
+    const section = String(row[2]).toUpperCase().trim().replace("+", "");
     const courseCells = row.slice(3);
 
     timeSlots.forEach((time, index) => {
       const cellValue = courseCells[index]
         ? String(courseCells[index]).trim()
         : "";
-      const course = cellValue.length >= 5 ? cellValue : null;
+      const course = cellValue.length > 5 ? cellValue : null;
       if (course) {
         classes.push({ course, time, slot: index + 1 });
       }

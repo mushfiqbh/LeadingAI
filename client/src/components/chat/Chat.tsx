@@ -10,9 +10,10 @@ import { ChatInput } from "./ChatInput";
 import { MessageList } from "./MessageList";
 import { EmptyChat } from "./EmptyChat";
 import { useChatListeners } from "@/hooks/useChatListeners";
+import History from "../general/History";
 
 const Chat: React.FC = () => {
-  const { user } = useAuth();
+  const { user, showHistory } = useAuth();
   const { selectedConversationId, messages: storeMessages } = useChatStore();
 
   // TTFB testing - track message send timeSlots
@@ -91,6 +92,8 @@ const Chat: React.FC = () => {
           isLoading={isLoading || isStreaming}
         />
       </div>
+
+      {showHistory && <History />}
     </div>
   );
 };

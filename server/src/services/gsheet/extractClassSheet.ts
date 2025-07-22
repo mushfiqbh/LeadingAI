@@ -1,8 +1,8 @@
 import {
-  ClassRoutineData,
+  RoutineData,
   FlatSchedule,
   RoutineMetadata,
-  WeeklyDaySchedule,
+  ClassSchedule,
 } from "../../types/types";
 import {
   csvParser,
@@ -19,11 +19,11 @@ import {
  * Main execution function to fetch and parse routines for a full week,
  * directly creating a section-wise data structure.
  * @param {string} spreadsheetId - The ID of the Google Sheet.
- * @returns {Promise<ClassRoutineData | null>} A promise that resolves to the final routine data.
+ * @returns {Promise<RoutineData | null>} A promise that resolves to the final routine data.
  */
 export default async function extractClassRoutineSheet(
   spreadsheetId: string
-): Promise<ClassRoutineData | null> {
+): Promise<RoutineData | null> {
   const days = [
     "Sunday",
     "Monday",
@@ -34,7 +34,7 @@ export default async function extractClassRoutineSheet(
     "Saturday",
   ];
   let masterMetadata: RoutineMetadata | null = null;
-  const batchMap = new Map<string, Map<string, WeeklyDaySchedule[]>>();
+  const batchMap = new Map<string, Map<string, ClassSchedule[]>>();
 
   for (const day of days) {
     const parsedData = await csvParser(spreadsheetId, day);
@@ -67,7 +67,7 @@ export default async function extractClassRoutineSheet(
           const { batch, section, classes } = dailySchedule;
 
           if (!batchMap.has(batch))
-            batchMap.set(batch, new Map<string, WeeklyDaySchedule[]>());
+            batchMap.set(batch, new Map<string, ClassSchedule[]>());
           const sectionMap = batchMap.get(batch)!;
 
           if (!sectionMap.has(section)) sectionMap.set(section, []);

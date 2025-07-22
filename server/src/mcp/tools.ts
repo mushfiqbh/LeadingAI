@@ -62,11 +62,13 @@ export const tools: ChatCompletionTool[] = [
           },
           department: {
             type: "string",
-            description: "The department for which to retrieve the routine.",
+            description:
+              "The department for which to retrieve the routine.",
           },
           batch: {
-            type: "string",
-            description: "The batch for which to retrieve the routine.",
+            type: "number",
+            description:
+              "The batch for which to retrieve the routine.",
           },
           section: {
             type: "string",
