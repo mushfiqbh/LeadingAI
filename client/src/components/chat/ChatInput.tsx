@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Send, X, ImageUp } from "lucide-react";
+import { Send, X } from "lucide-react";
 import { ChatMessage } from "../../types/types";
 import { useAuth } from "@/context/AuthContext";
 
@@ -15,7 +15,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   isLoading,
 }) => {
-  const { userProfile, setShowManager } = useAuth();
+  const { userProfile, setShowManager, setShowHistory } = useAuth();
   const [input, setInput] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -32,6 +32,36 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     "What's the bus schedule",
     "Whats my CGPA",
   ]);
+
+  const SESSION_STORAGE_KEY = "chat-input-draft";
+
+  // Load saved input from session storage on component mount
+  useEffect(() => {
+    const savedInput = sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (savedInput && savedInput.trim() !== "") {
+      setInput(savedInput);
+      setShowSuggestions(false);
+      // Adjust textarea height after setting input
+      setTimeout(() => {
+        adjustTextareaHeight();
+      }, 0);
+    }
+  }, []);
+
+  // Save input to session storage whenever it changes
+  const handleInputChange = (value: string) => {
+    setInput(value);
+    setShowSuggestions(value.trim() === "");
+
+    // Save to session storage
+    if (value.trim() !== "") {
+      sessionStorage.setItem(SESSION_STORAGE_KEY, value);
+    } else {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
+    }
+
+    adjustTextareaHeight();
+  };
 
   const baseSuggestions = [
     "Check my results",
@@ -90,6 +120,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     setShowSuggestions(true);
     shuffleSuggestions();
 
+    // Remove draft from session storage after successful submission
+    sessionStorage.removeItem(SESSION_STORAGE_KEY);
+
     // Reset textarea height after clearing input
     setTimeout(() => {
       adjustTextareaHeight();
@@ -117,14 +150,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file));
-      textareaRef.current?.focus();
-    }
-  };
+  // const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     setImage(file);
+  //     setImagePreview(URL.createObjectURL(file));
+  //     textareaRef.current?.focus();
+  //   }
+  // };
 
   const removeImage = () => {
     setImage(null);
@@ -177,15 +210,24 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       {/* Input Form */}
       <form onSubmit={handleSubmit} className="flex items-center gap-3">
         {/* Image Upload Button */}
-        <label className="flex-shrink-0 group cursor-pointer">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="hidden"
-          />
+        <label
+          onClick={() => setShowHistory(true)}
+          className="flex-shrink-0 group cursor-pointer"
+        >
           <div className="p-3 text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 hover:text-blue-600 transition-all duration-200 border border-gray-200/50 group-hover:border-blue-300 shadow-sm hover:shadow-md">
-            <ImageUp className="w-5 h-5" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
           </div>
         </label>
 
@@ -194,11 +236,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           <textarea
             ref={textareaRef}
             value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              setShowSuggestions(e.target.value.trim() === "");
-              adjustTextareaHeight();
-            }}
+            onChange={(e) => handleInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Prompt here..."
             className="w-full px-4 py-3 text-gray-900 bg-white border-2 border-gray-200/50 rounded-xl scrollbar-hidden focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 resize-none min-h-[48px] max-h-[120px] placeholder-gray-400 shadow-sm hover:shadow-md transition-all duration-200"

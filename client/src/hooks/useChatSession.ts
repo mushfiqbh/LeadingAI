@@ -45,7 +45,10 @@ export const useChatSession = () => {
         // User has no conversation - create one
         const newConversationData = {
           participants: [user.uid],
-          lastMessage: null,
+          lastMessage: {
+            text: "",
+            senderId: "",
+          },
           title: "New Chat",
         };
 

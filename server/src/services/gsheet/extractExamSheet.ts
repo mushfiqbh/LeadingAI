@@ -1,15 +1,15 @@
-import { ExamRoutineData, ExamSchedule, FlatSchedule } from "../../types/types";
+import { RoutineData, ExamSchedule, FlatSchedule } from "../../types/types";
 import refineDepartmentName from "../../utils/refineDepartmentName";
 import { RowIdentifier, csvParser } from "./helperFunctions";
 
 /**
  * Parses raw table data and generates a single, merged JSON schedule in one pass.
  * @param {string} spreadsheetId - The ID of the Google Sheet.
- * @return {Promise<ExamRoutineData | null>} A promise that resolves to the final routine data.
+ * @return {Promise<RoutineData | null>} A promise that resolves to the final routine data.
  */
 export default async function extractExamRoutineSheet(
   spreadsheetId: string
-): Promise<ExamRoutineData | null> {
+): Promise<RoutineData | null> {
   const parsedData = await csvParser(spreadsheetId, "Sheet1");
 
   if (!parsedData || parsedData.length === 0) {
@@ -119,7 +119,7 @@ export default async function extractExamRoutineSheet(
         courseEntries.forEach((course, index) => {
           if (RowIdentifier.isCourseCode(course.trim())) {
             batchEntry.exams.push({
-              subject: course.trim().split(" ")[0],
+              course: course.trim().split(" ")[0],
               date: headers.dates[index] || null,
               time: headers.timeSlots[index] || null,
               weekday: headers.weekDays[index] || null,

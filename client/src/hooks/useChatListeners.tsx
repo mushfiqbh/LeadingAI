@@ -33,7 +33,9 @@ export function useChatListeners(userId: string) {
           ...doc.data(),
         })) as Conversation[];
 
-        setConversations(convos);
+        setConversations(
+          convos.filter((c): c is Conversation => c.deleted !== true)
+        );
       },
       (error) => {
         console.error("❌ Error fetching conversations:", error);

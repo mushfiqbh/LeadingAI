@@ -7,7 +7,7 @@ export async function getRoutine(
   aiMessageId: string,
   category: string,
   department: string,
-  batch: string,
+  batch: number,
   section?: string
 ): Promise<string> {
   try {
@@ -22,9 +22,22 @@ export async function getRoutine(
       return "Routine not found. Please contribute to add new routines.";
     }
 
-    const schedule = routine.schedules.find(
+    if (!department) {
+      return "Department is required to fetch the routine.";
+    }
+
+    if (!batch) {
+      return "Batch is required to fetch the routine.";
+    }
+
+    if (!section && category === "class-routine") {
+      return "Section is required for class routines.";
+    }
+
+    const schedule = routine?.schedules?.find(
       (s: FlatSchedule) =>
-        s.batch === batch && (section ? s.section.includes(section) : true)
+        s.batch === batch.toString() &&
+        (section ? s.section.includes(section.toUpperCase()) : true)
     );
 
     if (schedule) {

@@ -84,7 +84,7 @@ export default function RoutineUploadForm({
       if (onUploadSuccess) onUploadSuccess();
     } catch {
       setUploadStatus("error");
-      setErrorMessage("Error uploading routine");
+      setErrorMessage("Error uploading routine. Check correct Category and URL.");
     }
   };
 

@@ -1,8 +1,4 @@
-import {
-  ClassRoutineData,
-  FlatSchedule,
-  RoutineOptions,
-} from "../../types/types";
+import { RoutineData, FlatSchedule } from "../../types/types";
 import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 import { FirebaseAdminService } from "../firebaseAdmin";
 import classRoutineImageCreator from "./classRoutineImageCreator";
@@ -12,7 +8,7 @@ export default async function routineCreatorWorker(
   category: string,
   aiMessageId: string,
   schedule: FlatSchedule,
-  routine: ClassRoutineData
+  routine: RoutineData
 ) {
   try {
     const FILENAME = `${schedule.batch}${

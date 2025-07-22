@@ -62,7 +62,7 @@ export default function CreditsManager() {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h3 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {CREDITS_BALANCE > 0
                   ? `Credits Balance: ${CREDITS_BALANCE}`
                   : "No Credits Available"}
@@ -159,7 +159,7 @@ export default function CreditsManager() {
             >
               <div className="text-3xl">🎁</div>
               <div>
-                <h3 className="text-md font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                <h3 className="text-lg font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                   Get 3200 Credits FREE
                 </h3>
               </div>

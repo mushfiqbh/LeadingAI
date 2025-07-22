@@ -7,7 +7,7 @@ export default function ContributeLayout({
 }) {
   return (
     <ProtectedRoute>
-      <div className="w-full min-h-[calc(100dvh-70px)] mt-[70px]">
+      <div className="w-full min-h-[calc(100dvh-40px)] mt-[70px]">
         {children}
 
         {/* Help Section */}

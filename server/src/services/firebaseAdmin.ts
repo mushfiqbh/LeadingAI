@@ -1,6 +1,6 @@
 import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { ClassRoutineData, FlatSchedule } from "../types/types";
+import { RoutineData, FlatSchedule } from "../types/types";
 
 // Initialize Firebase Admin SDK
 let isFirebaseInitialized = false;
@@ -312,7 +312,7 @@ export class FirebaseAdminService {
   static async getRoutineByCategory(
     category: string,
     department: string
-  ): Promise<ClassRoutineData | null> {
+  ): Promise<RoutineData | null> {
     try {
       const now = new Date().toISOString();
 
@@ -334,11 +334,20 @@ export class FirebaseAdminService {
       const doc = snapshot.docs[0];
       return {
         id: doc.id,
-        ...(doc.data() as ClassRoutineData),
-      };
+        ...doc.data(),
+      } as RoutineData;
     } catch (error) {
       console.error("💥 Error getting routines by category:", error);
       return null;
+    }
+  }
+
+  static async deleteRoutine(routineId: string): Promise<void> {
+    try {
+      await adminDb.collection("routines").doc(routineId).delete();
+    } catch (error) {
+      console.error("💥 Error deleting routine:", error);
+      throw error;
     }
   }
 }

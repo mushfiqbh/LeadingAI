@@ -111,6 +111,7 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({
       onButtonClick: () => {
         if (onConfirm) {
           onConfirm();
+          clearAllToasts();
         }
       },
       onCancel: options?.onCancel || (() => {}),

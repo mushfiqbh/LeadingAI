@@ -14,6 +14,8 @@ type AuthContextType = {
   setUserProfile: (profile: UserProfile | null) => void;
   showManager: boolean;
   setShowManager: (value: boolean) => void;
+  showHistory: boolean;
+  setShowHistory: (value: boolean) => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -24,6 +26,8 @@ export const AuthContext = createContext<AuthContextType>({
   setUserProfile: () => {},
   showManager: false,
   setShowManager: () => {},
+  showHistory: false,
+  setShowHistory: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -32,6 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [showManager, setShowManager] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
@@ -105,6 +110,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUserProfile,
         showManager,
         setShowManager,
+        showHistory,
+        setShowHistory,
       }}
     >
       {children}

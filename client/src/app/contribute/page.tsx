@@ -31,7 +31,7 @@ const ContributePage = () => {
       icon: Text,
       description: "Text content you want to share",
       color: "from-blue-500 to-cyan-500",
-    }
+    },
   ];
 
   return (
@@ -103,146 +103,93 @@ const ContributePage = () => {
 
             {/* Contributors Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              {/* Contributor 1 */}
-              <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                  🏆 #1
-                </div>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                    AR
+              {[
+                {
+                  name: "Farhan M.",
+                  role: "CSE, Batch 62",
+                  contributions: {
+                    notesShared: 47,
+                    routinesUpdated: 12,
+                    noticesPosted: 8,
+                  },
+                  rating: 4.9,
+                  points: 1247,
+                },
+                {
+                  name: "Ahmed R.",
+                  role: "CSE, Batch 62",
+                  contributions: {
+                    notesShared: 35,
+                    routinesUpdated: 10,
+                    noticesPosted: 5,
+                  },
+                  rating: 4.8,
+                  points: 1100,
+                },
+                {
+                  name: "Fatema S.",
+                  role: "CSE, Batch 62",
+                  contributions: {
+                    notesShared: 30,
+                    routinesUpdated: 8,
+                    noticesPosted: 6,
+                  },
+                  rating: 4.7,
+                  points: 1020,
+                },
+              ].map((contributor, index) => (
+                <div
+                  key={index}
+                  className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+                >
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                      {contributor.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-800">
+                        {contributor.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {contributor.role}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-800">
-                      Ahmed Rahman
-                    </h3>
-                    <p className="text-sm text-gray-600">CSE, Batch 2021</p>
-                  </div>
-                </div>
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Notes Shared</span>
-                    <span className="font-semibold text-blue-600">47</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
-                      Routines Updated
-                    </span>
-                    <span className="font-semibold text-green-600">12</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
-                      Notices Posted
-                    </span>
-                    <span className="font-semibold text-purple-600">8</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <span className="text-yellow-500">⭐</span>
-                    <span className="text-sm font-medium text-gray-700">
-                      4.9/5.0
-                    </span>
-                  </div>
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs px-3 py-1 rounded-full">
-                    1,247 pts
-                  </div>
-                </div>
-              </div>
 
-              {/* Contributor 2 */}
-              <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                <div className="absolute top-4 right-4 bg-gradient-to-r from-gray-400 to-gray-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                  🥈 #2
-                </div>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                    SK
+                  <div className="space-y-2 mb-6">
+                    {Object.entries(contributor.contributions).map(
+                      ([key, value]) => (
+                        <div
+                          key={key}
+                          className="flex justify-between items-center"
+                        >
+                          <span className="text-sm text-gray-600 capitalize">
+                            {key.replace(/([A-Z])/g, " $1")}
+                          </span>
+                          <span className="font-semibold text-blue-600">
+                            {value}
+                          </span>
+                        </div>
+                      )
+                    )}
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-800">
-                      Sadia Khan
-                    </h3>
-                    <p className="text-sm text-gray-600">BBA, Batch 2020</p>
-                  </div>
-                </div>
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Notes Shared</span>
-                    <span className="font-semibold text-blue-600">38</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
-                      Routines Updated
-                    </span>
-                    <span className="font-semibold text-green-600">15</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
-                      Notices Posted
-                    </span>
-                    <span className="font-semibold text-purple-600">6</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <span className="text-yellow-500">⭐</span>
-                    <span className="text-sm font-medium text-gray-700">
-                      4.8/5.0
-                    </span>
-                  </div>
-                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs px-3 py-1 rounded-full">
-                    1,089 pts
-                  </div>
-                </div>
-              </div>
 
-              {/* Contributor 3 */}
-              <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                <div className="absolute top-4 right-4 bg-gradient-to-r from-orange-400 to-red-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                  🥉 #3
-                </div>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                    MH
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-800">
-                      Mahir Hassan
-                    </h3>
-                    <p className="text-sm text-gray-600">EEE, Batch 2022</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      <span className="text-yellow-500">⭐</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        {contributor.rating}/5.0
+                      </span>
+                    </div>
+                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs px-3 py-1 rounded-full">
+                      {contributor.points} pts
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Notes Shared</span>
-                    <span className="font-semibold text-blue-600">32</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
-                      Routines Updated
-                    </span>
-                    <span className="font-semibold text-green-600">9</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
-                      Notices Posted
-                    </span>
-                    <span className="font-semibold text-purple-600">11</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1">
-                    <span className="text-yellow-500">⭐</span>
-                    <span className="text-sm font-medium text-gray-700">
-                      4.7/5.0
-                    </span>
-                  </div>
-                  <div className="bg-gradient-to-r from-purple-500 to-pink-600 text-white text-xs px-3 py-1 rounded-full">
-                    967 pts
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>

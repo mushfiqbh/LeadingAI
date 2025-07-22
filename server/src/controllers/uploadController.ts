@@ -1,4 +1,4 @@
-import { ExamRoutineData, ClassRoutineData } from "./../types/types";
+import { RoutineData } from "./../types/types";
 import { Request, Response } from "express";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
@@ -91,7 +91,7 @@ export const createRoutine = async (
     }
     const spreadsheetId = match[1];
 
-    let data: ExamRoutineData | ClassRoutineData | null = {
+    let data: RoutineData | null = {
       title: "",
       department: "",
       semester: "",
@@ -105,8 +105,19 @@ export const createRoutine = async (
       data = await extractExamRoutineSheet(spreadsheetId);
     }
 
-    if (!data) {
-      throw new Error("No data found in the Google Sheet");
+    if (
+      !data ||
+      !data.title ||
+      !data.department ||
+      !data.semester ||
+      data.schedules.length === 0
+    ) {
+      await FirebaseAdminService.deleteRoutine(routineId);
+
+      res
+        .status(400)
+        .json({ error: "Invalid routine data extracted from sheet" });
+      return;
     }
 
     await FirebaseAdminService.updateRoutine(routineId, {
