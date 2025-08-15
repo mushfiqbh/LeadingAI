@@ -104,6 +104,16 @@ export const useChatApi = () => {
             continue;
           }
 
+          if (data === "__calling_set_routine_mcp__") {
+            setStatusMessage("🔗 Storing New Routine");
+            continue;
+          }
+
+          if (data === "__calling_get_links_mcp__") {
+            setStatusMessage("🔗 Fetching Google Drive Links");
+            continue;
+          }
+
           // Clear status message when we start receiving actual content
           if (statusMessage && statusMessage !== "") {
             setStatusMessage("");

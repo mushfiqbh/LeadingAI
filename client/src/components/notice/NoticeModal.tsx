@@ -69,17 +69,6 @@ export default function NoticeModal({
             </div>
           </div>
 
-          {notice.information && (
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-bold text-lg text-center text-teal-600 mb-3">
-                Transcribed Information by AI
-              </h4>
-              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                {notice.information}
-              </p>
-            </div>
-          )}
-
           {userProfile?.isAdmin && (
             <div className="text-center pt-4 border-t border-gray-200">
               <button
@@ -96,8 +85,19 @@ export default function NoticeModal({
                 }}
                 className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
               >
-                🗑️ Delete Notice (Admin)
+                🗑️ Delete This Notice
               </button>
+            </div>
+          )}
+
+          {notice.information && (
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-bold text-lg text-center text-teal-600 mb-3">
+                Transcribed Information by AI
+              </h4>
+              <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                {notice.information}
+              </p>
             </div>
           )}
         </div>

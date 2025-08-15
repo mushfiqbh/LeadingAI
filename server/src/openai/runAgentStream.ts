@@ -2,9 +2,10 @@ import openaiClient from "./openaiClient";
 import { tools } from "../mcp/tools";
 import { ChatCompletionMessageParam } from "openai/resources/index";
 import { getResult } from "../mcp/resultMCP";
-import { getUnifiedSystemPrompt } from "./systemPrompt";
+import { getUnifiedSystemPrompt, getNoticeSystemPrompt } from "./systemPrompt";
 import { getNotice } from "../mcp/noticeMCP";
-import { getRoutine } from "../mcp/routineMCP";
+import { getRoutine, setRoutine } from "../mcp/routineMCP";
+import { getLinks } from "../mcp/driveMCP";
 import { countTokens } from "../utils/countTokens";
 import { TiktokenModel } from "tiktoken";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
@@ -43,15 +44,16 @@ export async function* runAgentStream(
     if (toolCall.function.name === "get_result") {
       mcpResult = await getResult(args.student_id, args.birthday);
     } else if (toolCall.function.name === "get_notice") {
-      mcpResult = await getNotice(args.category);
+      mcpResult = await getNotice();
+      if (mcpResult) {
+        systemPrompt.content += "\n\n" + getNoticeSystemPrompt();
+      }
     } else if (toolCall.function.name === "get_routine") {
-      mcpResult = await getRoutine(
-        aiMessageId,
-        args.category,
-        args.department,
-        args.batch,
-        args.section
-      );
+      mcpResult = await getRoutine(aiMessageId, args);
+    } else if (toolCall.function.name === "set_routine") {
+      mcpResult = await setRoutine(userId, args.sheet_url, args.category);
+    } else if (toolCall.function.name === "get_links") {
+      mcpResult = await getLinks();
     } else {
       console.warn(`⚠️ Unknown tool called: ${toolCall.function.name}`);
       mcpResult = { error: `Unknown tool: ${toolCall.function.name}` };

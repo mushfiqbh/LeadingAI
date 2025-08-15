@@ -26,10 +26,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     "Latest notice",
     "Create class routine",
     "Create exam routine",
-    "Find notes or PDFs",
+    "Google drive pdf",
     "What can you do",
     "Any upcoming events",
-    "What's the bus schedule",
     "Whats my CGPA",
   ]);
 
@@ -69,10 +68,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     "Latest notice",
     "Create class routine",
     "Create exam routine",
-    "Find notes or PDFs",
+    "Google drive pdf",
     "What can you do",
     "Any upcoming events",
-    "What's the bus schedule",
   ];
 
   // Shuffle function to randomize suggestions

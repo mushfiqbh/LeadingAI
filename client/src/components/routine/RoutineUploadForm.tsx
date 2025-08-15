@@ -19,6 +19,7 @@ export default function RoutineUploadForm({
   const { user } = useAuth();
   const [sheetUrl, setSheetUrl] = useState("");
   const [expirationOption, setExpirationOption] = useState<string>("");
+  const [expirationCount, setExpirationCount] = useState<number>(1);
   const [category, setCategory] = useState<
     "class-routine" | "exam-routine" | "unset"
   >("unset");
@@ -55,7 +56,7 @@ export default function RoutineUploadForm({
         uid: user?.uid || "Anonymous",
         name: user?.displayName || "Anonymous",
       },
-      expiryDate: calculateExpirationDate(expirationOption),
+      expiryDate: calculateExpirationDate(expirationCount, expirationOption),
     });
 
     try {
@@ -84,7 +85,9 @@ export default function RoutineUploadForm({
       if (onUploadSuccess) onUploadSuccess();
     } catch {
       setUploadStatus("error");
-      setErrorMessage("Error uploading routine. Check correct Category and URL.");
+      setErrorMessage(
+        "Error uploading routine. Check correct Category and URL."
+      );
     }
   };
 
@@ -118,17 +121,21 @@ export default function RoutineUploadForm({
               uploadStatus === "loading" ? "opacity-50" : ""
             }`}
           />
-          <Link className={`absolute left-3 top-3.5 w-4 h-4 ${
-            uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
-          }`} />
+          <Link
+            className={`absolute left-3 top-3.5 w-4 h-4 ${
+              uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
+            }`}
+          />
         </div>
 
         <label className="block text-sm font-medium text-gray-700">
           Select Category <span className="text-red-500">*</span>
         </label>
-        <div className={`flex gap-4 mb-4 transition-opacity duration-200 ${
-          uploadStatus === "loading" ? "opacity-50" : "opacity-100"
-        }`}>
+        <div
+          className={`flex gap-4 mb-4 transition-opacity duration-200 ${
+            uploadStatus === "loading" ? "opacity-50" : "opacity-100"
+          }`}
+        >
           {[
             {
               value: "class-routine",
@@ -170,54 +177,71 @@ export default function RoutineUploadForm({
           }`}
         >
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Expiration Period <span className="text-red-500">*</span>
+            Routine Expiration Period <span className="text-red-500">*</span>
           </label>
 
-          <div className="relative">
-            <Calendar
-              className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
+          <div className="flex items-center gap-2 mb-2">
+            <input
+              type="number"
+              min={1}
+              value={expirationCount}
+              onChange={(e) => setExpirationCount(Number(e.target.value))}
+              className={`w-20 border-2 border-gray-200/50 rounded-md px-3 py-2 text-gray-900 ${
+                uploadStatus === "loading"
+                  ? "cursor-not-allowed bg-gray-50"
+                  : ""
               }`}
-            />
-            <ChevronDown
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
-              }`}
-            />
-            <select
-              value={expirationOption}
-              onChange={(e) => setExpirationOption(e.target.value)}
               disabled={uploadStatus === "loading"}
-              className={`w-full pl-10 pr-10 py-3 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors appearance-none bg-white disabled:opacity-50 ${
-                expirationOption === ""
-                  ? "border-red-300 text-gray-500"
-                  : "border-gray-300 text-gray-900"
-              }`}
-            >
-              {expirationOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  className="text-gray-900"
-                >
-                  {option.label}
+              placeholder="1"
+            />
+
+            <div className="relative">
+              <ChevronDown
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                  uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
+                }`}
+              />
+              <select
+                value={expirationOption}
+                onChange={(e) => setExpirationOption(e.target.value)}
+                className={`w-full border-2 border-gray-200/50 rounded-md p-2 text-gray-900 appearance-none ${
+                  uploadStatus === "loading"
+                    ? "cursor-not-allowed bg-gray-50"
+                    : "bg-white"
+                }`}
+                disabled={uploadStatus === "loading"}
+              >
+                <option value="" disabled>
+                  Select expiration period
                 </option>
-              ))}
-            </select>
+                {expirationOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {expirationOption === "" && (
             <p className="text-xs text-red-500 mt-1">
-              Please select an expiration period for the routine
+              Please select an expiration period for the routine.
             </p>
           )}
 
           {expirationOption && (
             <p className="text-xs text-green-600 mt-1">
               Routine will expire on:{" "}
-              {new Date(
-                calculateExpirationDate(expirationOption)
-              ).toLocaleDateString()}
+              {
+                new Date(
+                  calculateExpirationDate(
+                    expirationCount,
+                    expirationOption
+                  ).valueOf()
+                )
+                  .toString()
+                  .split("00")[0]
+              }
             </p>
           )}
         </div>
@@ -231,7 +255,7 @@ export default function RoutineUploadForm({
           {uploadStatus === "loading" && (
             <Loader2 className="w-4 h-4 animate-spin" />
           )}
-          {uploadStatus === "loading" ? "Uploading..." : "Submit Routine"}
+          {uploadStatus === "loading" ? "Processing..." : "Submit Routine"}
         </button>
       </div>
     </div>

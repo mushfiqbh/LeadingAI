@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Bell, Upload, X, Calendar, ChevronDown } from "lucide-react";
+import { Bell, Upload, X, ChevronDown } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
   expirationOptions,
@@ -19,17 +19,23 @@ export default function NoticeUploadForm({
   const { user } = useAuth();
   const [noticeImage, setNoticeImage] = useState<File | null>(null);
   const [expirationOption, setExpirationOption] = useState<string>("");
+  const [expirationCount, setExpirationCount] = useState<number>(1);
   const [uploadStatus, setUploadStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const isFormValid = () => {
-    return user && noticeImage && expirationOption !== "";
+    return (
+      user &&
+      noticeImage &&
+      expirationOption &&
+      noticeImage.type.startsWith("image/") // Ensure it's an image file
+    );
   };
 
   const handleFileUpload = async () => {
-    if (!user || !noticeImage || !expirationOption) {
+    if (!user || !noticeImage || !expirationOption || expirationCount <= 0) {
       setErrorMessage(
         "Please select an image, expiration option, and ensure you are logged in."
       );
@@ -41,11 +47,12 @@ export default function NoticeUploadForm({
 
     const formData = new FormData();
     formData.append("image", noticeImage);
-    formData.append("category", "general");
-    formData.append("status", "pending");
     formData.append("userId", user?.uid);
     formData.append("userName", user?.displayName || "Anonymous");
-    formData.append("expiryDate", calculateExpirationDate(expirationOption));
+    formData.append(
+      "expiryDate",
+      calculateExpirationDate(expirationCount, expirationOption)
+    );
 
     try {
       const response = await fetch(
@@ -97,7 +104,9 @@ export default function NoticeUploadForm({
           <h3 className="text-xl font-semibold text-gray-800">
             Upload University Notice
           </h3>
-          <p className="text-sm text-gray-600">AI uses this to generate responses</p>
+          <p className="text-sm text-gray-600">
+            AI uses this to generate responses
+          </p>
         </div>
       </div>
 
@@ -177,37 +186,47 @@ export default function NoticeUploadForm({
             Notice Expiration Period <span className="text-red-500">*</span>
           </label>
 
-          <div className="relative">
-            <Calendar
-              className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
+          <div className="flex items-center gap-2 mb-2">
+            <input
+              type="number"
+              min={1}
+              value={expirationCount}
+              onChange={(e) => setExpirationCount(Number(e.target.value))}
+              className={`w-20 border-2 border-gray-200/50 rounded-md px-3 py-2 text-gray-900 ${
+                uploadStatus === "loading"
+                  ? "cursor-not-allowed bg-gray-50"
+                  : ""
               }`}
-            />
-            <ChevronDown
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
-              }`}
-            />
-            <select
-              value={expirationOption}
-              onChange={(e) => setExpirationOption(e.target.value)}
               disabled={uploadStatus === "loading"}
-              className={`w-full pl-10 pr-10 py-3 border rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors appearance-none bg-white disabled:opacity-50 disabled:cursor-not-allowed ${
-                expirationOption === ""
-                  ? "border-red-300 text-gray-500"
-                  : "border-gray-300 text-gray-900"
-              }`}
-            >
-              {expirationOptions.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  className="text-gray-900"
-                >
-                  {option.label}
+              placeholder="1"
+            />
+
+            <div className="relative">
+              <ChevronDown
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                  uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
+                }`}
+              />
+              <select
+                value={expirationOption}
+                onChange={(e) => setExpirationOption(e.target.value)}
+                className={`w-full border-2 border-gray-200/50 rounded-md p-2 text-gray-900 appearance-none ${
+                  uploadStatus === "loading"
+                    ? "cursor-not-allowed bg-gray-50"
+                    : "bg-white"
+                }`}
+                disabled={uploadStatus === "loading"}
+              >
+                <option value="" disabled>
+                  Select expiration period
                 </option>
-              ))}
-            </select>
+                {expirationOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {expirationOption === "" && (
@@ -219,9 +238,16 @@ export default function NoticeUploadForm({
           {expirationOption && (
             <p className="text-xs text-green-600 mt-1">
               Notice will expire on:{" "}
-              {new Date(
-                calculateExpirationDate(expirationOption)
-              ).toLocaleDateString()}
+              {
+                new Date(
+                  calculateExpirationDate(
+                    expirationCount,
+                    expirationOption
+                  ).valueOf()
+                )
+                  .toString()
+                  .split("00")[0]
+              }
             </p>
           )}
         </div>
@@ -234,7 +260,7 @@ export default function NoticeUploadForm({
           {uploadStatus === "loading" ? (
             <div className="flex items-center justify-center gap-2">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Uploading Notice...
+              Processing...
             </div>
           ) : (
             "Submit Notice"

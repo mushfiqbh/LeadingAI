@@ -15,6 +15,10 @@ export default function Page() {
   const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
+    fetch(
+      "https://leadingai-fcfebbhfhfeybbej.centralindia-01.azurewebsites.net"
+    );
+
     if (user && !isEmailVerified && !loading) {
       setShowVerifyEmail(true);
     } else {

@@ -99,7 +99,7 @@ export default function Header() {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                Leading AI
+                Prime AI
               </h1>
 
               {loading ? (
@@ -273,26 +273,6 @@ export default function Header() {
                           />
                         </svg>
                         <span className="font-medium">Report / Feedback</span>
-                      </Link>
-
-                      <Link
-                        href="/developer"
-                        className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                          />
-                        </svg>
-                        <span className="font-medium">Developer</span>
                       </Link>
                     </div>
 

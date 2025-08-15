@@ -18,7 +18,7 @@ export default function ClassRoutinePage() {
   const initialLoadRef = useRef(false);
   const loadingRef = useRef(false);
   
-  const ROUTINES_PER_PAGE = 1;
+  const ROUTINES_PER_PAGE = 3;
 
   const fetchRoutines = useCallback(
     async (reset: boolean = false) => {

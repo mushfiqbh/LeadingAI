@@ -55,7 +55,6 @@ export interface UserProfile {
 export interface Notice {
   id: string;
   title: string;
-  category: "bus-schedule" | "general";
   imageUrl: string;
   information: string;
   contributor: {
@@ -82,4 +81,12 @@ export interface Routine {
   expiryDate: string | null;
   createdAt?: Date | Timestamp;
   updatedAt?: Date | Timestamp;
+}
+
+export interface Link {
+  id: string;
+  title: string;
+  description?: string;
+  url: string;
+  createdAt?: Date | Timestamp;
 }

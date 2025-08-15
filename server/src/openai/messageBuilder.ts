@@ -7,6 +7,22 @@ interface MessageBuilderParams {
   userProfile: any | null;
 }
 
+function currentContext() {
+  const now = new Date();
+  const today = now.toISOString().split("T")[0]; // YYYY-MM-DD
+  const weekday = now.toLocaleDateString("en-US", { weekday: "long" });
+  const currentTime = now.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  return ` ### Current Context
+  - **Date:** ${weekday}, ${today}
+  - **Time:** ${currentTime}
+  `;
+}
+
 export function buildMessagesWithContext({
   text,
   conversationMessages,
@@ -69,7 +85,7 @@ export function buildMessagesWithContext({
 
   const userMessage: ChatCompletionMessageParam = {
     role: "user",
-    content: text,
+    content: text + currentContext(),
   };
 
   if (image) {

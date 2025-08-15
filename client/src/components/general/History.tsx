@@ -102,7 +102,7 @@ export default function History() {
       {/* Sidebar */}
       <div
         ref={historyRef}
-        className="w-full max-w-md bg-white shadow-2xl h-full overflow-hidden flex flex-col animate-in slide-in-from-left duration-300"
+        className="w-5/6 max-w-md bg-white shadow-2xl h-full overflow-hidden flex flex-col animate-in slide-in-from-left duration-300"
       >
         {/* Header */}
         <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 to-purple-600 text-white">

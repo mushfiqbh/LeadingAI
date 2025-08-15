@@ -1,16 +1,22 @@
 import routineCreatorWorker from "../services/creator/routineCreatorWorker";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
-import { FlatSchedule } from "../types/types";
+import extractClassRoutineSheet from "../services/gsheet/extractClassSheet";
+import extractExamRoutineSheet from "../services/gsheet/extractExamSheet";
+import { FlatSchedule, RoutineData } from "../types/types";
 import refineDepartmentName from "../utils/refineDepartmentName";
 
 export async function getRoutine(
   aiMessageId: string,
-  category: string,
-  department: string,
-  batch: number,
-  section?: string
+  args: {
+    category: string;
+    department: string;
+    batch: string;
+    section?: string;
+  }
 ): Promise<string> {
   try {
+    const { category, department, batch, section } = args;
+
     const refinedDept = refineDepartmentName(department);
 
     const routine = await FirebaseAdminService.getRoutineByCategory(
@@ -37,7 +43,9 @@ export async function getRoutine(
     const schedule = routine?.schedules?.find(
       (s: FlatSchedule) =>
         s.batch === batch.toString() &&
-        (section ? s.section.includes(section.toUpperCase()) : true)
+        (category === "class-routine" && section
+          ? s.section.includes(section.toUpperCase())
+          : true)
     );
 
     if (schedule) {
@@ -52,3 +60,56 @@ export async function getRoutine(
     return "Error fetching routine data.";
   }
 }
+
+export const setRoutine = async (
+  userId: string,
+  sheetUrl: string,
+  category: string
+) => {
+  try {
+    if (!sheetUrl) {
+      throw new Error("Sheet URL is required");
+    }
+
+    // Extract the spreadsheet ID from the URL
+    const regex = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/;
+    const match = sheetUrl.match(regex);
+    if (!match) {
+      throw new Error("Invalid Google Sheets URL");
+    }
+    const spreadsheetId = match[1];
+
+    let data: RoutineData | null = {
+      title: "",
+      department: "",
+      semester: "",
+      timeSlots: [],
+      schedules: [],
+    };
+
+    if (category === "class-routine") {
+      data = await extractClassRoutineSheet(spreadsheetId);
+    } else if (category === "exam-routine") {
+      data = await extractExamRoutineSheet(spreadsheetId);
+    }
+
+    if (!data) {
+      return "Error extracting routine data";
+    }
+
+    await FirebaseAdminService.createRoutine(userId, {
+      title: data.title,
+      department: data.department,
+      semester: data.semester,
+      timeSlots: data.timeSlots,
+      schedules: data.schedules,
+      sheetUrl: sheetUrl,
+      category,
+      expiryDate: new Date("2099-12-31").toISOString(),
+    });
+
+    return "Routine created successfully";
+  } catch {
+    return "Error creating routine";
+  }
+};
