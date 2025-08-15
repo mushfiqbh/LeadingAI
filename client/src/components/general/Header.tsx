@@ -99,7 +99,7 @@ export default function Header() {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                Prime AI
+                Leading AI
               </h1>
 
               {loading ? (
