@@ -2,7 +2,11 @@
 
 LeadingAI is a comprehensive AI-powered chat platform designed specifically for Leading University students. Built with Next.js, Express.js, and Firebase, it provides real-time AI assistance, academic resources, and collaborative features tailored to university life.
 
+![SystemDesignFlow](https://github.com/mushfiqbh/LeadingAI/blob/main/LeadingAIFigJam.webp)
+
 ## 🚀 Key Features
+
+![ChatScreenshot](https://github.com/mushfiqbh/LeadingAI/blob/main/LeadingAIChat.webp)
 
 ### 💬 AI Chat Assistant
 
