@@ -20,7 +20,7 @@ export default function NoticesForm() {
   const initialLoadRef = useRef(false);
   const loadingRef = useRef(false);
 
-  const NOTICES_PER_PAGE = 1;
+  const NOTICES_PER_PAGE = 3;
 
   const fetchNotices = useCallback(
     async (reset: boolean = false) => {

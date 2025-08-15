@@ -17,7 +17,7 @@ export const createNotice = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { category, expiryDate, userId, userName } = req.body;
+  const { expiryDate, userId, userName } = req.body;
   const image = req.file as Express.Multer.File | undefined;
 
   try {
@@ -45,7 +45,6 @@ export const createNotice = async (
 
       // Create the notice object
       const noticeData: any = {
-        category: category || "general",
         title,
         imageUrl,
         information,

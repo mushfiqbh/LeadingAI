@@ -46,14 +46,29 @@ export default function NoticeList({
               {notice.title || "University Notice"}
             </h5>
             <div className="flex flex-wrap gap-2 items-center mb-1">
-              <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
+              <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">
                 By {notice.contributor?.name || "Anonymous"}
               </span>
-              {notice.expiryDate && (
-                <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                  Expires: {new Date(notice.expiryDate).toLocaleDateString()}
-                </span>
-              )}
+              {notice.expiryDate &&
+                (() => {
+                  const expiry = new Date(notice.expiryDate.valueOf());
+                  const now = new Date();
+
+                  expiry.setHours(0, 0, 0, 0);
+                  now.setHours(0, 0, 0, 0);
+
+                  const isExpired = expiry < now;
+
+                  return isExpired ? (
+                    <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">
+                      Expired
+                    </span>
+                  ) : (
+                    <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
+                      Expires: {expiry.toString().split("00")[0]}
+                    </span>
+                  );
+                })()}
             </div>
           </div>
         </li>

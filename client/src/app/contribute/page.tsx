@@ -19,10 +19,10 @@ const ContributePage = () => {
       color: "from-orange-500 to-yellow-500",
     },
     {
-      name: "Upload PDF Files",
+      name: "Share Drive Folder",
       link: "drive",
       icon: FolderOpen,
-      description: "Study materials you have",
+      description: "Share the link to your Google Drive folder",
       color: "from-purple-500 to-indigo-500",
     },
     {

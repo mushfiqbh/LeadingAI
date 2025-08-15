@@ -30,18 +30,22 @@ export const tools: ChatCompletionTool[] = [
     function: {
       name: "get_notice",
       description:
-        "Fetch recent university notices, bus schedules, announcements, updates, exam notices, holiday notifications, or any university information.",
+        "Retrieve recent university notices, bus schedules, announcements, updates, exam notices, holiday notifications, or any university information.",
       parameters: {
         type: "object",
-        properties: {
-          category: {
-            type: "string",
-            description:
-              "Category of notice to retrieve. Use 'bus-schedule' for bus schedule, 'general' for other notifications.",
-            enum: ["bus-schedule", "general"],
-          },
-        },
-        required: ["category"],
+        properties: {},
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get_links",
+      description:
+        "Retrieve Google drive shared folder links containing study materials, notes, pdfs.",
+      parameters: {
+        type: "object",
+        properties: {},
       },
     },
   },
@@ -62,13 +66,11 @@ export const tools: ChatCompletionTool[] = [
           },
           department: {
             type: "string",
-            description:
-              "The department for which to retrieve the routine.",
+            description: "The department for which to retrieve the routine.",
           },
           batch: {
             type: "number",
-            description:
-              "The batch for which to retrieve the routine.",
+            description: "The batch for which to retrieve the routine.",
           },
           section: {
             type: "string",
@@ -77,6 +79,30 @@ export const tools: ChatCompletionTool[] = [
           },
         },
         required: ["category", "department", "batch"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "set_google_sheet",
+      description:
+        "Update new Routine from Google Sheet URL to store in database",
+      parameters: {
+        type: "object",
+        properties: {
+          sheet_url: {
+            type: "string",
+            description: "The Google Sheet URL containing the new routine",
+          },
+          category: {
+            type: "string",
+            description:
+              "The category of the routine (e.g., class-routine, exam-routine)",
+            enum: ["class-routine", "exam-routine"],
+          },
+        },
+        required: ["sheet_url", "category"],
       },
     },
   },

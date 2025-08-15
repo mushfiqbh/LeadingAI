@@ -23,6 +23,6 @@ export function countTokens(
   }
 
   // every reply is primed with <|start|>assistant<|message|>
-  totalTokens += 3;
+  totalTokens += 3;  
   return totalTokens;
 }

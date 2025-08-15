@@ -11,10 +11,12 @@ import {
   updateDoc,
   getDoc,
   addDoc,
+  serverTimestamp,
+  where,
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 import { User } from "firebase/auth";
-import { Notice, Routine, UserProfile } from "@/types/types";
+import { Link, Notice, Routine, UserProfile } from "@/types/types";
 
 export const getUserProfileFS = async (uid: string) => {
   if (!uid) {
@@ -75,10 +77,12 @@ export const getNoticesWithPagination = async (
 
   try {
     let q;
+    const now = new Date().toISOString();
 
     if (lastDoc) {
       q = query(
         noticesRef,
+        where("expiryDate", ">=", now),
         orderBy("createdAt", "desc"),
         startAfter(lastDoc),
         firestoreLimit(limitCount)
@@ -86,6 +90,7 @@ export const getNoticesWithPagination = async (
     } else {
       q = query(
         noticesRef,
+        where("expiryDate", ">=", now),
         orderBy("createdAt", "desc"),
         firestoreLimit(limitCount)
       );
@@ -149,9 +154,12 @@ export const getRoutinesWithPagination = async (
 
   try {
     let q;
+    const now = new Date().toISOString();
+
     if (lastDoc) {
       q = query(
         routinesRef,
+        where("expiryDate", ">=", now),
         orderBy("createdAt", "desc"),
         startAfter(lastDoc),
         firestoreLimit(limitCount)
@@ -159,6 +167,7 @@ export const getRoutinesWithPagination = async (
     } else {
       q = query(
         routinesRef,
+        where("expiryDate", ">=", now),
         orderBy("createdAt", "desc"),
         firestoreLimit(limitCount)
       );
@@ -208,6 +217,53 @@ export const createRoutineFS = async (
     return docRef.id;
   } catch (error) {
     console.error("Error creating routine:", error);
+    throw error;
+  }
+};
+
+// Create drive link
+export const createDriveLinkInFirebase = async (
+  link: Omit<Link, "id" | "createdAt">
+): Promise<string> => {
+  try {
+    const linkData = {
+      ...link,
+      createdAt: serverTimestamp(),
+    };
+
+    const docRef = await addDoc(collection(db, "links"), linkData);
+
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating drive link:", error);
+    throw error;
+  }
+};
+
+// Fetch drive links
+export const fetchDriveLinksFromFirebase = async (): Promise<Link[]> => {
+  try {
+    const snapshot = await getDocs(collection(db, "links"));
+    const links: Link[] = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Link[];
+    return links;
+  } catch (error) {
+    console.error("Error fetching drive links:", error);
+    throw error;
+  }
+};
+
+// Delete drive links
+export const deleteDriveLinkFromFirebase = async (
+  linkId: string
+): Promise<void> => {
+  try {
+    const linkRef = doc(db, "links", linkId);
+    await deleteDoc(linkRef);
+  } catch (error) {
+    console.error("Error deleting drive link:", error);
     throw error;
   }
 };

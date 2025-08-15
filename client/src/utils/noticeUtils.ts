@@ -1,46 +1,30 @@
-import { User } from "firebase/auth";
-
 export const expirationOptions = [
-  { value: "", label: "Select expiration period" },
-  { value: "NO_EXPIRATION", label: "No Expiration" },
-  { value: "1_WEEK", label: "1 Week" },
-  { value: "2_WEEKS", label: "2 Weeks" },
-  { value: "1_MONTH", label: "1 Month" },
-  { value: "4_MONTHS", label: "4 Months" },
-  { value: "6_MONTHS", label: "6 Months" },
-  { value: "1_YEAR", label: "1 Year" },
+  "Days",
+  "Weeks",
+  "Months",
+  "Years",
+  "No Expiration",
 ];
 
-export const calculateExpirationDate = (option: string): string => {
+export const calculateExpirationDate = (
+  count: number,
+  option: string
+): string => {
   const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
   switch (option) {
-    case "1_WEEK":
-      return new Date(now.setDate(now.getDate() + 7)).toISOString();
-    case "2_WEEKS":
-      return new Date(now.setDate(now.getDate() + 14)).toISOString();
-    case "1_MONTH":
-      return new Date(now.setMonth(now.getMonth() + 1)).toISOString();
-    case "4_MONTHS":
-      return new Date(now.setMonth(now.getMonth() + 4)).toISOString();
-    case "6_MONTHS":
-      return new Date(now.setMonth(now.getMonth() + 6)).toISOString();
-    case "1_YEAR":
-      return new Date(now.setFullYear(now.getFullYear() + 1)).toISOString();
-    case "NO_EXPIRATION":
+    case "Days":
+      return new Date(now.setDate(now.getDate() + count)).toISOString();
+    case "Weeks":
+      return new Date(now.setDate(now.getDate() + count * 7)).toISOString();
+    case "Months":
+      return new Date(now.setMonth(now.getMonth() + count)).toISOString();
+    case "Years":
+      return new Date(now.setFullYear(now.getFullYear() + count)).toISOString();
+    case "No Expiration":
       return new Date("2099-12-31").toISOString();
     default:
-      return "";
+      return new Date("2099-12-31").toISOString();
   }
-};
-
-export const isFormValid = ({
-  user,
-  noticeImage,
-  expirationOption,
-}: {
-  user: User | null;
-  noticeImage: File | null;
-  expirationOption: string;
-}) => {
-  return user && noticeImage && expirationOption !== "";
 };

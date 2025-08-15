@@ -12,11 +12,6 @@ if (apps.length === 0) {
   try {
     // Check if GOOGLE_APPLICATION_CREDENTIALS is set (should be a file path)
     if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      console.log(
-        "📄 Using service account key file:",
-        process.env.GOOGLE_APPLICATION_CREDENTIALS
-      );
-
       // applicationDefault() will automatically read from the file path
       initializeApp({
         credential: applicationDefault(),
@@ -270,26 +265,48 @@ export class FirebaseAdminService {
     }
   }
 
-  static async getNoticesInformation(
-    category: string = "general"
-  ): Promise<string[]> {
+  static async getNoticesInformation() {
     try {
       const now = new Date().toISOString();
 
       const snapshot = await adminDb
         .collection("notices")
         .select("information")
-        .where("category", "==", category)
         .where("expiryDate", ">=", now)
         .orderBy("expiryDate", "asc")
         .orderBy("createdAt", "desc")
         .limit(5)
         .get();
 
-      return snapshot.docs.map((doc) => doc.data().information || "");
+      return snapshot.docs.map((doc) => doc.data().information);
     } catch (error) {
       console.error("💥 Error getting notices:", error);
       return [];
+    }
+  }
+
+  static async createRoutine(
+    userId: string,
+    routineData: any
+  ): Promise<string> {
+    try {
+      const userProfile =
+        (await adminDb.collection("users").doc(userId).get()).data() || {};
+
+      const docRef = await adminDb.collection("routines").add({
+        ...routineData,
+        contributor: {
+          uid: userId,
+          name: userProfile.fullName || "Anonymous",
+        },
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+
+      return docRef.id;
+    } catch (error) {
+      console.error("💥 Error creating routine:", error);
+      throw error;
     }
   }
 
@@ -348,6 +365,21 @@ export class FirebaseAdminService {
     } catch (error) {
       console.error("💥 Error deleting routine:", error);
       throw error;
+    }
+  }
+
+  static async getLinks() {
+    try {
+      const snapshot = await adminDb.collection("links").get();
+      return snapshot.docs.map((doc) => {
+        return {
+          link: `[${doc.data().title}](${doc.data().url})`,
+          description: doc.data().description,
+        };
+      });
+    } catch (error) {
+      console.error("💥 Error getting links:", error);
+      return [];
     }
   }
 }

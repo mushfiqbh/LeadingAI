@@ -61,3 +61,33 @@ export interface RoutineOptions {
   section: string;
   timeSlots: string[];
 }
+
+export interface FileMetadata {
+  id: string;
+  title: string;
+  alternateLink: string;
+  webContentLink: string;
+  fileSize: string; // Size in bytes as a string
+}
+
+export interface FrontPageData {
+  id: string;
+  title: string;
+  date: Date;
+  course: {
+    code: string;
+    title: string;
+  };
+  teacher: {
+    name: string;
+    faculty: string;
+    designation: string;
+  };
+  student: {
+    id: string;
+    name: string;
+    batch: string;
+    section: string;
+    dept: string;
+  };
+}
