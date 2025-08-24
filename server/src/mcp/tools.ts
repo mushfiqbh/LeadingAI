@@ -12,7 +12,7 @@ export const tools: ChatCompletionTool[] = [
         properties: {
           student_id: {
             type: "string",
-            description: "The unique student ID of the student",
+            description: "The student ID of the student provided latest",
           },
           birthday: {
             type: "string",
