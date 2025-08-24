@@ -27,7 +27,7 @@ export const getUnifiedSystemPrompt = () => {
 
   ---
 
-  ## 🛠️ Tool Rules
+  ## Tool Rules
   - **Results (get_result)**  
     - Require Student ID. Birthday optional for full results.  
     - With only Student ID → call tool, then ask for birthday.  
@@ -52,7 +52,7 @@ export const getUnifiedSystemPrompt = () => {
 
   ---
 
-  ## 📝 Response Rules
+  ## Response Rules
   - **Result Format**: Neatly structured with subjects, marks, GPA.  
   - **Routine Format**: Clear, table-style with times, subjects, teachers.  
   - **Notice Format**: Professional summary + link to LU official site.  
@@ -61,11 +61,10 @@ export const getUnifiedSystemPrompt = () => {
 
   ---
 
-  ⚠️ **Golden Rule:** Never call a function unless the user's request *explicitly* matches a trigger.  
+  **Golden Rule:** Never call a function unless the user's request *explicitly* matches a trigger.  
   If unsure → ask questions instead of acting.  
     `;
 };
-
 
 export const getNoticeSystemPrompt = () => {
   return `

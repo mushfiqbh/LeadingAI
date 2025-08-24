@@ -118,7 +118,7 @@ export class FirebaseAdminService {
       const messagesSnapshot = await adminDb
         .collection("messages")
         .where("conversationId", "==", conversationId)
-        .orderBy("timestamp", "asc")
+        .orderBy("timestamp", "desc")
         .limit(5)
         .get();
 
