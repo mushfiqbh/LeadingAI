@@ -78,7 +78,6 @@ export interface Routine {
     uid: string;
     name: string;
   };
-  expiryDate: string | null;
   createdAt?: Date | Timestamp;
   updatedAt?: Date | Timestamp;
 }

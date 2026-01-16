@@ -154,12 +154,10 @@ export const getRoutinesWithPagination = async (
 
   try {
     let q;
-    const now = new Date().toISOString();
 
     if (lastDoc) {
       q = query(
         routinesRef,
-        where("expiryDate", ">=", now),
         orderBy("createdAt", "desc"),
         startAfter(lastDoc),
         firestoreLimit(limitCount)
@@ -167,7 +165,6 @@ export const getRoutinesWithPagination = async (
     } else {
       q = query(
         routinesRef,
-        where("expiryDate", ">=", now),
         orderBy("createdAt", "desc"),
         firestoreLimit(limitCount)
       );
