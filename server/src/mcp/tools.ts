@@ -40,12 +40,51 @@ export const tools: ChatCompletionTool[] = [
   {
     type: "function",
     function: {
+      name: "set_notice",
+      description:
+        "Update new Notice by extracting data from uploaded image",
+      parameters: {
+        type: "object",
+        properties: {
+          image_url: {
+            type: "string",
+            description: "The URL of the uploaded image containing the new notice",
+          },
+        },
+        required: ["image_url"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "get_links",
       description:
         "Retrieve Google drive shared folder links containing study materials, notes, pdfs.",
       parameters: {
         type: "object",
         properties: {},
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
+      name: "set_links",
+      description:
+        "Update new Google Drive shared folder links, youtube links or any web links containing study materials, notes, pdfs.",
+      parameters: {
+        type: "object",
+        properties: {
+          links: {
+            type: "array",
+            items: {
+              type: "string",
+              description: "A Google Drive shared folder link, YouTube link, or any web link containing study materials, notes, pdfs",
+            },
+          },
+        },
+        required: ["links"],
       },
     },
   },
@@ -85,7 +124,7 @@ export const tools: ChatCompletionTool[] = [
   {
     type: "function",
     function: {
-      name: "set_google_sheet",
+      name: "set_routine",
       description:
         "Update new Routine from Google Sheet URL to store in database",
       parameters: {

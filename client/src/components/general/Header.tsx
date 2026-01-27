@@ -1,19 +1,23 @@
 "use client";
 
+import type { ViewState } from "@/types/types";
 import { useAuth } from "@/context/AuthContext";
-import { useToaster } from "@/context/ToasterContext";
 import { logout } from "@/lib/authFunctions";
-import { Bot, Check, CircleUser, MessageSquareDiff } from "lucide-react";
+import { Check, CircleUser } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useChatStore } from "@/hooks/useChatStore";
 import CreditsManager from "./CreditsManager";
 
-export default function Header() {
+export default function Header({
+  setView,
+  onLoginClick,
+}: {
+  setView?: React.Dispatch<React.SetStateAction<ViewState>>;
+  onLoginClick?: () => void;
+}) {
   const [showMenu, setShowMenu] = useState(false);
-  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const {
     user,
@@ -21,11 +25,8 @@ export default function Header() {
     loading,
     showManager,
     setShowManager,
-    setShowHistory,
   } = useAuth();
   const router = useRouter();
-  const { createConversationInFirebase, selectConversation } = useChatStore();
-  const { prompt } = useToaster();
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -40,104 +41,45 @@ export default function Header() {
     };
   }, []);
 
-  const handleNewConversation = async () => {
-    if (!user?.uid || isCreatingConversation) return;
-
-    setShowMenu(false);
-
-    // Use toaster prompt to get conversation title
-    prompt(
-      "New Conversation",
-      "Enter a title for your new conversation:",
-      async (title: string) => {
-        if (!title.trim()) return;
-
-        setIsCreatingConversation(true);
-
-        try {
-          const newConversationData = {
-            title: title.trim(),
-            participants: [user.uid],
-            lastMessage: {
-              text: "",
-              senderId: "",
-            },
-          };
-
-          const conversationId = await createConversationInFirebase(
-            newConversationData
-          );
-
-          // Select the new conversation
-          selectConversation(conversationId);
-
-          // Navigate to chat page if not already there
-          if (window.location.pathname !== "/") {
-            router.push("/");
-          }
-        } catch (error) {
-          console.error("❌ Error creating new conversation:", error);
-          // You might want to show a toast notification here
-        } finally {
-          setIsCreatingConversation(false);
-        }
-      },
-      {
-        inputPlaceholder: "e.g., Math Help, Study Session, etc.",
-        buttonText: "Create",
-      }
-    );
-  };
-
   return (
     <div className="w-full min-h-[70px] fixed top-0 z-20 bg-white backdrop-blur-md shadow-sm transition-colors">
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-              <Bot className="w-6 h-6 text-white" />
-            </div>
-            <div>
+            <div onClick={setView ? () => setView("home") : undefined }>
               <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                Leading AI
+                LeadingAI
               </h1>
+              <p className="text-xs text-gray-500">Back To Home</p>
+            </div>
+          </Link>
 
+          {!user && (
+            <div>
+              <button onClick={onLoginClick} className="px-2 py-1 font-medium border border-black/80 rounded-2xl cursor-pointer hover:-translate-y-0.5">Login</button>
+            </div>
+          )}
+
+          {user && (
+            <div className="flex items-center gap-5">
               {loading ? (
                 <p className="text-xs text-gray-500 animate-pulse">
                   Loading...
                 </p>
               ) : (
                 user && (
-                  <p
+                  <button
                     onClick={() => setShowManager(true)}
-                    className="text-xs text-gray-500"
+                    className="text-sm text-gray-500 cursor-pointer"
                   >
                     <span className="text-blue-600 font-semibold">
                       {Number(userProfile?.totalCredits) -
                         Number(userProfile?.usedCredits)}
                     </span>{" "}
-                    Credits Remaining
-                  </p>
+                    Credits
+                  </button>
                 )
               )}
-            </div>
-          </Link>
-
-          {user && (
-            <div className="flex items-center gap-2">
-              <button
-                name="contribute"
-                onClick={() => {
-                  if (!user.emailVerified) {
-                    alert("Please verify your email to contribute.");
-                    return;
-                  }
-                  router.push("/contribute");
-                }}
-                className="px-2 py-1 text-xs md:text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 hover:scale-105 hover:shadow-lg"
-              >
-                Contribute
-              </button>
 
               <div className="relative">
                 <button
@@ -186,13 +128,38 @@ export default function Header() {
                     </div>
 
                     <div className="py-2">
-                      <Link
-                        href="/profile"
+                      <button
+                        onClick={() => setView && setView("profile")}
                         className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
                       >
                         <CircleUser className="w-4 h-4" />
                         <span className="font-medium">Profile</span>
-                      </Link>
+                      </button>
+
+                      {window.location.pathname !== "/" && (
+                        <button
+                          onClick={() => {
+                            router.push("/");
+                            return setView && setView("home");
+                          }}
+                          className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                            />
+                          </svg>
+                          <span className="font-medium">Home</span>
+                        </button>
+                      )}
 
                       <button
                         onClick={() => setShowManager(true)}
@@ -212,48 +179,7 @@ export default function Header() {
                           />
                         </svg>
                         <span className="font-medium">Credits</span>
-                      </button>
-
-                      {window.location.pathname !== "/" ? (
-                        <Link
-                          href="/"
-                          className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
-                        >
-                          <MessageSquareDiff className="w-4 h-4" />
-                          <span className="font-medium">Back to Chat</span>
-                        </Link>
-                      ) : (
-                        <button
-                          onClick={handleNewConversation}
-                          className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
-                        >
-                          <MessageSquareDiff className="w-4 h-4" />
-                          <span className="font-medium">New Chat</span>
-                        </button>
-                      )}
-
-                      <button
-                        onClick={() => {
-                          router.push("/");
-                          setShowHistory(true);
-                        }}
-                        className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <span className="font-medium">Conversations</span>
-                      </button>
+                      </button> 
 
                       <Link
                         href="/report"

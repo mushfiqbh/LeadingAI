@@ -10,10 +10,9 @@ import { ChatInput } from "./ChatInput";
 import { MessageList } from "./MessageList";
 import { EmptyChat } from "./EmptyChat";
 import { useChatListeners } from "@/hooks/useChatListeners";
-import History from "../general/History";
 
 const Chat: React.FC = () => {
-  const { user, showHistory } = useAuth();
+  const { user } = useAuth();
   const { selectedConversationId, messages: storeMessages } = useChatStore();
 
   // TTFB testing - track message send timeSlots
@@ -51,7 +50,7 @@ const Chat: React.FC = () => {
 
       return handleSendMessage(message);
     },
-    [handleSendMessage, selectedConversationId]
+    [handleSendMessage, selectedConversationId],
   );
 
   // TTFB testing - monitor for streaming start
@@ -71,8 +70,9 @@ const Chat: React.FC = () => {
   }, [isStreaming, selectedConversationId]);
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col h-full bg-gradient-to-br from-gray-50/50 via-white/30 to-blue-50/30 rounded-xl shadow-lg border border-white/20">
-      <div className="flex-1 overflow-y-auto scroll-smooth p-2 mb-32 min-h-0">
+    <div className="w-full h-[calc(100dvh-70px)] max-w-5xl mx-auto flex flex-col bg-gradient-to-br from-gray-50/50 via-white/30 to-blue-50/30 rounded-xl shadow-lg border border-white/20 overflow-hidden">
+      {/* Scrollable message area */}
+      <div className="overflow-y-auto scroll-smooth p-2">
         {currentMessages.length === 0 ? (
           <EmptyChat userName={user?.displayName?.split(" ")[0]} />
         ) : (
@@ -86,14 +86,13 @@ const Chat: React.FC = () => {
         )}
       </div>
 
-      <div className="fixed w-full max-w-5xl mx-auto bottom-0 left-0 right-0 z-10 bg-white/80 backdrop-blur-sm border-t border-gray-200/50 shadow-2xl">
+      {/* Sticky input bar inside card */}
+      <div className="sticky bottom-0 z-10 bg-white/80 backdrop-blur-sm border-t border-gray-200/50 shadow-2xl">
         <ChatInput
           onSendMessage={handleSendMessageWithLatency}
           isLoading={isLoading || isStreaming}
         />
       </div>
-
-      {showHistory && <History />}
     </div>
   );
 };

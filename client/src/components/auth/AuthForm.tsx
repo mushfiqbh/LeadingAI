@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import LoginForm from "./LoginForm";
 import CreateAccountForm from "./CreateAccountForm";
@@ -9,21 +9,28 @@ import ResetPasswordForm from "./ResetPasswordForm";
 export default function AuthForm() {
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
-  const { user, isEmailVerified } = useAuth();
+  const { user, isEmailVerified, setIsAuthModalOpen } = useAuth();
 
-  // If user is logged in but not verified
-  if (user && !isEmailVerified) {
+  // Close modal if user is logged in and verified
+  useEffect(() => {
+    if (user && isEmailVerified) {
+      setIsAuthModalOpen(false);
+    }
+  }, [user, isEmailVerified, setIsAuthModalOpen]);
+
+  // If user is logged in (verified or not), don't show login forms
+  if (user) {
     return null;
   }
 
   return (
-    <div className="w-full max-w-sm mx-auto fixed z-30 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-gray-700 p-6">
+    <div className="w-full max-w-sm mx-auto bg-white text-gray-700">
       <h2 className="text-2xl font-bold mb-4 text-center">
         {isCreatingAccount
           ? "Create Account"
           : isResettingPassword
           ? "Reset Password"
-          : "Sign In Required"}
+          : "Please Log In"}
       </h2>
 
       {isCreatingAccount ? (

@@ -331,15 +331,11 @@ export class FirebaseAdminService {
     department: string
   ): Promise<RoutineData | null> {
     try {
-      const now = new Date().toISOString();
-
       const snapshot = await adminDb
         .collection("routines")
         .select("title", "semester", "department", "timeSlots", "schedules")
         .where("category", "==", category)
         .where("department", "==", department)
-        .where("expiryDate", ">=", now)
-        .orderBy("expiryDate", "asc")
         .orderBy("createdAt", "desc")
         .limit(1)
         .get();

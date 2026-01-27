@@ -4,11 +4,11 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { Notice } from "@/types/types";
 import { getNoticesWithPagination } from "@/lib/firestore";
 import { DocumentSnapshot } from "firebase/firestore";
-import NoticeModal from "@/components/notice/NoticeModal";
-import NoticeList from "@/components/notice/NoticeList";
-import NoticeUploadForm from "@/components/notice/NoticeUploadForm";
+import NoticeModal from "@/components/contribute/notice/NoticeModal";
+import NoticeList from "@/components/contribute/notice/NoticeList";
+import NoticeUploadForm from "@/components/contribute/notice/NoticeUploadForm";
 
-export default function NoticesForm() {
+export default function NoticeShare() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [selectedNotice, setSelectedNotice] = useState<Notice | null>(null);
   const [fetchStatus, setFetchStatus] = useState<"idle" | "loading" | "error">(

@@ -1,13 +1,13 @@
 "use client";
 
-import RoutineUploadForm from "@/components/routine/RoutineUploadForm";
-import RoutineList from "@/components/routine/RoutineList";
+import RoutineUploadForm from "@/components/contribute/routine/RoutineUploadForm";
+import RoutineList from "@/components/contribute/routine/RoutineList";
 import { getRoutinesWithPagination } from "@/lib/firestore";
 import { Routine } from "@/types/types";
 import { DocumentSnapshot } from "firebase/firestore";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export default function ClassRoutinePage() {
+export default function RoutineShare() {
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [fetchStatus, setFetchStatus] = useState<"idle" | "loading" | "error">(
     "loading"

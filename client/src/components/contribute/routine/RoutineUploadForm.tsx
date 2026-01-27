@@ -1,12 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, ChevronDown, Link, Loader2 } from "lucide-react";
+import { Calendar, Link, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import {
-  calculateExpirationDate,
-  expirationOptions,
-} from "@/utils/noticeUtils";
 import { createRoutineFS } from "@/lib/firestore";
 
 interface RoutineUploadFormProps {
@@ -18,8 +14,6 @@ export default function RoutineUploadForm({
 }: RoutineUploadFormProps) {
   const { user } = useAuth();
   const [sheetUrl, setSheetUrl] = useState("");
-  const [expirationOption, setExpirationOption] = useState<string>("");
-  const [expirationCount, setExpirationCount] = useState<number>(1);
   const [category, setCategory] = useState<
     "class-routine" | "exam-routine" | "unset"
   >("unset");
@@ -34,7 +28,6 @@ export default function RoutineUploadForm({
       sheetUrl &&
       category &&
       category !== "unset" &&
-      expirationOption !== "" &&
       sheetUrl.trim().includes("docs.google.com/spreadsheets")
     );
   };
@@ -56,7 +49,6 @@ export default function RoutineUploadForm({
         uid: user?.uid || "Anonymous",
         name: user?.displayName || "Anonymous",
       },
-      expiryDate: calculateExpirationDate(expirationCount, expirationOption),
     });
 
     try {
@@ -80,7 +72,6 @@ export default function RoutineUploadForm({
       setSheetUrl("");
       setCategory("unset");
       setUploadStatus("success");
-      setExpirationOption("");
       setErrorMessage("");
       if (onUploadSuccess) onUploadSuccess();
     } catch {
@@ -169,81 +160,6 @@ export default function RoutineUploadForm({
               {opt.label}
             </button>
           ))}
-        </div>
-
-        <div
-          className={`transition-opacity duration-200 ${
-            uploadStatus === "loading" ? "opacity-50" : "opacity-100"
-          }`}
-        >
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Routine Expiration Period <span className="text-red-500">*</span>
-          </label>
-
-          <div className="flex items-center gap-2 mb-2">
-            <input
-              type="number"
-              min={1}
-              value={expirationCount}
-              onChange={(e) => setExpirationCount(Number(e.target.value))}
-              className={`w-20 border-2 border-gray-200/50 rounded-md px-3 py-2 text-gray-900 ${
-                uploadStatus === "loading"
-                  ? "cursor-not-allowed bg-gray-50"
-                  : ""
-              }`}
-              disabled={uploadStatus === "loading"}
-              placeholder="1"
-            />
-
-            <div className="relative">
-              <ChevronDown
-                className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                  uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
-                }`}
-              />
-              <select
-                value={expirationOption}
-                onChange={(e) => setExpirationOption(e.target.value)}
-                className={`w-full border-2 border-gray-200/50 rounded-md p-2 text-gray-900 appearance-none ${
-                  uploadStatus === "loading"
-                    ? "cursor-not-allowed bg-gray-50"
-                    : "bg-white"
-                }`}
-                disabled={uploadStatus === "loading"}
-              >
-                <option value="" disabled>
-                  Select expiration period
-                </option>
-                {expirationOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {expirationOption === "" && (
-            <p className="text-xs text-red-500 mt-1">
-              Please select an expiration period for the routine.
-            </p>
-          )}
-
-          {expirationOption && (
-            <p className="text-xs text-green-600 mt-1">
-              Routine will expire on:{" "}
-              {
-                new Date(
-                  calculateExpirationDate(
-                    expirationCount,
-                    expirationOption
-                  ).valueOf()
-                )
-                  .toString()
-                  .split("00")[0]
-              }
-            </p>
-          )}
         </div>
 
         {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}

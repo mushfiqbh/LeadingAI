@@ -50,27 +50,6 @@ export default function RoutineList({ routines }: { routines: Routine[] }) {
                     {routine.department}
                   </span>
                 )}
-
-                {routine.expiryDate &&
-                  (() => {
-                    const expiry = new Date(routine.expiryDate.valueOf());
-                    const now = new Date();
-
-                    expiry.setHours(0, 0, 0, 0);
-                    now.setHours(0, 0, 0, 0);
-
-                    const isExpired = expiry < now;
-
-                    return isExpired ? (
-                      <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700">
-                        Expired
-                      </span>
-                    ) : (
-                      <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
-                        Expires: {expiry.toString().split("00")[0]}
-                      </span>
-                    );
-                  })()}
               </div>
             </div>
           </Link>

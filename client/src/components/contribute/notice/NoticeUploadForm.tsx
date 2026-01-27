@@ -187,20 +187,27 @@ export default function NoticeUploadForm({
           </label>
 
           <div className="flex items-center gap-2 mb-2">
-            <input
-              type="number"
-              min={1}
-              value={expirationCount}
-              onChange={(e) => setExpirationCount(Number(e.target.value))}
-              className={`w-20 border-2 border-gray-200/50 rounded-md px-3 py-2 text-gray-900 ${
-                uploadStatus === "loading"
-                  ? "cursor-not-allowed bg-gray-50"
-                  : ""
-              }`}
-              disabled={uploadStatus === "loading"}
-              placeholder="1"
-            />
-
+            <div className="flex items-center gap-2 mt-1">
+              <button
+                type="button"
+                onClick={() => setExpirationCount((c) => Math.max(1, c - 1))}
+                disabled={uploadStatus === "loading" || expirationCount <= 1}
+                className="px-4 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold disabled:opacity-50"
+              >
+                -
+              </button>
+              <span className="px-3 py-1 rounded bg-white text-gray-900 font-semibold min-w-[2rem] text-center">
+                {expirationCount}
+              </span>
+              <button
+                type="button"
+                onClick={() => setExpirationCount((c) => c + 1)}
+                disabled={uploadStatus === "loading"}
+                className="px-4 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold disabled:opacity-50"
+              >
+                +
+              </button>
+            </div>
             <div className="relative">
               <ChevronDown
                 className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${

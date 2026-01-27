@@ -5,7 +5,7 @@ interface EmptyChatProps {
 }
 
 export const EmptyChat: React.FC<EmptyChatProps> = ({ userName }) => (
-  <div className="min-h-[calc(100vh-16rem)] flex items-center justify-center p-6 bg-gradient-to-br from-blue-50/30 via-white/10 to-purple-50/30">
+  <div className="flex items-center justify-center p-6 bg-gradient-to-br from-blue-50/30 via-white/10 to-purple-50/30">
     <div className="text-center max-w-2xl">
       <div className="mb-8">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">

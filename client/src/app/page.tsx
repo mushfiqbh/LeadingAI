@@ -3,16 +3,13 @@
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { logout } from "@/lib/authFunctions";
-import AuthForm from "@/components/auth/AuthForm";
 import VerifyEmail from "@/components/auth/VerifyEmail";
-import Chat from "@/components/chat/Chat";
 import LoadingScreen from "@/components/ui/LoadingScreen";
-import Landing from "@/components/general/LandingPage";
+import HomeManager from "@/components/home/HomeManager";
 
 export default function Page() {
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
   const { user, isEmailVerified, loading } = useAuth();
-  const [showLanding, setShowLanding] = useState(true);
 
   useEffect(() => {
     fetch(
@@ -30,12 +27,13 @@ export default function Page() {
   if (loading) return <LoadingScreen />;
 
   // If user is not logged in
-  if (!user)
-    return showLanding ? (
-      <Landing setShowLanding={setShowLanding} />
-    ) : (
-      <AuthForm />
+  if (!user) {
+    return (
+      <>
+        <HomeManager isAnonymous={true} />
+      </>
     );
+  }
 
   // If user is logged in but email is not verified
   if (!isEmailVerified && showVerifyEmail) {
@@ -50,5 +48,5 @@ export default function Page() {
   }
 
   // If user is logged in and email is verified
-  return <Chat />;
+  return <HomeManager />;
 }
