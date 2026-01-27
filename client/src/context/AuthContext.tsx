@@ -16,6 +16,8 @@ type AuthContextType = {
   setShowManager: (value: boolean) => void;
   showHistory: boolean;
   setShowHistory: (value: boolean) => void;
+  isAuthModalOpen: boolean;
+  setIsAuthModalOpen: (value: boolean) => void;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -28,6 +30,8 @@ export const AuthContext = createContext<AuthContextType>({
   setShowManager: () => {},
   showHistory: false,
   setShowHistory: () => {},
+  isAuthModalOpen: false,
+  setIsAuthModalOpen: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -37,6 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [showManager, setShowManager] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
@@ -100,6 +105,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    // If we're not loading and there's no user, check for anonymous profile in localStorage
+    if (!loading && !user) {
+        const storedProfile = localStorage.getItem("anonymousProfile");
+        if (storedProfile) {
+            try {
+                const parsed = JSON.parse(storedProfile);
+                // Convert string dates back to Date objects if needed, 
+                // but checking types.ts UserProfile has Date objects. 
+                // JSON.parse won't restore Dates automatically.
+                // For simplified anonymous usage, we might just store basic fields.
+                // Or we can just set it as is for now and ensure components handle string/date mismatch or parse it properly.
+                // Let's simpler:
+                setUserProfile({
+                    ...parsed,
+                    // reconstruct dates if necessary or just let them be strings if components are lenient
+                    // To be safe, let's create a minimal valid user profile
+                });
+            } catch (e) {
+                console.error("Failed to parse anonymous profile", e);
+            }
+        }
+    }
+  }, [loading, user]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -112,6 +142,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setShowManager,
         showHistory,
         setShowHistory,
+        isAuthModalOpen,
+        setIsAuthModalOpen,
       }}
     >
       {children}

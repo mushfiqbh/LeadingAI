@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Send, X } from "lucide-react";
+import { ImageUp, Send, X } from "lucide-react";
 import { ChatMessage } from "../../types/types";
 import { useAuth } from "@/context/AuthContext";
 
@@ -15,7 +15,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   isLoading,
 }) => {
-  const { userProfile, setShowManager, setShowHistory } = useAuth();
+  const { userProfile, setShowManager } = useAuth();
   const [input, setInput] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -43,6 +43,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       // Adjust textarea height after setting input
       setTimeout(() => {
         adjustTextareaHeight();
+        textareaRef.current?.focus();
+        // Clear session storage so it doesn't persist if they leave and come back cleanly? 
+        // Or keep it? The prompt implies "typing... opens chat". 
+        // If they navigate back and forth, maybe clear it?
+        // But for now, focusing is key.
       }, 0);
     }
   }, []);
@@ -148,14 +153,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
-  // const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-  //   if (file) {
-  //     setImage(file);
-  //     setImagePreview(URL.createObjectURL(file));
-  //     textareaRef.current?.focus();
-  //   }
-  // };
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+      textareaRef.current?.focus();
+    }
+  };
 
   const removeImage = () => {
     setImage(null);
@@ -163,100 +168,96 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="bg-white/95 backdrop-blur-sm p-4 border-t border-gray-200/50">
-      {/* Suggested Messages */}
-      {showSuggestions && input.trim() === "" && !image && (
-        <div className="mb-4">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hidden pb-2">
-            {suggestions.map((suggestion, index) => (
-              <button
-                key={index}
-                onClick={() => handleSuggestionClick(suggestion)}
-                className="px-4 py-2.5 text-sm bg-gradient-to-r from-blue-50 to-purple-50 text-gray-700 rounded-full hover:from-blue-100 hover:to-purple-100 transition-all duration-200 border border-blue-200/50 whitespace-nowrap flex-shrink-0 shadow-sm hover:shadow-md transform hover:scale-105"
-                type="button"
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Image Preview */}
-      {imagePreview && (
-        <div className="mb-4">
-          <div className="relative inline-block max-w-xs">
-            <Image
-              width={200}
-              height={150}
-              src={imagePreview}
-              alt="Preview"
-              className="rounded-xl w-full h-auto object-cover border-2 border-gray-200/50 shadow-lg"
-            />
-            <button
-              onClick={removeImage}
-              type="button"
-              className="absolute -top-2 -right-2 bg-white text-gray-600 rounded-full p-1.5 shadow-lg hover:text-red-500 hover:bg-red-50 transition-all duration-200 border border-gray-200"
-              title="Remove image"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Input Form */}
-      <form onSubmit={handleSubmit} className="flex items-center gap-3">
-        {/* Image Upload Button */}
-        <label
-          onClick={() => setShowHistory(true)}
-          className="flex-shrink-0 group cursor-pointer"
-        >
-          <div className="p-3 text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 hover:text-blue-600 transition-all duration-200 border border-gray-200/50 group-hover:border-blue-300 shadow-sm hover:shadow-md">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-        </label>
-
-        {/* Text Input */}
-        <div className="flex-1 relative">
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => handleInputChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Prompt here..."
-            className="w-full px-4 py-3 text-gray-900 bg-white border-2 border-gray-200/50 rounded-xl scrollbar-hidden focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 resize-none min-h-[48px] max-h-[120px] placeholder-gray-400 shadow-sm hover:shadow-md transition-all duration-200"
-            rows={1}
-            disabled={isLoading}
-          />
-        </div>
-
-        {/* Send Button */}
-        <button
-          type="submit"
-          disabled={isLoading || (!input.trim() && !image)}
-          className="flex-shrink-0 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
-          title="Send message"
-        >
-          {isLoading ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Send className="w-5 h-5" />
-          )}
-        </button>
-      </form>
+   <div className="bg-white/90 backdrop-blur p-4 border-t border-gray-200">
+  {/* Suggested Messages */}
+  {showSuggestions && input.trim() === "" && !image && (
+    <div className="mb-3">
+      <div className="flex gap-2 overflow-x-auto scrollbar-hidden pb-1">
+        {suggestions.map((suggestion, index) => (
+          <button
+            key={index}
+            onClick={() => handleSuggestionClick(suggestion)}
+            type="button"
+            className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-full border border-gray-200 whitespace-nowrap
+                       hover:bg-gray-200 transition-colors duration-150"
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
     </div>
+  )}
+
+  {/* Image Preview */}
+  {imagePreview && (
+    <div className="mb-3">
+      <div className="relative inline-block max-w-xs">
+        <Image
+          width={200}
+          height={150}
+          src={imagePreview}
+          alt="Preview"
+          className="rounded-lg border border-gray-200"
+        />
+        <button
+          onClick={removeImage}
+          type="button"
+          title="Remove image"
+          className="absolute -top-2 -right-2 bg-white text-gray-500 rounded-full p-1 border border-gray-200
+                     hover:text-red-500 transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  )}
+
+  {/* Input Form */}
+  <form
+    onSubmit={handleSubmit}
+    className="flex items-end gap-2 rounded-2xl bg-gray-50 p-2 border border-gray-200 focus-within:border-blue-400 transition-colors"
+  >
+    {/* Image Upload */}
+    <label className="p-2 text-gray-400 hover:text-blue-500 cursor-pointer transition-colors">
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+        disabled={isLoading}
+      />
+      <ImageUp className="w-5 h-5" />
+    </label>
+
+    {/* Text Input */}
+    <textarea
+      ref={textareaRef}
+      value={input}
+      onChange={(e) => handleInputChange(e.target.value)}
+      onKeyDown={handleKeyDown}
+      placeholder="Prompt here..."
+      rows={1}
+      disabled={isLoading}
+      className="flex-1 px-4 py-3 text-gray-900 bg-white border border-gray-200 rounded-xl resize-none
+                 focus:outline-none focus:ring-2 focus:ring-blue-500/20 min-h-[48px] max-h-[160px]
+                 placeholder-gray-400 transition"
+    />
+
+    {/* Send Button */}
+    <button
+      type="submit"
+      disabled={isLoading || (!input.trim() && !image)}
+      title="Send message"
+      className="w-11 h-11 flex items-center justify-center rounded-xl bg-blue-600 text-white
+                 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {isLoading ? (
+        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+      ) : (
+        <Send className="w-5 h-5" />
+      )}
+    </button>
+  </form>
+</div>
   );
 };

@@ -1,5 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 
+export type ViewState = "home" | "chat" | "share" | "profile";
+
 export interface ChatMessage {
   text: string;
   image?: File | null;

@@ -1,90 +1,45 @@
+"use client";
+
+import { useState } from "react";
 import ProtectedRoute from "@/components/general/ProtectedRoute";
-import { Bell, Calendar, FolderOpen, Text } from "lucide-react";
-import Link from "next/link";
+import NoticeShare from "./tabs/NoticeShare";
+import RoutineShare from "./tabs/RoutineShare";
+import DriveShare from "./tabs/DriveShare";
 
 const ContributePage = () => {
-  const forms = [
-    {
-      name: "Upload Notices",
-      link: "notices",
-      icon: Bell,
-      description: "Image of latest notice",
-      color: "from-red-500 to-pink-500",
-    },
-    {
-      name: "Class / Exam Routine",
-      link: "routines",
-      icon: Calendar,
-      description: "Share Google sheet url of the routine",
-      color: "from-orange-500 to-yellow-500",
-    },
-    {
-      name: "Share Drive Folder",
-      link: "drive",
-      icon: FolderOpen,
-      description: "Share the link to your Google Drive folder",
-      color: "from-purple-500 to-indigo-500",
-    },
-    {
-      name: "Paste Any Notes",
-      link: "notes",
-      icon: Text,
-      description: "Text content you want to share",
-      color: "from-blue-500 to-cyan-500",
-    },
-  ];
+  const [activeTab, setActiveTab] = useState<number>(0);
 
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-        <div className="min-h-screen py-10 relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white">
-          <div className="relative max-w-7xl mx-auto text-center p-5">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 lg:mb-6 leading-tight">
-              Contribute to AI Model Context
-            </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-white/90 max-w-4xl mx-auto leading-relaxed px-4">
-              Help your fellow students by sharing academic resources,
-              schedules, and important notices. Together, we build a stronger
-              academic community!
-            </p>
-          </div>
+        <div className="min-h-screen py-10 relative overflow-hidden">
+          <h1 className="text-2xl text-center font-bold mb-4 lg:mb-6 leading-tight">
+            Contribute to AI Model Context
+          </h1>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
-            {/* Navigation Cards Section */}
-            <div className="mb-12 lg:mb-16">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                {forms.map((form, index) => {
-                  const IconComponent = form.icon;
-
-                  return (
-                    <Link
-                      key={index}
-                      href={`/contribute/${form.link}`}
-                      className="group flex items-center relative p-4 lg:p-6 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 active:scale-95 border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20"
-                    >
-                      <div className="flex items-center justify-center gap-4">
-                        <div
-                          className={`flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center bg-gradient-to-r ${form.color} text-white shadow-lg`}
-                        >
-                          <IconComponent className="w-5 h-5 lg:w-6 lg:h-6" />
-                        </div>
-                        <div className="flex-1 min-w-0 items-center">
-                          <h3 className="font-semibold text-sm lg:text-base mb-1 leading-tight">
-                            {form.name}
-                          </h3>
-                          <p className="text-xs lg:text-sm leading-relaxed text-gray-500 line-clamp-2">
-                            {form.description}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Hover effect overlay */}
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
+          <nav>
+            <ul className="flex justify-center gap-6 my-8">
+              {["Share Notices", "Share Routines", "Share Drives"].map((tab, index) => (
+                <li key={index}>
+                  <button
+                    onClick={() => setActiveTab(index)}
+                    className={`px-4 py-2 rounded-full font-medium transition-colors ${
+                      activeTab === index
+                        ? "text-indigo-600 bg-white/90 shadow-lg"
+                        : "text-gray-600 hover:bg-white/20"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          
+          <div>
+            {activeTab == 0 && <NoticeShare />}
+            {activeTab == 1 && <RoutineShare />}
+            {activeTab == 2 && <DriveShare />}
           </div>
         </div>
 

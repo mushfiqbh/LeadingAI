@@ -9,7 +9,7 @@ import {
 } from "@/lib/firestore";
 import { Link } from "@/types/types";
 
-export default function DriveForm() {
+export default function DriveShare() {
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -60,7 +60,6 @@ export default function DriveForm() {
 
   // Handle delete link
   async function handleDelete(id: string) {
-    // Replace with your toaster confirmation
     const confirmed = window.confirm(
       "Are you sure you want to delete this link?"
     );
@@ -76,7 +75,7 @@ export default function DriveForm() {
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto space-y-8 p-6">
+    <div className="w-full md:w-1/2 mx-auto space-y-8 p-6">
       {/* Header Section */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow">
