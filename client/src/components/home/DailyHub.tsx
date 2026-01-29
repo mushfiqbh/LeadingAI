@@ -2,6 +2,7 @@
 
 import React, { Dispatch, useEffect, useRef, useState } from "react";
 import { AlertCircle, MessageSquare, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { ViewState } from "@/types/types";
 import ActionCard from "../ui/ActionCard";
 import ProfileImage from "@/assets/profile.png";
@@ -38,6 +39,7 @@ const DailyHub: React.FC<DailyHubProps> = ({
   onLoginClick,
   isAnonymous,
 }) => {
+  const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -249,6 +251,9 @@ const DailyHub: React.FC<DailyHubProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
           <ActionCard
+            onClick={
+              () => router.push("/frontpage")
+            }
             title="Generate Frontpage"
             description="Create professional academic cover pages"
             image={FrontPageImage}
