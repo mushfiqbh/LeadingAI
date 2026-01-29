@@ -39,7 +39,7 @@ interface FrontPageStore {
   updateStudent: (id: string, student: Partial<Student>) => Promise<void>;
 }
 
-export const useFrontPageStore = create<FrontPageStore>((set, get) => ({
+export const useFrontPageStore = create<FrontPageStore>((set) => ({
   // Initial State
   type: 'assignment',
   title: '',
