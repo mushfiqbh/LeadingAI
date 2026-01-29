@@ -7,7 +7,7 @@ import RoutineShare from "./tabs/RoutineShare";
 import DriveShare from "./tabs/DriveShare";
 
 const ContributePage = () => {
-  const [activeTab, setActiveTab] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState<number>(0);      
 
   return (
     <ProtectedRoute>

@@ -48,7 +48,7 @@ export default function Header({
           <Link href="/" className="flex items-center gap-3 group">
             <div onClick={setView ? () => setView("home") : undefined }>
               <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                LeadingAI
+                Agent
               </h1>
               <p className="text-xs text-gray-500">Back To Home</p>
             </div>

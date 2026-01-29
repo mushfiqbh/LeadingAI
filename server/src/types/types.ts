@@ -69,25 +69,3 @@ export interface FileMetadata {
   webContentLink: string;
   fileSize: string; // Size in bytes as a string
 }
-
-export interface FrontPageData {
-  id: string;
-  title: string;
-  date: Date;
-  course: {
-    code: string;
-    title: string;
-  };
-  teacher: {
-    name: string;
-    faculty: string;
-    designation: string;
-  };
-  student: {
-    id: string;
-    name: string;
-    batch: string;
-    section: string;
-    dept: string;
-  };
-}
