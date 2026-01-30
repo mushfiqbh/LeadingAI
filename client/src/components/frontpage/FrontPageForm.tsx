@@ -569,7 +569,7 @@ export default function FrontPageForm() {
           </div>
 
           {selectedStudents.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-black/80">
               {selectedStudents.map((student: Student) => (
                 <div
                   key={student.studentId}
@@ -638,7 +638,7 @@ export default function FrontPageForm() {
         />
 
         {/* Group Selection */}
-        <div className="flex flex-wrap gap-4 items-center py-2">
+        <div className="flex flex-wrap gap-4 items-center py-2 text-black/80">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
