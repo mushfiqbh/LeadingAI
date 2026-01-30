@@ -67,7 +67,7 @@ export default function Header({
                     onClick={() => setShowManager(true)}
                     className="text-sm text-gray-500 cursor-pointer"
                   >
-                    <span className="text-green-500 font-semibold">
+                    <span className="text-blue-500 font-semibold">
                       {Number(userProfile?.totalCredits) -
                         Number(userProfile?.usedCredits)}
                     </span>{" "}

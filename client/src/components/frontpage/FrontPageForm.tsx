@@ -22,12 +22,16 @@ export default function FrontPageForm() {
     selectedCourse,
     selectedTeacher,
     selectedStudents,
+    isGroupFrontPage,
+    groupTitle,
     courses,
     teachers,
     students,
     loading,
     setType,
     setTitle,
+    setGroupTitle,
+    setIsGroupFrontPage,
     setDate,
     setCourse,
     setTeacher,
@@ -39,7 +43,6 @@ export default function FrontPageForm() {
     updateTeacher,
     addStudent,
     updateStudent,
-    resetForm,
     shareFrontPage,
     suggestedTeacherIds,
     updateCourseTeacherUsage,
@@ -128,18 +131,18 @@ export default function FrontPageForm() {
 
   const filteredCourses = courses.filter(
     (c: Course) =>
-      c.code.toLowerCase().includes(courseQuery.toLowerCase()) ||
-      c.title.toLowerCase().includes(courseQuery.toLowerCase()) ||
-      c.keywords?.toLowerCase().includes(courseQuery.toLowerCase()),
+      c.code.toLowerCase().includes(courseQuery.trim().toLowerCase()) ||
+      c.title.toLowerCase().includes(courseQuery.trim().toLowerCase()) ||
+      c.keywords?.toLowerCase().includes(courseQuery.trim().toLowerCase()),
   );
 
   const filteredTeachers = teachers
     .filter(
       (t: Teacher) =>
-        t.name.toLowerCase().includes(teacherQuery.toLowerCase()) ||
-        t.faculty.toLowerCase().includes(teacherQuery.toLowerCase()) ||
-        t.designation.toLowerCase().includes(teacherQuery.toLowerCase()) ||
-        t.code?.toLowerCase().includes(teacherQuery.toLowerCase()),
+        t.name.toLowerCase().includes(teacherQuery.trim().toLowerCase()) ||
+        t.faculty.toLowerCase().includes(teacherQuery.trim().toLowerCase()) ||
+        t.designation.toLowerCase().includes(teacherQuery.trim().toLowerCase()) ||
+        t.code?.toLowerCase().includes(teacherQuery.trim().toLowerCase()),
     )
     .sort((a: Teacher, b: Teacher) => {
       const aSuggested = a.id ? suggestedTeacherIds.includes(a.id) : false;
@@ -151,8 +154,8 @@ export default function FrontPageForm() {
 
   const filteredStudents = students.filter(
     (s: Student) =>
-      (s.name.toLowerCase().includes(studentQuery.toLowerCase()) ||
-        s.studentId.toLowerCase().includes(studentQuery.toLowerCase())) &&
+      (s.name.toLowerCase().includes(studentQuery.trim().toLowerCase()) ||
+        s.studentId.toLowerCase().includes(studentQuery.trim().toLowerCase())) &&
       !selectedStudents.some((selected: Student) => selected.studentId === s.studentId),
   );
 
@@ -182,42 +185,67 @@ export default function FrontPageForm() {
       format: "a4",
     });
 
-    selectedStudents.forEach((student: Student, index: number) => {
+    if (isGroupFrontPage) {
       const data = {
-        id: `bulk-${student.studentId}`,
+        id: `group-${selectedCourse.code}`,
         title,
         date,
         course: selectedCourse,
         teacher: selectedTeacher,
+        isGroup: true,
+        groupTitle,
+        students: selectedStudents,
         student: {
-          id: student.studentId,
-          name: student.name,
-          batch: student.batch,
-          section: student.section,
-          dept: student.dept,
+          id: "",
+          name: "",
+          batch: "",
+          section: "",
+          dept: "",
         },
       };
-
-      if (index > 0) {
-        doc.addPage();
-      }
 
       if (type === "assignment") {
         generateAssignment(data, doc);
       } else {
         generateLabReport(data, doc);
       }
-    });
+    } else {
+      selectedStudents.forEach((student: Student, index: number) => {
+        const data = {
+          id: `bulk-${student.studentId}`,
+          title,
+          date,
+          course: selectedCourse,
+          teacher: selectedTeacher,
+          student: {
+            id: student.studentId,
+            name: student.name,
+            batch: student.batch,
+            section: student.section,
+            dept: student.dept,
+          },
+        };
+
+        if (index > 0) {
+          doc.addPage();
+        }
+
+        if (type === "assignment") {
+          generateAssignment(data, doc);
+        } else {
+          generateLabReport(data, doc);
+        }
+      });
+    }
 
     // Update usage cache
     if (selectedCourse.id && selectedTeacher.id) {
       updateCourseTeacherUsage(selectedCourse.id, selectedTeacher.id);
     }
 
+    const shortIds = selectedStudents.map((s) => s.studentId.slice(-3)).join("_");
     doc.save(
-      `${type === "assignment" ? "A" : "LR"}-BULK-${selectedCourse.code}_${
-        selectedStudents.length
-      }_Students.pdf`,
+      `${selectedCourse.code}_(${shortIds})_${isGroupFrontPage ? "Group" : "Bulk"}_${type === "assignment" ? "Assignment" : "LabReport"}.pdf`,
     );
   };
 
@@ -386,7 +414,9 @@ export default function FrontPageForm() {
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-8 bg-white">
-      <div className="space-y-4 mt-5">
+      <div className="space-y-4">
+        <h4 className="text-2xl text-center text-zinc-200 font-semibold mb-4">Friendly Frontpage Generator</h4>
+
         {/* Type Selection */}
         <div className="p-1 bg-zinc-100 rounded-xl inline-flex w-full">
           <button
@@ -607,12 +637,47 @@ export default function FrontPageForm() {
           )}
         />
 
+        {/* Group Selection */}
+        <div className="flex flex-wrap gap-4 items-center py-2">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="frontpageMode"
+              checked={!isGroupFrontPage}
+              onChange={() => setIsGroupFrontPage(false)}
+              className="w-4 h-4 text-black border-zinc-300 focus:ring-black"
+            />
+            <span className="text-sm font-medium">{selectedStudents.length >0 ? `${selectedStudents.length}` : null} Individual Frontpages</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="frontpageMode"
+              checked={isGroupFrontPage}
+              onChange={() => setIsGroupFrontPage(true)}
+              className="w-4 h-4 text-black border-zinc-300 focus:ring-black"
+            />
+            <span className="text-sm font-medium">1 Group Frontpage</span>
+          </label>
+        </div>
+
+        {isGroupFrontPage && (
+          <div className="space-y-1 pb-2">
+            <label className="text-sm font-medium text-zinc-700">Group Name / Number</label>
+            <Input
+              placeholder="e.g. Group A / The Innovators"
+              value={groupTitle}
+              onChange={(e) => setGroupTitle(e.target.value)}
+            />
+          </div>
+        )}
+
         <p id="message" className="text-xs text-red-500">{message}</p>
 
         <div className="flex gap-4">          
           <Button
             variant="success"
-            className="px-6 py-6 text-lg"
+            className="px-4 py-3 text-lg"
             onClick={handleShareWhatsapp}
             disabled={isSubmitting || !selectedCourse || !selectedTeacher || selectedStudents.length === 0}
           >
@@ -621,7 +686,7 @@ export default function FrontPageForm() {
           </Button>
 
           <Button
-            className="py-6 text-lg"
+            className="px-4 py-3 text-lg"
             onClick={handleGenerateBulk}
             disabled={
               !title ||
@@ -631,16 +696,7 @@ export default function FrontPageForm() {
             }
           >
             Download{" "}
-            {selectedStudents.length > 0 ? `${selectedStudents.length} ` : ""}
-            Pages
-          </Button>
-
-          <Button
-            variant="outline"
-            className="px-6 py-6 text-lg border-zinc-200 text-zinc-600 hover:bg-zinc-50"
-            onClick={resetForm}
-          >
-            Clear
+            {isGroupFrontPage ? "Group PDF" : (selectedStudents.length > 0 ? `${selectedStudents.length} Pages` : "PDF")}
           </Button>
         </div>
       </div>

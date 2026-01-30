@@ -12,6 +12,8 @@ interface FrontPageStore {
   selectedTeacher: Teacher | null;
   selectedStudent: Student | null;
   selectedStudents: Student[];
+  isGroupFrontPage: boolean;
+  groupTitle: string;
 
   // Cache Data
   courses: Course[];
@@ -23,6 +25,8 @@ interface FrontPageStore {
   // Actions
   setType: (type: FrontPageType) => void;
   setTitle: (title: string) => void;
+  setGroupTitle: (title: string) => void;
+  setIsGroupFrontPage: (isGroup: boolean) => void;
   setDate: (date: Date) => void;
   setCourse: (course: Course | null) => void;
   setTeacher: (teacher: Teacher | null) => void;
@@ -53,6 +57,8 @@ export const useFrontPageStore = create<FrontPageStore>((set, get) => ({
   selectedTeacher: null,
   selectedStudent: null,
   selectedStudents: [],
+  isGroupFrontPage: false,
+  groupTitle: '',
   
   courses: [],
   teachers: [],
@@ -63,6 +69,8 @@ export const useFrontPageStore = create<FrontPageStore>((set, get) => ({
   // Setters
   setType: (type) => set({ type }),
   setTitle: (title) => set({ title }),
+  setGroupTitle: (groupTitle) => set({ groupTitle }),
+  setIsGroupFrontPage: (isGroupFrontPage) => set({ isGroupFrontPage }),
   setDate: (date) => set({ date }),
   setCourse: (selectedCourse) => {
     set({ selectedCourse });
@@ -83,6 +91,8 @@ export const useFrontPageStore = create<FrontPageStore>((set, get) => ({
     selectedTeacher: null,
     selectedStudent: null,
     selectedStudents: [],
+    isGroupFrontPage: false,
+    groupTitle: '',
     suggestedTeacherIds: [],
   }),
 
@@ -246,7 +256,7 @@ export const useFrontPageStore = create<FrontPageStore>((set, get) => ({
   },
 
   shareFrontPage: async () => {
-    const { type, title, date, selectedCourse, selectedTeacher, selectedStudents } = get();
+    const { type, title, date, selectedCourse, selectedTeacher, selectedStudents, isGroupFrontPage, groupTitle } = get();
     
     if (!selectedCourse || !selectedTeacher || selectedStudents.length === 0) {
       throw new Error("Missing required data to share");
@@ -255,6 +265,8 @@ export const useFrontPageStore = create<FrontPageStore>((set, get) => ({
     const shareData = {
       type,
       title,
+      isGroup: isGroupFrontPage,
+      groupTitle,
       date: date.toISOString(),
       course: selectedCourse,
       teacher: selectedTeacher,
@@ -296,6 +308,8 @@ export const useFrontPageStore = create<FrontPageStore>((set, get) => ({
         set({
           type: data.type,
           title: data.title,
+          isGroupFrontPage: data.isGroup || false,
+          groupTitle: data.groupTitle || '',
           date: new Date(data.date),
           selectedCourse: data.course,
           selectedTeacher: data.teacher,
