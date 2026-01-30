@@ -97,15 +97,24 @@ const generateAssignment = (data: FrontPageData, existingDoc?: jsPDF) => {
     ["Section", data.student.section],
   ];
 
+  const tableWidth = 80;
+  const labelWidth = 30;
+  const tableStartX = (pageWidth - tableWidth) / 2;
+  const tableTopY = submittedByY + 7;
+
   studentInfo.forEach((row, index) => {
-    const y =
-      submittedByY + (index + 1) * rowHeight + 4;
+    const y = tableTopY + (index + 1) * rowHeight - 2;
+    const rowY = tableTopY + index * rowHeight;
+
+    // Draw table cell borders
+    doc.rect(tableStartX, rowY, tableWidth, rowHeight);
+    doc.line(tableStartX + labelWidth, rowY, tableStartX + labelWidth, rowY + rowHeight);
 
     doc.setFont("Times New Roman", "bold");
-    doc.text(row[0], 70, y);
+    doc.text(row[0], tableStartX + 5, y);
 
     doc.setFont("Times New Roman", "normal");
-    doc.text(row[1], 100, y);
+    doc.text(row[1], tableStartX + labelWidth + 5, y);
   });
 
   const submissionDate = new Date(data.date)

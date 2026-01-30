@@ -31,7 +31,7 @@ const generateLabReport = (data: FrontPageData, existingDoc?: jsPDF) => {
 
   doc.setFont("Times New Roman", "bold");
   doc.setFontSize(16);
-  doc.setTextColor("purple");
+  doc.setTextColor("blue");
   doc.text(data.title, pageWidth / 2, 100, "center"); // lab report title
 
   // Course Information Table
@@ -39,12 +39,12 @@ const generateLabReport = (data: FrontPageData, existingDoc?: jsPDF) => {
   const rowHeight = 7; // Adjust row height as needed
 
   const courseInfo = [
-    ["Course Code", data.course.code],
-    ["Course Title", data.course.title],
+    ["Course Code:", data.course.code],
+    [" Course Title:", data.course.title],
   ];
   let courseInfoEnd = courseInfo.length;
 
-  doc.setFontSize(12);
+  doc.setFontSize(14);
   doc.setTextColor("black");
   let inc = 0;
 
@@ -54,22 +54,22 @@ const generateLabReport = (data: FrontPageData, existingDoc?: jsPDF) => {
     const wrappedText = doc.splitTextToSize(row[1], 100);
     courseInfoEnd += wrappedText.length - 1;
 
-    if (row[0] == "Course Title" && wrappedText.length > 1) {
+    if (row[0] == " Course Title:" && wrappedText.length > 1) {
       inc = 1;
     }
 
     doc.setFont("Times New Roman", "normal");
     wrappedText.forEach((line: string, lineIndex: number) => {
-      doc.text(line, 100, y + lineIndex * rowHeight);
+      doc.text(line, 102, y + lineIndex * rowHeight);
     });
 
     doc.setFont("Times New Roman", "bold");
-    doc.text(row[0], 70, y);
+    doc.text(row[0], 72, y);
   });
 
   // Submitted To Section
   doc.setFont("Times New Roman", "bold");
-  doc.setTextColor("purple");
+  doc.setTextColor("gray");
   doc.text(
     "Submitted To",
     pageWidth / 2,
@@ -103,7 +103,7 @@ const generateLabReport = (data: FrontPageData, existingDoc?: jsPDF) => {
 
   // Submitted By Section
   doc.setFont("Times New Roman", "bold");
-  doc.setTextColor("purple");
+  doc.setTextColor("gray");
   doc.text(
     "Submitted By",
     pageWidth / 2,
@@ -118,26 +118,32 @@ const generateLabReport = (data: FrontPageData, existingDoc?: jsPDF) => {
     ["Section", data.student.section],
   ];
 
+  const submittedByTitleY = yPosition + courseInfoEnd * rowHeight + 3 * rowHeight + 50;
+  const tableWidth = 80;
+  const labelWidth = 30;
+  const tableStartX = (pageWidth - tableWidth) / 2;
+  const tableTopY = submittedByTitleY + 7;
+
   doc.setFont("Times New Roman", "normal");
   doc.setTextColor("black");
   studentInfo.forEach((row, index) => {
-    const y =
-      yPosition +
-      courseInfoEnd * rowHeight +
-      3 * rowHeight +
-      40 +
-      (index + 1) * rowHeight;
+    const y = tableTopY + (index + 1) * rowHeight - 2;
+    const rowY = tableTopY + index * rowHeight;
+
+    // Draw table cell borders
+    doc.rect(tableStartX, rowY, tableWidth, rowHeight);
+    doc.line(tableStartX + labelWidth, rowY, tableStartX + labelWidth, rowY + rowHeight);
 
     doc.setFont("Times New Roman", "bold");
-    doc.text(row[0], 70, y + 10);
+    doc.text(row[0], tableStartX + 5, y);
 
     doc.setFont("Times New Roman", "normal");
-    doc.text(row[1], 100, y + 10);
+    doc.text(row[1], tableStartX + labelWidth + 5, y);
   });
 
   // Submission Date
   doc.setFont("Times New Roman", "bold");
-  doc.setTextColor("purple");
+  doc.setTextColor("blue");
   const submissionDate = new Date(data.date)
     .toISOString()
     .split("T")[0]

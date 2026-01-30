@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "default" | "outline" | "ghost";
+  variant?: "default" | "outline" | "success" | "ghost";
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -12,6 +12,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       default: "bg-black text-white hover:bg-zinc-800",
       outline:
         "border border-zinc-300 bg-white text-black hover:bg-zinc-100",
+      success: "bg-green-600 text-white hover:bg-green-700",
       ghost:
         "bg-transparent hover:bg-zinc-100 text-black",
     };

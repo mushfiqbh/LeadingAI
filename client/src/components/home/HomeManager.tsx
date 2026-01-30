@@ -39,8 +39,8 @@ const HomeManager: React.FC<HomeManagerProps> = ({ isAnonymous = false }) => {
   }, [view]);
 
   return (
-    <div className="relative w-full mt-[70px] overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <Header setView={setView} onLoginClick={() => setIsAuthModalOpen(true)} />
+    <div className="relative w-full mt-[40px] overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <Header onLoginClick={() => setIsAuthModalOpen(true)} />
 
       <Modal
         isOpen={isAuthModalOpen}

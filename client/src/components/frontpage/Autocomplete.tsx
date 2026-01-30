@@ -73,24 +73,18 @@ const Autocomplete = <T,>({
           placeholder={placeholder}
           className="pr-10"
         />
-        <button
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-blue-600 transition-colors"
-          onClick={(e) => {
-            e.preventDefault();
-            if (selectedItem && onEdit) {
-              onEdit(selectedItem);
-            } else {
+        {!selectedItem && (
+          <button
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-blue-600 transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
               onCreateNew();
-            }
-          }}
-          type="button"
-        >
-          {selectedItem ? (
-            <Edit2 className="h-4 w-4 text-blue-600" />
-          ) : (
+            }}
+            type="button"
+          >
             <Plus className="h-4 w-4 text-blue-600" />
-          )}
-        </button>
+          </button>
+        )}
       </div>
 
       {isOpen && (
@@ -116,7 +110,17 @@ const Autocomplete = <T,>({
             >
               <Plus className="h-4 w-4" />
               Add New {label}
-            </div>            
+            </div>
+
+            {selectedItem && (<div
+              className="border-t border-zinc-100 px-4 py-2 hover:bg-zinc-50 cursor-pointer text-red-600 flex items-center gap-2 text-sm font-medium"
+              onClick={() => {
+                onSelect(null);
+                setIsOpen(false);
+              }}
+            >
+              Clear
+            </div> )}        
           </div>
 
           {items.length > 0 ? (

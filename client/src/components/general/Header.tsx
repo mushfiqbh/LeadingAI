@@ -11,10 +11,8 @@ import { useRouter } from "next/navigation";
 import CreditsManager from "./CreditsManager";
 
 export default function Header({
-  setView,
   onLoginClick,
 }: {
-  setView?: React.Dispatch<React.SetStateAction<ViewState>>;
   onLoginClick?: () => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -42,16 +40,13 @@ export default function Header({
   }, []);
 
   return (
-    <div className="w-full min-h-[70px] fixed top-0 z-20 bg-white backdrop-blur-md shadow-sm transition-colors">
-      <div className="max-w-7xl mx-auto px-4 py-3">
+    <div className="w-full min-h-[40px] fixed top-0 z-20 bg-white backdrop-blur-md shadow-sm transition-colors">
+      <div className="max-w-7xl mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
-            <div onClick={setView ? () => setView("home") : undefined }>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                Agent
-              </h1>
-              <p className="text-xs text-gray-500">Back To Home</p>
-            </div>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+              LeadingAI
+            </h1>
           </Link>
 
           {!user && (
@@ -72,11 +67,11 @@ export default function Header({
                     onClick={() => setShowManager(true)}
                     className="text-sm text-gray-500 cursor-pointer"
                   >
-                    <span className="text-blue-600 font-semibold">
+                    <span className="text-green-500 font-semibold">
                       {Number(userProfile?.totalCredits) -
                         Number(userProfile?.usedCredits)}
                     </span>{" "}
-                    Credits
+                    AI Credits
                   </button>
                 )
               )}
@@ -128,20 +123,17 @@ export default function Header({
                     </div>
 
                     <div className="py-2">
-                      <button
-                        onClick={() => setView && setView("profile")}
+                      <Link
+                        href="/profile"
                         className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
                       >
                         <CircleUser className="w-4 h-4" />
                         <span className="font-medium">Profile</span>
-                      </button>
+                      </Link>
 
                       {window.location.pathname !== "/" && (
-                        <button
-                          onClick={() => {
-                            router.push("/");
-                            return setView && setView("home");
-                          }}
+                        <Link
+                          href="/"
                           className="flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors duration-200 text-gray-700 hover:text-gray-900"
                         >
                           <svg
@@ -158,7 +150,7 @@ export default function Header({
                             />
                           </svg>
                           <span className="font-medium">Home</span>
-                        </button>
+                        </Link>
                       )}
 
                       <button

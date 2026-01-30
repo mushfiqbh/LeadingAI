@@ -10,7 +10,7 @@ import { Modal } from "../ui/Modal";
 import { Skeleton } from "../ui/Skeleton";
 import generateAssignment from "./generateAssignment";
 import generateLabReport from "./generateLabReport";
-import { Loader2, X, Users } from "lucide-react";
+import { Loader2, X, Users, Share2 } from "lucide-react";
 import { Course, Teacher, Student } from "@/types/frontPage";
 import refineDepartmentName from "@/utils/refineDepartmentName";
 
@@ -40,12 +40,16 @@ export default function FrontPageForm() {
     addStudent,
     updateStudent,
     resetForm,
+    shareFrontPage,
+    suggestedTeacherIds,
+    updateCourseTeacherUsage,
   } = useFrontPageStore();
 
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<string>("");
 
   // New/Edit Item State
   const [newCourse, setNewCourse] = useState<{
@@ -123,30 +127,38 @@ export default function FrontPageForm() {
   };
 
   const filteredCourses = courses.filter(
-    (c) =>
+    (c: Course) =>
       c.code.toLowerCase().includes(courseQuery.toLowerCase()) ||
       c.title.toLowerCase().includes(courseQuery.toLowerCase()) ||
       c.keywords?.toLowerCase().includes(courseQuery.toLowerCase()),
   );
 
-  const filteredTeachers = teachers.filter(
-    (t) =>
-      t.name.toLowerCase().includes(teacherQuery.toLowerCase()) ||
-      t.faculty.toLowerCase().includes(teacherQuery.toLowerCase()) ||
-      t.designation.toLowerCase().includes(teacherQuery.toLowerCase()) ||
-      t.code?.toLowerCase().includes(teacherQuery.toLowerCase()),
-  );
+  const filteredTeachers = teachers
+    .filter(
+      (t: Teacher) =>
+        t.name.toLowerCase().includes(teacherQuery.toLowerCase()) ||
+        t.faculty.toLowerCase().includes(teacherQuery.toLowerCase()) ||
+        t.designation.toLowerCase().includes(teacherQuery.toLowerCase()) ||
+        t.code?.toLowerCase().includes(teacherQuery.toLowerCase()),
+    )
+    .sort((a: Teacher, b: Teacher) => {
+      const aSuggested = a.id ? suggestedTeacherIds.includes(a.id) : false;
+      const bSuggested = b.id ? suggestedTeacherIds.includes(b.id) : false;
+      if (aSuggested && !bSuggested) return -1;
+      if (!aSuggested && bSuggested) return 1;
+      return 0;
+    });
 
   const filteredStudents = students.filter(
-    (s) =>
+    (s: Student) =>
       (s.name.toLowerCase().includes(studentQuery.toLowerCase()) ||
         s.studentId.toLowerCase().includes(studentQuery.toLowerCase())) &&
-      !selectedStudents.some((selected) => selected.studentId === s.studentId),
+      !selectedStudents.some((selected: Student) => selected.studentId === s.studentId),
   );
 
   const handleAddStudentToList = (student: Student | null) => {
     if (!student) return;
-    if (!selectedStudents.some((s) => s.studentId === student.studentId)) {
+    if (!selectedStudents.some((s: Student) => s.studentId === student.studentId)) {
       setSelectedStudents([...selectedStudents, student]);
     }
     setStudentQuery("");
@@ -154,13 +166,13 @@ export default function FrontPageForm() {
 
   const handleRemoveStudentFromList = (studentId: string) => {
     setSelectedStudents(
-      selectedStudents.filter((s) => s.studentId !== studentId),
+      selectedStudents.filter((s: Student) => s.studentId !== studentId),
     );
   };
 
   const handleGenerateBulk = async () => {
-    if (!selectedCourse || !selectedTeacher || selectedStudents.length === 0) {
-      alert("Please select Course, Teacher, and at least one Student.");
+    if ( !title || !selectedCourse || !selectedTeacher || selectedStudents.length === 0) {
+      setMessage("Please fill in all required fields before generating PDF.");
       return;
     }
 
@@ -170,7 +182,7 @@ export default function FrontPageForm() {
       format: "a4",
     });
 
-    selectedStudents.forEach((student, index) => {
+    selectedStudents.forEach((student: Student, index: number) => {
       const data = {
         id: `bulk-${student.studentId}`,
         title,
@@ -197,11 +209,42 @@ export default function FrontPageForm() {
       }
     });
 
+    // Update usage cache
+    if (selectedCourse.id && selectedTeacher.id) {
+      updateCourseTeacherUsage(selectedCourse.id, selectedTeacher.id);
+    }
+
     doc.save(
       `${type === "assignment" ? "A" : "LR"}-BULK-${selectedCourse.code}_${
         selectedStudents.length
       }_Students.pdf`,
     );
+  };
+
+  const handleShareWhatsapp = async () => {
+    if (!title || !selectedCourse || !selectedTeacher || selectedStudents.length === 0) {
+      setMessage("Please fill in all required fields before sharing.");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    try {
+      const shareId = await shareFrontPage();
+      const shareUrl = `${window.location.origin}/frontpage/share/${shareId}`;
+      const text = `Hey! I've prepared the front pages for ${selectedCourse.code} (${selectedCourse.title}). You can download and edit them here: ${shareUrl}`;
+      
+      // Update usage cache
+      if (selectedCourse.id && selectedTeacher.id) {
+        updateCourseTeacherUsage(selectedCourse.id, selectedTeacher.id);
+      }
+      
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, "_blank");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to create share link.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const submitCourse = async () => {
@@ -217,7 +260,8 @@ export default function FrontPageForm() {
       if (newCourse.id) {
         await updateCourse(newCourse.id, courseData);
       } else {
-        await addCourse(courseData);
+        const added = await addCourse(courseData);
+        setCourse(added);
       }
       setIsCourseModalOpen(false);
       setNewCourse({ code: "", title: "", keywords: "" });
@@ -243,7 +287,8 @@ export default function FrontPageForm() {
       if (newTeacher.id) {
         await updateTeacher(newTeacher.id, teacherData);
       } else {
-        await addTeacher(teacherData);
+        const added = await addTeacher(teacherData);
+        setTeacher(added);
       }
       setIsTeacherModalOpen(false);
       setNewTeacher({ code: "", name: "", faculty: "", designation: "" });
@@ -276,9 +321,9 @@ export default function FrontPageForm() {
       if (newStudent.id) {
         await updateStudent(newStudent.id, studentData);
       } else {
-        await addStudent(studentData);
+        const added = await addStudent(studentData);
         // Automatically add the new student to the selected list
-        handleAddStudentToList({ id: studentData.studentId, ...studentData });
+        handleAddStudentToList(added);
       }
       setIsStudentModalOpen(false);
       setNewStudent({
@@ -374,6 +419,7 @@ export default function FrontPageForm() {
               placeholder={
                 type === "assignment" ? "Assignment Title" : "Experiment Name"
               }
+              required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
@@ -461,18 +507,25 @@ export default function FrontPageForm() {
                 : ""
             }
             renderItem={(item) => (
-              <div>
-                <div className="font-medium">
-                  {item.name}{" "}
-                  {item.code && (
-                    <span className="text-zinc-400 font-normal ml-1">
-                      ({item.code})
-                    </span>
-                  )}
+              <div className="flex justify-start items-center w-full">
+                <div className="min-w-0">
+                  <div className="font-medium truncate">
+                    {item.name}{" "}
+                    {item.code && (
+                      <span className="text-zinc-400 font-normal ml-1">
+                        ({item.code})
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs text-zinc-500 truncate">
+                    {item.designation}, {item.faculty}
+                  </div>
                 </div>
-                <div className="text-xs text-zinc-500">
-                  {item.designation}, {item.faculty}
-                </div>
+                {item.id && suggestedTeacherIds.includes(item.id) && (
+                  <span className="flex-shrink-0 ml-2 bg-green-100 text-green-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider border border-green-400">
+                    Suggested
+                  </span>
+                )}
               </div>
             )}
           />
@@ -487,10 +540,10 @@ export default function FrontPageForm() {
 
           {selectedStudents.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {selectedStudents.map((student) => (
+              {selectedStudents.map((student: Student) => (
                 <div
                   key={student.studentId}
-                  className="flex items-center justify-between p-3 bg-zinc-50 border border-zinc-200 rounded-xl"
+                  className="flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-xl"
                 >
                   <div className="min-w-0">
                     <div className="text-sm font-bold truncate">
@@ -524,13 +577,11 @@ export default function FrontPageForm() {
               ))}
             </div>
           )}
-          
-          <p className="text-xs text-red-400">&#9432; This will generate same Frontpages with different student details (Not Group Frontpage)</p>
         </div>
 
         <Autocomplete
           label="Students"
-          placeholder="Search by ID/ Name and click to add..."
+          placeholder="Search by short ID/ Name and click to add..."
           items={filteredStudents}
           onSearch={setStudentQuery}
           onSelect={handleAddStudentToList}
@@ -556,9 +607,21 @@ export default function FrontPageForm() {
           )}
         />
 
-        <div className="flex gap-4">
+        <p id="message" className="text-xs text-red-500">{message}</p>
+
+        <div className="flex gap-4">          
           <Button
-            className="flex-1 py-6 text-lg"
+            variant="success"
+            className="px-6 py-6 text-lg"
+            onClick={handleShareWhatsapp}
+            disabled={isSubmitting || !selectedCourse || !selectedTeacher || selectedStudents.length === 0}
+          >
+            {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Share2 className="h-5 w-5 mr-1" />}
+            Share to WhatsApp
+          </Button>
+
+          <Button
+            className="py-6 text-lg"
             onClick={handleGenerateBulk}
             disabled={
               !title ||
@@ -567,10 +630,11 @@ export default function FrontPageForm() {
               selectedStudents.length === 0
             }
           >
-            Generate{" "}
+            Download{" "}
             {selectedStudents.length > 0 ? `${selectedStudents.length} ` : ""}
             Pages
           </Button>
+
           <Button
             variant="outline"
             className="px-6 py-6 text-lg border-zinc-200 text-zinc-600 hover:bg-zinc-50"
