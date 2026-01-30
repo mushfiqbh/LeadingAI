@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { AlertCircle, MessageSquare, Clock, Settings, FileText, UserCircle } from "lucide-react";
-import Link from "next/link";
+import { AlertCircle, MessageSquare, Clock, Settings, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ActionCard from "../ui/ActionCard";
 import { AuthContext } from "@/context/AuthContext";
@@ -37,6 +36,28 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, content, action }) => {
 };
 
 
+interface ClassInfo {
+  time: string;
+  subject: string;
+  teacher: string;
+  room: string;
+}
+
+interface RoutineSchedule {
+  batch: string | number;
+  section: string;
+  content: string;
+}
+
+interface RoutineDay {
+  day: string;
+  classes: Array<{
+    course: string;
+    time: string;
+    room?: string;
+  }>;
+}
+
 const DailyHub: React.FC = () => {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -49,7 +70,7 @@ const DailyHub: React.FC = () => {
   const [dept, setDept] = useState("");
   const [batch, setBatch] = useState("");
   const [section, setSection] = useState("");
-  const [todayClasses, setTodayClasses] = useState<any[]>([]);
+  const [todayClasses, setTodayClasses] = useState<ClassInfo[]>([]);
   const [displayDayLabel, setDisplayDayLabel] = useState("Today");
   const [loadingRoutine, setLoadingRoutine] = useState(false);
 
@@ -57,7 +78,7 @@ const DailyHub: React.FC = () => {
     if (courses.length === 0 || teachers.length === 0) {
       fetchFrontPageData();
     }
-  }, []);
+  }, [courses.length, teachers.length, fetchFrontPageData]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -83,29 +104,29 @@ const DailyHub: React.FC = () => {
       try {
         const routineDoc = await getLatestClassRoutine(refinedDept);
         if (routineDoc) {
-          const schedules = routineDoc.schedules || [];
+          const schedules: RoutineSchedule[] = routineDoc.schedules || [];
           
-          const userSchedule = schedules.find((s: any) => 
+          const userSchedule = schedules.find((s: RoutineSchedule) => 
             String(s.batch) === String(batch) && 
             s.section.toLowerCase() === section.toLowerCase()
           );
 
           if (userSchedule && userSchedule.content) {
-            const content = JSON.parse(userSchedule.content);
+            const content: RoutineDay[] = JSON.parse(userSchedule.content);
             const daysOrder = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             const today = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
             const todayIndex = daysOrder.indexOf(today);
 
-            let foundClasses = [];
+            let foundClasses: ClassInfo[] = [];
             let foundDayLabel = "Today";
 
             for (let i = 0; i < 7; i++) {
               const checkIndex = (todayIndex + i) % 7;
               const checkDay = daysOrder[checkIndex];
-              const dayData = content.find((d: any) => d.day === checkDay);
+              const dayData = content.find((d: RoutineDay) => d.day === checkDay);
               
               if (dayData && dayData.classes && dayData.classes.length > 0) {
-                foundClasses = dayData.classes.map((c: any) => {
+                foundClasses = dayData.classes.map((c: { course: string; time: string; room?: string }) => {
                   const regex = /^\s*([A-Z]{3}\s*-\s*\d{4})\s+([A-Z]{2,3})\s+(.+)\s*$/i;
                   const match = c.course.match(regex);
                   
@@ -114,7 +135,7 @@ const DailyHub: React.FC = () => {
                   let roomNo = c.room || "N/A";
 
                   if (match) {
-                    let [, extractedCC, extractedTC, extractedRN] = match;
+                    const [, extractedCC, extractedTC, extractedRN] = match;
                     const courseCode = extractedCC.replace(/\s*-\s*/, "-").toUpperCase();
                     const teacherCode = extractedTC.toUpperCase();
                     roomNo = extractedRN.trim();
@@ -173,11 +194,6 @@ const DailyHub: React.FC = () => {
   const urgentNotices = [
     "Assignment submission deadline extended to Jan 20",
     "Library will be closed on Jan 18 for maintenance",
-  ];
-
-  const upcomingExams = [
-    { subject: "Data Structures", date: "Jan 25, 2026", type: "Midterm" },
-    { subject: "Web Development", date: "Jan 28, 2026", type: "Quiz" },
   ];
 
   const cardsData = [

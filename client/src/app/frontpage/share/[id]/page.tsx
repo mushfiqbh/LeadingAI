@@ -20,7 +20,7 @@ export default function SharedFrontPage() {
       if (id && typeof id === "string") {
         try {
           await loadSharedFrontPage(id);
-        } catch (err) {
+        } catch {
           setError("This shared link is invalid or has expired.");
         } finally {
           setIsInitialLoading(false);
@@ -62,7 +62,7 @@ export default function SharedFrontPage() {
           <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-blue-800 text-sm flex items-center gap-3">
             <AlertCircle className="h-5 w-5 flex-shrink-0" />
             <p>
-              You're viewing shared front pages. You can edit the details below and download them as PDF.
+              You&lsquo;re viewing shared front pages. You can edit the details below and download them as PDF.
             </p>
           </div>
         </div>
