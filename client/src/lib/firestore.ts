@@ -16,7 +16,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 import { User } from "firebase/auth";
-import { Link, Notice, Routine, UserProfile } from "@/types/types";
+import { Link, Notice, Routine, RoutineBase, UserProfile } from "@/types/types";
 
 export const getUserProfileFS = async (uid: string) => {
   if (!uid) {
@@ -201,7 +201,7 @@ export const getRoutinesWithPagination = async (
 };
 
 export const createRoutineFS = async (
-  routineData: Omit<Routine, "id" | "createdAt" | "updatedAt">
+  routineData: RoutineBase
 ) => {
   try {
     const routinesRef = collection(db, "routines");

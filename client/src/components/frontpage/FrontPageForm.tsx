@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import jsPDF from "jspdf";
 import { useFrontPageStore } from "@/store/useFrontPageStore";
 import Autocomplete from "./Autocomplete";

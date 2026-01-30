@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import ActionCard from "../ui/ActionCard";
 import { Modal } from "../ui/Modal";
 import NoticeShare from "../contribute/tabs/NoticeShare";
