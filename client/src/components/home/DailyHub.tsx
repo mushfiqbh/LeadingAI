@@ -13,7 +13,6 @@ import refineDepartmentName from "@/utils/refineDepartmentName";
 import { updateUserProfileFS, getLatestClassRoutine } from "@/lib/firestore";
 import { useFrontPageStore } from "@/store/useFrontPageStore";
 import QuickContribute from "./QuickContribute";
-import AuthForm from "../auth/AuthForm";
 
 interface InfoCardProps {
   title: string;

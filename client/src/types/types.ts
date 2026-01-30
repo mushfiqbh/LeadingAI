@@ -81,22 +81,25 @@ export interface ClassSchedule {
 }
 //  example of content: [{"day":"Sunday","classes":[{"course":"CSE-1151 STA RAB-304","time":"08:50-10:00AM","slot":1}]
 
-export interface Routine {
+export interface RoutineBase {
   id?: string;
   category: "class-routine" | "exam-routine" | "unset";
-  title?: string;
-  sheetUrl: string;
-  semester?: string;
-  department?: string;
-  content?: string;
-  batch: number;
-  section: string;
-  timeSlots?: string[];
-  schedules?: ClassSchedule[];
+  sheetUrl: string;  
   contributor: {
     uid: string;
     name: string;
-  };
+  }; 
+}
+
+export interface Routine extends RoutineBase {
+  title?: string;
+  semester?: string;
+  department?: string;
+  content?: string;
+  batch?: number;
+  section?: string;
+  timeSlots?: string[];
+  schedules?: ClassSchedule[];
   createdAt?: Date | Timestamp;
-  updatedAt?: Date | Timestamp;  
+  updatedAt?: Date | Timestamp; 
 }

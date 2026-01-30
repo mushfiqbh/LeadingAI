@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useFrontPageStore } from "@/store/useFrontPageStore";
 import FrontPageForm from "@/components/frontpage/FrontPageForm";
