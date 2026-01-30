@@ -1,6 +1,5 @@
 "use client";
 
-import type { ViewState } from "@/types/types";
 import { useAuth } from "@/context/AuthContext";
 import { logout } from "@/lib/authFunctions";
 import { Check, CircleUser } from "lucide-react";
@@ -10,11 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import CreditsManager from "./CreditsManager";
 
-export default function Header({
-  onLoginClick,
-}: {
-  onLoginClick?: () => void;
-}) {
+export default function Header() {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const {
@@ -48,12 +43,6 @@ export default function Header({
               LeadingAI
             </h1>
           </Link>
-
-          {!user && (
-            <div>
-              <button onClick={onLoginClick} className="px-2 py-1 font-medium border border-black/80 rounded-2xl cursor-pointer hover:-translate-y-0.5">Login</button>
-            </div>
-          )}
 
           {user && (
             <div className="flex items-center gap-5">

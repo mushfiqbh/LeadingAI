@@ -1,37 +1,46 @@
-import { StaticImageData } from "next/image";
-import Image from "next/image";
+import { LucideIcon } from "lucide-react";
 
 interface ActionCardProps {
   title: string;
   description: string;
-  image: StaticImageData;
   onClick?: () => void;
+  icon?: LucideIcon;
+  color?: string;
 }
 
 const ActionCard: React.FC<ActionCardProps> = ({
   title,
   description,
-  image,
   onClick,
+  icon: Icon,
+  color = "blue",
 }) => {
+  const colorVariants: { [key: string]: string } = {
+    blue: "border-l-blue-500 hover:bg-blue-50/30",
+    purple: "border-l-purple-500 hover:bg-purple-50/30",
+    orange: "border-l-orange-500 hover:bg-orange-50/30",
+    green: "border-l-green-500 hover:bg-green-50/30",
+    indigo: "border-l-indigo-500 hover:bg-indigo-50/30",
+    rose: "border-l-rose-500 hover:bg-rose-50/30",
+  };
+
   return (
     <div
       onClick={onClick}
-      className="relative flex flex-col justify-center items-start text-left w-full h-32 p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 group cursor-pointer overflow-hidden bg-gradient-to-r from-white to-gray-200"
+      className={`relative flex flex-col justify-between items-start text-left w-full min-h-[140px] p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 border-l-4 group cursor-pointer bg-white ${colorVariants[color] || colorVariants.blue}`}
     >
-      <div className="absolute right-0 top-0 bottom-0 w-3/5 h-full mix-blend-normal">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover [mask-image:linear-gradient(to_right,transparent,black)]"
-          priority
-        />
-      </div>
-
-      <div className="relative z-10 max-w-[65%]">
-        <h3 className="font-bold mb-1 text-lg">{title}</h3>
-        <p className="text-sm text-gray-700 font-medium">{description}</p>
+      <div className="space-y-2 w-full">
+        <div className="flex justify-between items-start w-full">
+          <h3 className="font-bold text-gray-800 text-lg leading-tight group-hover:text-blue-600 transition-colors">
+            {title}
+          </h3>
+          {Icon && (
+            <div className={`p-2 rounded-xl bg-gray-50 group-hover:scale-110 transition-transform`}>
+              <Icon className="w-5 h-5 text-gray-400 group-hover:text-blue-500" />
+            </div>
+          )}
+        </div>
+        <p className="text-sm text-gray-500 font-medium line-clamp-2">{description}</p>
       </div>
     </div>
   );

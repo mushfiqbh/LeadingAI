@@ -1,26 +1,35 @@
 "use client";
 
-import React, { Dispatch, useEffect, useRef, useState } from "react";
-import { AlertCircle, MessageSquare, Clock } from "lucide-react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { AlertCircle, MessageSquare, Clock, Settings, FileText, UserCircle } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ViewState } from "@/types/types";
 import ActionCard from "../ui/ActionCard";
-import ProfileImage from "@/assets/profile.png";
-import FrontPageImage from "@/assets/front-page.png";
-import ContributeImage from "@/assets/contribute.png";
-import ScheduleImage from "@/assets/schedule.png";
+import { AuthContext } from "@/context/AuthContext";
+import { Modal } from "../ui/Modal";
+import { Input } from "../ui/Input";
+import { Button } from "../ui/Button";
+import refineDepartmentName from "@/utils/refineDepartmentName";
+import { updateUserProfileFS, getLatestClassRoutine } from "@/lib/firestore";
+import { useFrontPageStore } from "@/store/useFrontPageStore";
+import QuickContribute from "./QuickContribute";
+import AuthForm from "../auth/AuthForm";
 
 interface InfoCardProps {
   title: string;
   content: React.ReactNode;
+  action?: React.ReactNode;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({ title, content }) => {
+const InfoCard: React.FC<InfoCardProps> = ({ title, content, action }) => {
   return (
     <div className="min-w-[85vw] md:min-w-[400px] snap-center bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200">
       <div className="flex items-start gap-4">
         <div className="flex-1">
-          <h3 className="font-semibold text-gray-800 mb-2">{title}</h3>
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold text-gray-800">{title}</h3>
+            {action}
+          </div>
           <div className="text-gray-600 text-sm">{content}</div>
         </div>
       </div>
@@ -28,29 +37,139 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, content }) => {
   );
 };
 
-interface DailyHubProps {
-  setView?: Dispatch<React.SetStateAction<ViewState>>;
-  onLoginClick?: () => void;
-  isAnonymous?: boolean;
-}
 
-const DailyHub: React.FC<DailyHubProps> = ({
-  setView,
-  onLoginClick,
-  isAnonymous,
-}) => {
+const DailyHub: React.FC = () => {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Mock data - replace with actual data from your backend
-  const todayClasses = [
-    { time: "09:00 AM", subject: "Data Structures", room: "Room 301" },
-    { time: "11:00 AM", subject: "Web Development", room: "Lab 2" },
-    { time: "02:00 PM", subject: "Database Systems", room: "Room 205" },
-    { time: "02:00 PM", subject: "Database Systems", room: "Room 205" },
-  ];
+  const { user, userProfile } = useContext(AuthContext);
+  const { courses, teachers, fetchData: fetchFrontPageData } = useFrontPageStore();
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [dept, setDept] = useState("");
+  const [batch, setBatch] = useState("");
+  const [section, setSection] = useState("");
+  const [todayClasses, setTodayClasses] = useState<any[]>([]);
+  const [displayDayLabel, setDisplayDayLabel] = useState("Today");
+  const [loadingRoutine, setLoadingRoutine] = useState(false);
+
+  useEffect(() => {
+    if (courses.length === 0 || teachers.length === 0) {
+      fetchFrontPageData();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedInfo = localStorage.getItem("user_info");
+      const parsed = savedInfo ? JSON.parse(savedInfo) : null;
+
+      setDept(userProfile?.department || parsed?.department || "");
+      setBatch(userProfile?.batch || parsed?.batch || "");
+      setSection(userProfile?.section || parsed?.section || "");
+    }
+  }, [userProfile]);
+
+  useEffect(() => {
+    const fetchRoutine = async () => {
+      if (!dept || !batch || !section) {
+        setTodayClasses([]);
+        return;
+      }
+      setLoadingRoutine(true);
+
+      const refinedDept = refineDepartmentName(dept);
+
+      try {
+        const routineDoc = await getLatestClassRoutine(refinedDept);
+        if (routineDoc) {
+          const schedules = routineDoc.schedules || [];
+          
+          const userSchedule = schedules.find((s: any) => 
+            String(s.batch) === String(batch) && 
+            s.section.toLowerCase() === section.toLowerCase()
+          );
+
+          if (userSchedule && userSchedule.content) {
+            const content = JSON.parse(userSchedule.content);
+            const daysOrder = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const today = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
+            const todayIndex = daysOrder.indexOf(today);
+
+            let foundClasses = [];
+            let foundDayLabel = "Today";
+
+            for (let i = 0; i < 7; i++) {
+              const checkIndex = (todayIndex + i) % 7;
+              const checkDay = daysOrder[checkIndex];
+              const dayData = content.find((d: any) => d.day === checkDay);
+              
+              if (dayData && dayData.classes && dayData.classes.length > 0) {
+                foundClasses = dayData.classes.map((c: any) => {
+                  const regex = /^\s*([A-Z]{3}\s*-\s*\d{4})\s+([A-Z]{2,3})\s+(.+)\s*$/i;
+                  const match = c.course.match(regex);
+                  
+                  let courseTitle = c.course;
+                  let teacherName = "";
+                  let roomNo = c.room || "N/A";
+
+                  if (match) {
+                    let [, extractedCC, extractedTC, extractedRN] = match;
+                    const courseCode = extractedCC.replace(/\s*-\s*/, "-").toUpperCase();
+                    const teacherCode = extractedTC.toUpperCase();
+                    roomNo = extractedRN.trim();
+
+                    const courseObj = courses.find((crs) => crs.code === courseCode);
+                    const teacherObj = teachers.find((t) => t.code === teacherCode);
+
+                    courseTitle = courseObj ? courseObj.title : courseCode;
+                    teacherName = teacherObj ? teacherObj.name : teacherCode;
+                  }
+
+                  return {
+                    time: c.time,
+                    subject: courseTitle,
+                    teacher: teacherName,
+                    room: roomNo
+                  };
+                });
+                foundDayLabel = i === 0 ? "Today" : i === 1 ? "Tomorrow" : checkDay;
+                break;
+              }
+            }
+
+            setTodayClasses(foundClasses);
+            setDisplayDayLabel(foundDayLabel);
+          } else {
+            setTodayClasses([]);
+            setDisplayDayLabel("Today");
+          }
+        } else {
+          setTodayClasses([]);
+          setDisplayDayLabel("Today");
+        }
+      } catch (error) {
+        console.error("Error fetching routine:", error);
+        setTodayClasses([]);
+        setDisplayDayLabel("Today");
+      } finally {
+        setLoadingRoutine(false);
+      }
+    };
+
+    fetchRoutine();
+  }, [dept, batch, section, courses, teachers]);
+
+  const handleUpdateInfo = async () => {
+    const info = { department: dept, batch, section };
+    if (user) {
+      await updateUserProfileFS(user, info);
+    } else {
+      localStorage.setItem("user_info", JSON.stringify(info));
+    }
+    setIsUpdateModalOpen(false);
+  };
 
   const urgentNotices = [
     "Assignment submission deadline extended to Jan 20",
@@ -65,28 +184,59 @@ const DailyHub: React.FC<DailyHubProps> = ({
   const cardsData = [
     {
       id: "classes",
-      title: "Today's Classes",
+      title: displayDayLabel === "Today" ? "Today's Classes" : `${displayDayLabel}'s Classes`,
+      action: (
+        <button 
+          onClick={() => setIsUpdateModalOpen(true)}
+          className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+        >
+          <Settings className="w-3 h-3" />
+          Update Info
+        </button>
+      ),
       content: (
         <div className="space-y-3 max-h-52 overflow-y-auto pr-2">
-          {todayClasses.length > 0 ? (
+          {loadingRoutine ? (
+            <p className="text-gray-500 italic">Loading routine...</p>
+          ) : todayClasses.length > 0 ? (
             todayClasses.map((cls, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors"
+                className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors"
               >
-                <Clock className="w-4 h-4 text-gray-500" />
                 <div className="flex-1">
-                  <p className="font-medium text-gray-800">{cls.subject}</p>
-                  <p className="text-xs text-gray-500">
-                    {cls.time} • {cls.room}
-                  </p>
+                  <p className="font-medium text-gray-800 leading-tight">{cls.subject}</p>
+                  {cls.teacher && (
+                    <p className="text-xs text-blue-600 font-medium mt-0.5">{cls.teacher}</p>
+                  )}
+                </div>
+                <div className="text-right flex flex-col items-end gap-1 shrink-0">
+                  <div className="flex items-center gap-1 text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded-md">
+                    <Clock className="w-3 h-3" />
+                    {cls.time}
+                  </div>
+                  <div className="text-[11px] text-gray-500 font-medium bg-gray-100 px-2 py-0.5 rounded-md">
+                    {cls.room}
+                  </div>
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-gray-500 italic">
-              No classes scheduled for today
-            </p>
+            <div className="text-center py-4">
+              <p className="text-gray-500 italic">
+                {(!dept || !batch || !section) 
+                  ? "Set your department, batch, and section to see today's routine" 
+                  : "No classes scheduled for today"}
+              </p>
+              {(!dept || !batch || !section) && (
+                <button 
+                  onClick={() => setIsUpdateModalOpen(true)}
+                  className="mt-2 text-sm text-blue-600 hover:underline"
+                >
+                  Update Information
+                </button>
+              )}
+            </div>
           )}
         </div>
       ),
@@ -112,38 +262,6 @@ const DailyHub: React.FC<DailyHubProps> = ({
         </div>
       ),
     },
-    {
-      id: "exams",
-      title: "Upcoming Exams & Deadlines",
-      content: (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 relative">
-          {isAnonymous && (
-            <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-lg">
-              <span className="text-xs font-semibold text-gray-500 bg-white px-2 py-1 rounded shadow-sm">
-                Login to view
-              </span>
-            </div>
-          )}
-          {upcomingExams.length > 0 ? (
-            upcomingExams.map((exam, idx) => (
-              <div
-                key={idx}
-                className="p-3 bg-purple-50 rounded-lg border border-purple-200"
-              >
-                <p className="font-medium text-gray-800">{exam.subject}</p>
-                <p className="text-sm text-gray-600">
-                  {exam.type} • {exam.date}
-                </p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 italic">
-              No upcoming exams or deadlines
-            </p>
-          )}
-        </div>
-      ),
-    },
   ];
 
   // Infinite scroll logic
@@ -164,7 +282,7 @@ const DailyHub: React.FC<DailyHubProps> = ({
           container.scrollBy({ left: scrollAmount, behavior: "smooth" });
         }
       }
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [isPaused]);
@@ -211,6 +329,7 @@ const DailyHub: React.FC<DailyHubProps> = ({
                 key={`${card.id}-${idx}`}
                 title={card.title}
                 content={card.content}
+                action={card.action}
               />
             ))}
           </div>
@@ -239,51 +358,28 @@ const DailyHub: React.FC<DailyHubProps> = ({
           </div>
         </div>
 
-        <div className="relative group">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <MessageSquare className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+        <div className="space-y-6 pt-4">
+          <h2 className="text-xl font-bold text-gray-800">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ActionCard
+              onClick={() => router.push("/frontpage")}
+              title="Generate Frontpage"
+              description="Create professional academic cover pages"
+              icon={FileText}
+              color="blue"
+            />
+            
+            <ActionCard
+              onClick={() => router.push("/chat")}
+              title="Chat with AI"
+              description="Get instant help with your academic tasks"
+              icon={MessageSquare}
+              color="blue"
+            />
           </div>
-          <button
-            className="block w-full pl-11 pr-4 py-4 border border-gray-200 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 font-medium shadow-sm transition-all duration-300 hover:shadow-lg hover:border-blue-300 text-lg"
-            onClick={() => setView && setView('chat')}
-          >Chat </button>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
-          <ActionCard
-            onClick={
-              () => router.push("/frontpage")
-            }
-            title="Generate Frontpage"
-            description="Create professional academic cover pages"
-            image={FrontPageImage}
-          />
-
-          <ActionCard
-            title="Generate Routine Image"
-            description="Generate schedules for your classes or exams"
-            image={ScheduleImage}
-          />
-
-          <ActionCard
-            title="Contribute Content"
-            description="Share New Notice, Routine or Drive link"
-            image={ContributeImage}
-            onClick={() => setView && setView("share")}
-          />
-          
-          <ActionCard
-            title="Update Profile"
-            description="Manage your personal information and settings"
-            image={ProfileImage}
-            onClick={() => {
-              if (isAnonymous && onLoginClick) {
-                onLoginClick();
-              } else {
-                return setView && setView("profile");
-              }
-            }}
-          />
+          <h2 className="text-xl font-bold text-gray-800 pt-4">Contribute</h2>
+          <QuickContribute />
         </div>
       </div>      
 
@@ -294,6 +390,49 @@ const DailyHub: React.FC<DailyHubProps> = ({
           Developed by <a href="https://github.com/mushfiqbh" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Mushfiq R.</a>
         </div>
       </div>
+
+      {/* Update Info Modal */}
+      <Modal isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)}>
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold">Update Your Information</h3>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Department</label>
+            <Input 
+              value={dept} 
+              onChange={(e) => setDept(e.target.value)}
+              placeholder="e.g. CSE, EEE, Architecture"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Batch</label>
+              <Input 
+                value={batch} 
+                onChange={(e) => setBatch(e.target.value)}
+                placeholder="e.g. 58"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Section</label>
+              <Input 
+                value={section} 
+                onChange={(e) => setSection(e.target.value)}
+                placeholder="e.g. A"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 mt-6">
+            <Button variant="outline" onClick={() => setIsUpdateModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateInfo}>
+              Save Information
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

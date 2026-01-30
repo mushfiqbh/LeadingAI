@@ -259,7 +259,7 @@ export default function FrontPageForm() {
     try {
       const shareId = await shareFrontPage();
       const shareUrl = `${window.location.origin}/frontpage/share/${shareId}`;
-      const text = `Hey! I've prepared the front pages for ${selectedCourse.code} (${selectedCourse.title}). You can download and edit them here: ${shareUrl}`;
+      const text = `Hey! I've prepared the front pages for ${selectedCourse.code}, Student ID(s): ${selectedStudents.map(s => s.studentId).join(", ")}. You can download and edit here: ${shareUrl}`;
       
       // Update usage cache
       if (selectedCourse.id && selectedTeacher.id) {

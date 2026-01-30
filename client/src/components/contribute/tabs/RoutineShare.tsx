@@ -87,7 +87,7 @@ export default function RoutineShare() {
   }, [fetchRoutines, hasMore, loadingMore, fetchStatus, loadMoreRoutines]);
 
   return (
-    <div className="w-full md:w-1/2 mx-auto p-6">
+    <div className="w-full mx-auto p-6">
       <RoutineUploadForm onUploadSuccess={() => fetchRoutines(true)} />
 
       <div className="mt-8">

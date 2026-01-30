@@ -1,7 +1,5 @@
 import { Timestamp } from "firebase/firestore";
 
-export type ViewState = "home" | "chat" | "share" | "profile";
-
 export interface ChatMessage {
   text: string;
   image?: File | null;
@@ -68,6 +66,21 @@ export interface Notice {
   updatedAt: Date | Timestamp;
 }
 
+export interface Link {
+  id: string;
+  title: string;
+  description?: string;
+  url: string;
+  createdAt?: Date | Timestamp;
+}
+
+export interface ClassSchedule {
+  batch: string;
+  section: string;
+  content: string;
+}
+//  example of content: [{"day":"Sunday","classes":[{"course":"CSE-1151 STA RAB-304","time":"08:50-10:00AM","slot":1}]
+
 export interface Routine {
   id?: string;
   category: "class-routine" | "exam-routine" | "unset";
@@ -76,18 +89,14 @@ export interface Routine {
   semester?: string;
   department?: string;
   content?: string;
+  batch: number;
+  section: string;
+  timeSlots?: string[];
+  schedules?: ClassSchedule[];
   contributor: {
     uid: string;
     name: string;
   };
   createdAt?: Date | Timestamp;
-  updatedAt?: Date | Timestamp;
-}
-
-export interface Link {
-  id: string;
-  title: string;
-  description?: string;
-  url: string;
-  createdAt?: Date | Timestamp;
+  updatedAt?: Date | Timestamp;  
 }

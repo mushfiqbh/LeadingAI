@@ -97,11 +97,11 @@ const generateAssignment = (data: FrontPageData, existingDoc?: jsPDF) => {
       doc.setFont("Times New Roman", "bold");
       doc.setFontSize(14);
       doc.setTextColor("#3c78d8");
-      doc.text(data.groupTitle, pageWidth / 2, submittedByY + 12, "center");
+      doc.text(data.groupTitle, pageWidth / 2, submittedByY + 10, "center");
     }
 
     doc.setTextColor("black");
-    const startY = submittedByY + (data.groupTitle ? 20 : 10);
+    const startY = submittedByY + (data.groupTitle ? 15 : 10);
     const colWidths = [55, 40, 15, 17]; // Name, ID, Batch, Section
     const tableWidth = colWidths.reduce((a, b) => a + b, 0);
     const startX = (pageWidth - tableWidth) / 2;
@@ -113,7 +113,7 @@ const generateAssignment = (data: FrontPageData, existingDoc?: jsPDF) => {
     let currentX = startX;
     header.forEach((h, i) => {
       doc.rect(currentX, startY, colWidths[i], rowHeight);
-      doc.text(h, currentX + 1, startY + 5);
+      doc.text(h, currentX + 2, startY + 5);
       currentX += colWidths[i];
     });
 
@@ -126,7 +126,7 @@ const generateAssignment = (data: FrontPageData, existingDoc?: jsPDF) => {
 
       studentData.forEach((val, colIndex) => {
         doc.rect(x, y, colWidths[colIndex], rowHeight);
-        doc.text(String(val), x + 1, y + 5);
+        doc.text(String(val), x + 2, y + 5);
         x += colWidths[colIndex];
       });
     });
