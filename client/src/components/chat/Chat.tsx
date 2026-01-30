@@ -70,7 +70,7 @@ const Chat: React.FC = () => {
   }, [isStreaming, selectedConversationId]);
 
   return (
-    <div className="w-full h-[calc(100dvh-70px)] max-w-5xl mx-auto flex flex-col bg-gradient-to-br from-gray-50/50 via-white/30 to-blue-50/30 rounded-xl shadow-lg border border-white/20 overflow-hidden">
+    <div className="w-full h-[calc(100dvh-40px)] max-w-5xl mx-auto flex flex-col bg-gradient-to-br from-gray-50/50 via-white/30 to-blue-50/30 rounded-xl shadow-lg border border-white/20 overflow-hidden">
       {/* Scrollable message area */}
       <div className="overflow-y-auto scroll-smooth p-2">
         {currentMessages.length === 0 ? (

@@ -264,3 +264,28 @@ export const deleteDriveLinkFromFirebase = async (
     throw error;
   }
 };
+
+/**
+ * Fetch the latest class routine for a specific department
+ */
+export const getLatestClassRoutine = async (department: string) => {
+  const routinesRef = collection(db, "routines");
+  const q = query(
+    routinesRef,
+    where("category", "==", "class-routine"),
+    where("department", "==", department),
+    orderBy("createdAt", "desc"),
+    firestoreLimit(1)
+  );
+
+  try {
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as Routine;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching latest routine:", error);
+    return null;
+  }
+};

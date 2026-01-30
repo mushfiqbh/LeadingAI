@@ -110,7 +110,7 @@ export default function NoticeShare() {
 
   return (
     <div id="notices-form" className="min-h-screen">
-      <div className="w-full md:w-1/2 mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50">
+      <div className="w-full mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50">
         <NoticeUploadForm onUploadSuccess={() => fetchNotices(true)} />
 
         <div className="mt-8">

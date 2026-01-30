@@ -75,7 +75,7 @@ export default function DriveShare() {
   }
 
   return (
-    <div className="w-full md:w-1/2 mx-auto space-y-8 p-6">
+    <div className="w-full mx-auto space-y-8 p-6">
       {/* Header Section */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow">

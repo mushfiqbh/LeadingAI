@@ -17,9 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-            <main className="w-full bg-white text-black/80">
-              {children}
-            </main>
+          {children}
         </AuthProvider>
         <Analytics />
       </body>

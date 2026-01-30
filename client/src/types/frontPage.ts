@@ -54,4 +54,7 @@ export interface FrontPageData {
     section: string;
     dept: string;
   };
+  isGroup?: boolean;
+  groupTitle?: string;
+  students?: Student[];
 }
