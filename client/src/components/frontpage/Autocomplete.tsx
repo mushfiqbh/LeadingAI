@@ -71,7 +71,7 @@ const Autocomplete = <T,>({
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="pr-10"
+          className="pr-10 "
         />
         {!selectedItem && (
           <button

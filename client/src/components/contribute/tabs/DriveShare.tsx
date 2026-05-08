@@ -8,6 +8,8 @@ import {
   deleteDriveLinkFromFirebase,
 } from "@/lib/firestore";
 import { Link } from "@/types/types";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 export default function DriveShare() {
   const [form, setForm] = useState({
@@ -75,147 +77,158 @@ export default function DriveShare() {
   }
 
   return (
-    <div className="w-full mx-auto space-y-8 p-6">
+    <div className="w-full mx-auto space-y-6">
       {/* Header Section */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow">
-          <FolderPlus className="w-6 h-6 text-white" />
-        </div>
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800">
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-green-50/50 to-teal-50/50 rounded-2xl p-4">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-200/20 to-emerald-200/20 rounded-full blur-3xl"></div>
+        <div className="relative">
+          <h3 className="text-lg font-bold text-gray-900">
             Share Drive Folder
           </h3>
-          <p className="text-sm text-gray-600">
-            Contribute resources for everyone
+          <p className="text-xs text-gray-500 mt-0.5">
+            Contribute resources & materials
           </p>
         </div>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="space-y-4 rounded-xl animate-in fade-in"
+        className="space-y-4"
       >
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-gray-600">
             Drive Folder URL <span className="text-red-500">*</span>
           </label>
-          <input
+          <Input
             type="url"
             placeholder="https://drive.google.com/drive/folders/..."
             value={form.url}
             onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
-            className="w-full rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
             disabled={loading}
+            className="h-10 text-sm"
           />
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-gray-600">
             Title <span className="text-red-500">*</span>
           </label>
-          <input
+          <Input
             type="text"
             placeholder="e.g. Semester 1 Materials"
             value={form.title}
             onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-            className="w-full rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
             disabled={loading}
+            className="h-10 text-sm"
           />
         </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-gray-600">
             Description
           </label>
           <textarea
-            placeholder="Describe in details so AI can recognize the content"
+            placeholder="Brief description for AI recognition"
             value={form.description}
             onChange={(e) =>
               setForm((f) => ({ ...f, description: e.target.value }))
             }
-            className="w-full rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+            className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-green-500 focus:bg-white disabled:opacity-50 transition-all"
             disabled={loading}
             rows={2}
           />
         </div>
 
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        {success && (
-          <p className="text-green-600 text-sm mt-2 animate-in fade-in">
-            Link saved! 🎉
-          </p>
+        {error && (
+          <div className="bg-red-50/80 px-3 py-2 rounded-lg animate-in slide-in-from-top-2">
+            <p className="text-red-600 text-xs font-medium">{error}</p>
+          </div>
         )}
-        <button
+        {success && (
+          <div className="bg-green-50/80 px-3 py-2 rounded-lg animate-in slide-in-from-top-2">
+            <p className="text-green-600 font-medium text-xs">Link shared successfully!</p>
+          </div>
+        )}
+        <Button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium shadow-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-lg"
+          className="w-full h-10 text-sm font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
         >
           {loading ? (
             <div className="flex items-center justify-center gap-2">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Saving...
+              Sharing...
             </div>
           ) : (
-            "Save Link"
+            "Share Link"
           )}
-        </button>
+        </Button>
       </form>
 
-      <div className="space-y-4">
-        <h3 className="text-md font-semibold mb-2">Available Drive Links</h3>
+      <div className="space-y-3 pt-4">
+        <h3 className="text-sm font-semibold text-gray-600">
+          {links.length} {links.length === 1 ? 'folder' : 'folders'} shared
+        </h3>
         {links.length === 0 ? (
-          <p className="text-gray-500">No drive links available.</p>
+          <div className="text-center py-12 bg-gray-50/50 rounded-xl">
+            <p className="text-gray-400 text-sm">No drive links yet</p>
+          </div>
         ) : (
-          <ul className="space-y-3">
+          <div className="grid gap-2">
             {links.map((link, idx) => (
-              <li
+              <div
                 key={link.id}
-                className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-100 shadow-sm flex flex-col gap-2 animate-in fade-in slide-in-from-left duration-300"
-                style={{ animationDelay: `${idx * 60}ms` }}
+                className="group bg-white/60 backdrop-blur-sm rounded-xl p-3 hover:bg-white hover:shadow-sm transition-all duration-200 animate-in fade-in"
+                style={{ animationDelay: `${idx * 50}ms` }}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-lg text-blue-700">
-                    {link.title}
-                  </span>
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-sm text-gray-900 truncate group-hover:text-green-600 transition-colors">
+                      {link.title}
+                    </h4>
+                    {link.description && (
+                      <p className="text-gray-500 text-xs leading-relaxed mt-0.5 line-clamp-2">
+                        {link.description}
+                      </p>
+                    )}
+                  </div>
                   <button
                     onClick={() => handleDelete(link.id)}
                     disabled={deletingId === link.id}
-                    className="ml-4 p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 transition-colors disabled:opacity-50"
-                    title="Delete link"
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all disabled:opacity-50 flex-shrink-0"
+                    title="Delete"
                   >
                     {deletingId === link.id ? (
-                      <span className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin inline-block"></span>
+                      <span className="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin inline-block"></span>
                     ) : (
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     )}
                   </button>
                 </div>
-                {link.description && (
-                  <p className="text-gray-700 text-sm mb-1">
-                    {link.description}
-                  </p>
-                )}
                 <div className="flex items-center gap-2">
                   <a
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95 no-underline"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-lg transition-all duration-200 no-underline"
                   >
-                    <FolderPlus className="w-4 h-4" />
-                    Open Drive Folder
+                    <FolderPlus className="w-3.5 h-3.5" />
+                    Open
                   </a>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(link.url)}
-                    className="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-md text-xs font-medium transition-colors"
-                    title="Copy link"
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      navigator.clipboard.writeText(link.url);
+                    }}
+                    className="px-3 py-1.5 h-auto text-xs rounded-lg hover:bg-gray-50 transition-all"
                   >
-                    Copy Link
-                  </button>
+                    Copy
+                  </Button>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </div>
   );
 }
+

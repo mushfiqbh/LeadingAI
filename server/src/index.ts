@@ -7,6 +7,7 @@ import fs from "fs";
 import uploadRouter from "./routes/uploadRouter";
 // Initialize Firebase Admin (this will run the initialization code)
 import "./services/firebaseAdmin";
+import { generateRoutineImage } from "./controllers/generateController";
 
 if (
   process.env.GCP_CREDENTIALS_JSON &&
@@ -63,6 +64,7 @@ app.get("/health/firebase", async (req, res) => {
 
 app.use("/chat", chatRouter);
 app.use("/upload", uploadRouter);
+app.get("/generate", generateRoutineImage);
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);

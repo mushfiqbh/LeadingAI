@@ -36,7 +36,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
         onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden scale-100 opacity-100 transition-all duration-300"
+        className="relative w-full max-w-md bg-white text-black/80 rounded-2xl shadow-xl overflow-hidden scale-100 opacity-100 transition-all duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <button

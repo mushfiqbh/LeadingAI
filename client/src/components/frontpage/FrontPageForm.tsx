@@ -152,12 +152,12 @@ export default function FrontPageForm() {
       return 0;
     });
 
-  const filteredStudents = students.filter(
+  const filteredStudents = studentQuery ? students.filter(
     (s: Student) =>
       (s.name.toLowerCase().includes(studentQuery.trim().toLowerCase()) ||
         s.studentId.toLowerCase().includes(studentQuery.trim().toLowerCase())) &&
       !selectedStudents.some((selected: Student) => selected.studentId === s.studentId),
-  );
+  ) : [];
 
   const handleAddStudentToList = (student: Student | null) => {
     if (!student) return;
@@ -415,7 +415,7 @@ export default function FrontPageForm() {
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-8 bg-white">
       <div className="space-y-4">
-        <h4 className="text-2xl text-center text-zinc-200 font-semibold mb-4">Friendly Frontpage Generator</h4>
+        <h4 className="text-2xl text-center text-zinc-200 font-semibold mb-4">Frontpage Generator</h4>
 
         {/* Type Selection */}
         <div className="p-1 bg-zinc-100 rounded-xl inline-flex w-full">
@@ -442,8 +442,8 @@ export default function FrontPageForm() {
         </div>
 
         {/* Basic Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-1">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-1 md:col-span-2">
             <label className="text-sm font-medium text-zinc-700">Title</label>
             <Input
               placeholder={
