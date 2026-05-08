@@ -50,7 +50,7 @@ export async function getRoutine(
 
     if (schedule) {
       // Don't wait for the worker to finish. Let it run in the background.
-      routineCreatorWorker(category, aiMessageId, schedule, routine);
+      routineCreatorWorker(category, schedule, routine, aiMessageId);
       return "Your routine image is being created and will be sent with the response.";
     }
 

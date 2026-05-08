@@ -1,17 +1,15 @@
 "use client";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { AlertCircle, MessageSquare, Clock, Settings, FileText } from "lucide-react";
-import { useRouter } from "next/navigation";
-import ActionCard from "../ui/ActionCard";
+import { AlertCircle, Clock, Settings } from "lucide-react";
 import { AuthContext } from "@/context/AuthContext";
-import { Modal } from "../ui/Modal";
-import { Input } from "../ui/Input";
-import { Button } from "../ui/Button";
 import refineDepartmentName from "@/utils/refineDepartmentName";
 import { updateUserProfileFS, getLatestClassRoutine } from "@/lib/firestore";
 import { useFrontPageStore } from "@/store/useFrontPageStore";
-import QuickContribute from "./QuickContribute";
+import QuickActions from "./QuickActions";
+import { Modal } from "../ui/Modal";
+import { Input } from "../ui/Input";
+import { Button } from "../ui/Button";
 
 interface InfoCardProps {
   title: string;
@@ -59,7 +57,6 @@ interface RoutineDay {
 }
 
 const DailyHub: React.FC = () => {
-  const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -210,7 +207,7 @@ const DailyHub: React.FC = () => {
         </button>
       ),
       content: (
-        <div className="space-y-3 max-h-52 overflow-y-auto pr-2">
+        <div className="space-y-3 overflow-y-auto pr-2">
           {loadingRoutine ? (
             <p className="text-gray-500 italic">Loading routine...</p>
           ) : todayClasses.length > 0 ? (
@@ -373,29 +370,7 @@ const DailyHub: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-6 pt-4">
-          <h2 className="text-xl font-bold text-gray-800">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ActionCard
-              onClick={() => router.push("/frontpage")}
-              title="Generate Frontpage"
-              description="Create professional academic cover pages"
-              icon={FileText}
-              color="blue"
-            />
-            
-            <ActionCard
-              onClick={() => router.push("/chat")}
-              title="Chat with AI"
-              description="Get instant help with your academic tasks"
-              icon={MessageSquare}
-              color="blue"
-            />
-          </div>
-
-          <h2 className="text-xl font-bold text-gray-800 pt-4">Contribute</h2>
-          <QuickContribute />
-        </div>
+        <QuickActions />
       </div>      
 
       {/* Footer */}
@@ -432,7 +407,7 @@ const DailyHub: React.FC = () => {
               <label className="text-sm font-medium">Section</label>
               <Input 
                 value={section} 
-                onChange={(e) => setSection(e.target.value)}
+                onChange={(e) => setSection(e.target.value.toUpperCase())}
                 placeholder="e.g. A"
               />
             </div>

@@ -109,24 +109,19 @@ export default function NoticeShare() {
   }, [selectedNotice]);
 
   return (
-    <div id="notices-form" className="min-h-screen">
-      <div className="w-full mx-auto bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-white/50">
-        <NoticeUploadForm onUploadSuccess={() => fetchNotices(true)} />
+    <div id="notices-form" className="w-full mx-auto space-y-8">
+      <NoticeUploadForm onUploadSuccess={() => fetchNotices(true)} />
 
-        <div className="mt-8">
-          <h4 className="text-lg font-semibold opacity-50 mt-6 mb-3">
-            Recent Notices
-          </h4>
+      <div className="mt-6 pt-4">
+        <h4 className="text-sm font-semibold text-gray-600 mb-3">Recent Notices</h4>
+        <div>
           {fetchStatus === "loading" ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="flex items-center gap-3">
-                <div className="w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-gray-600">Loading notices...</span>
-              </div>
+            <div className="flex flex-col items-center justify-center py-16 bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl border border-orange-100">
+              <span className="text-gray-600 font-medium">Loading notices...</span>
             </div>
           ) : fetchStatus === "error" ? (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
-              <p className="text-sm">
+            <div className="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 text-red-700 px-6 py-4 rounded-2xl shadow-sm">
+              <p className="text-sm font-medium">
                 Failed to load notices. Please refresh the page to try again.
               </p>
             </div>
@@ -136,10 +131,10 @@ export default function NoticeShare() {
 
               {/* Loading more indicator for infinite scroll */}
               {loadingMore && (
-                <div className="flex items-center justify-center py-4 mt-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-gray-600">
+                <div className="flex items-center justify-center py-6 mt-6">
+                  <div className="flex items-center gap-3 bg-gradient-to-r from-orange-50 to-amber-50 px-6 py-3 rounded-full border border-orange-200 shadow-sm">
+                    <div className="w-5 h-5 border-3 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-gray-600 font-medium">
                       Loading more notices...
                     </span>
                   </div>
@@ -147,9 +142,9 @@ export default function NoticeShare() {
               )}
 
               {!hasMore && notices.length > 0 && (
-                <div className="mt-6 text-center py-4">
-                  <p className="text-gray-500 text-sm">
-                    You&apos;ve reached the end of all notices
+                <div className="mt-8 text-center py-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl border border-gray-200">
+                  <p className="text-gray-600 text-sm font-medium">
+                    You've reached the end of all notices ✨
                   </p>
                 </div>
               )}

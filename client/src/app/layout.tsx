@@ -4,8 +4,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
-  title: "AI Agent",
-  description: "Agentic AI for Leading University Students",
+  title: "Leading AI",
+  description: "Frontpage, Routine, Notice",
 };
 
 export default function RootLayout({

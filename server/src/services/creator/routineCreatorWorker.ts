@@ -6,9 +6,9 @@ import examRoutineImageCreator from "./examRoutineImageCreator";
 
 export default async function routineCreatorWorker(
   category: string,
-  aiMessageId: string,
   schedule: FlatSchedule,
-  routine: RoutineData
+  routine: RoutineData,
+  aiMessageId: string,
 ) {
   try {
     const FILENAME = `${schedule.batch}${

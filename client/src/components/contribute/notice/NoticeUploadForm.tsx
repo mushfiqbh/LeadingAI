@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Bell, Upload, X, ChevronDown } from "lucide-react";
+import { Upload, X, ChevronDown, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
   expirationOptions,
   calculateExpirationDate,
 } from "@/utils/noticeUtils";
+import { Button } from "@/components/ui/Button";
 
 interface NoticeUploadFormProps {
   onUploadSuccess?: () => void;
@@ -37,7 +38,7 @@ export default function NoticeUploadForm({
   const handleFileUpload = async () => {
     if (!user || !noticeImage || !expirationOption || expirationCount <= 0) {
       setErrorMessage(
-        "Please select an image, expiration option, and ensure you are logged in."
+        "Please select an image, expiration option, and ensure you are logged in.",
       );
       return;
     }
@@ -51,7 +52,7 @@ export default function NoticeUploadForm({
     formData.append("userName", user?.displayName || "Anonymous");
     formData.append(
       "expiryDate",
-      calculateExpirationDate(expirationCount, expirationOption)
+      calculateExpirationDate(expirationCount, expirationOption),
     );
 
     try {
@@ -60,7 +61,7 @@ export default function NoticeUploadForm({
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -87,145 +88,127 @@ export default function NoticeUploadForm({
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "Upload failed. Please try again."
+          : "Upload failed. Please try again.",
       );
       console.error("Error uploading notice:", error);
     }
   };
 
   return (
-    <>
+    <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
-          <Bell className="w-6 h-6 text-white" />
-        </div>
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800">
+      <div className="relative overflow-hidden bg-gradient-to-br from-orange-50/50 via-amber-50/50 to-yellow-50/50 rounded-2xl p-4">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-200/20 to-amber-200/20 rounded-full blur-3xl"></div>
+        <div className="relative">
+          <h3 className="text-lg font-bold text-gray-900">
             Upload University Notice
           </h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-xs text-gray-500 mt-0.5">
             AI uses this to generate responses
           </p>
         </div>
       </div>
 
       <div className="space-y-4">
-        <div
-          className={`transition-opacity duration-200 ${
-            uploadStatus === "loading" ? "opacity-50" : "opacity-100"
-          }`}
-        >
-          <label className="block">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setNoticeImage(e.target.files?.[0] || null)}
-              className="hidden"
-              disabled={uploadStatus === "loading"}
-            />
-            <div
-              className={`border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 cursor-pointer ${
-                uploadStatus === "loading"
-                  ? "border-gray-200 bg-gray-50 cursor-not-allowed"
-                  : "border-gray-300 hover:border-orange-400 hover:bg-orange-50/50"
-              }`}
-            >
-              {noticeImage ? (
-                <div className="relative">
-                  <Image
-                    src={URL.createObjectURL(noticeImage)}
-                    alt="Notice preview"
-                    width={200}
-                    height={128}
-                    className="max-w-full h-32 object-contain mx-auto rounded-lg"
-                  />
-                  <button
-                    onClick={() => setNoticeImage(null)}
-                    disabled={uploadStatus === "loading"}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <Upload
-                    className={`w-8 h-8 mx-auto mb-2 ${
-                      uploadStatus === "loading"
-                        ? "text-gray-300"
-                        : "text-gray-400"
-                    }`}
-                  />
-                  <p
-                    className={
-                      uploadStatus === "loading"
-                        ? "text-gray-400"
-                        : "text-gray-600"
-                    }
-                  >
-                    {uploadStatus === "loading"
-                      ? "Uploading..."
-                      : "Click to upload notice image"}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    PNG, JPG up to 10MB
-                  </p>
-                </>
-              )}
-            </div>
+        <div>
+          <label className="text-xs font-semibold text-gray-600 mb-2 block">
+            Upload Notice Image <span className="text-red-500">*</span>
           </label>
+          <div
+            className={`transition-opacity duration-200 ${
+              uploadStatus === "loading" ? "opacity-50" : "opacity-100"
+            }`}
+          >
+            <label className="block">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNoticeImage(e.target.files?.[0] || null)}
+                className="hidden"
+                disabled={uploadStatus === "loading"}
+              />
+              <div
+                className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-200 cursor-pointer ${
+                  uploadStatus === "loading"
+                    ? "border-gray-100 bg-gray-50 cursor-not-allowed"
+                    : "border-gray-200 bg-gray-50 hover:bg-white hover:border-orange-300 hover:shadow-md"
+                }`}
+              >
+                {noticeImage ? (
+                  <div className="relative group">
+                    <Image
+                      src={URL.createObjectURL(noticeImage)}
+                      alt="Notice preview"
+                      width={400}
+                      height={200}
+                      className="max-w-full h-40 object-contain mx-auto rounded-xl"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setNoticeImage(null);
+                      }}
+                      disabled={uploadStatus === "loading"}
+                      className="absolute -top-2 -right-2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 backdrop-blur-sm transition-all shadow-lg"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <div className="p-3 bg-white rounded-xl shadow-sm mb-3">
+                      <Upload className="w-6 h-6 text-gray-400" />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-600">
+                      {uploadStatus === "loading"
+                        ? "Uploading..."
+                        : "Click to upload notice image"}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      PNG, JPG up to 10MB
+                    </p>
+                  </div>
+                )}
+              </div>
+            </label>
+          </div>
         </div>
 
-        <div
-          className={`transition-opacity duration-200 ${
-            uploadStatus === "loading" ? "opacity-50" : "opacity-100"
-          }`}
-        >
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Notice Expiration Period <span className="text-red-500">*</span>
+        <div>
+          <label className="text-xs font-semibold text-gray-600 mb-2 block">
+            Expiration <span className="text-red-500">*</span>
           </label>
-
-          <div className="flex items-center gap-2 mb-2">
-            <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center bg-gray-50 rounded-lg border border-gray-200 p-0.5">
               <button
                 type="button"
                 onClick={() => setExpirationCount((c) => Math.max(1, c - 1))}
                 disabled={uploadStatus === "loading" || expirationCount <= 1}
-                className="px-4 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold disabled:opacity-50"
+                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white text-gray-700 font-bold transition-all disabled:opacity-30"
               >
                 -
               </button>
-              <span className="px-3 py-1 rounded bg-white text-gray-900 font-semibold min-w-[2rem] text-center">
+              <span className="w-10 text-center text-gray-900 font-bold text-sm">
                 {expirationCount}
               </span>
               <button
                 type="button"
                 onClick={() => setExpirationCount((c) => c + 1)}
                 disabled={uploadStatus === "loading"}
-                className="px-4 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold disabled:opacity-50"
+                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white text-gray-700 font-bold transition-all disabled:opacity-30"
               >
                 +
               </button>
             </div>
-            <div className="relative">
-              <ChevronDown
-                className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                  uploadStatus === "loading" ? "text-gray-300" : "text-gray-400"
-                }`}
-              />
+            <div className="relative flex-1">
               <select
                 value={expirationOption}
                 onChange={(e) => setExpirationOption(e.target.value)}
-                className={`w-full border-2 border-gray-200/50 rounded-md p-2 text-gray-900 appearance-none ${
-                  uploadStatus === "loading"
-                    ? "cursor-not-allowed bg-gray-50"
-                    : "bg-white"
-                }`}
+                className="w-full h-9 bg-gray-50 border border-gray-200 rounded-lg px-3 text-xs font-semibold appearance-none focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-transparent transition-all"
                 disabled={uploadStatus === "loading"}
               >
                 <option value="" disabled>
-                  Select expiration period
+                  Select unit
                 </option>
                 {expirationOptions.map((option) => (
                   <option key={option} value={option}>
@@ -233,61 +216,59 @@ export default function NoticeUploadForm({
                   </option>
                 ))}
               </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             </div>
           </div>
-
-          {expirationOption === "" && (
-            <p className="text-xs text-red-500 mt-1">
-              Please select an expiration period for the notice
-            </p>
-          )}
-
           {expirationOption && (
-            <p className="text-xs text-green-600 mt-1">
-              Notice will expire on:{" "}
-              {
-                new Date(
+            <div className="mt-2 px-2 py-1.5 bg-green-50/60 rounded-lg">
+              <p className="text-[10px] text-green-600 font-semibold uppercase tracking-wider">
+                Expires:{" "}
+                {new Date(
                   calculateExpirationDate(
                     expirationCount,
-                    expirationOption
-                  ).valueOf()
-                )
-                  .toString()
-                  .split("00")[0]
-              }
-            </p>
+                    expirationOption,
+                  ).valueOf(),
+                ).toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                })}
+              </p>
+            </div>
           )}
         </div>
 
-        <button
+        {errorMessage && (
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl animate-in slide-in-from-top-2">
+            <p className="text-red-700 text-sm font-medium">{errorMessage}</p>
+          </div>
+        )}
+
+        {uploadStatus === "success" && (
+          <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-xl animate-in slide-in-from-top-2">
+            <p className="text-green-700 text-sm font-semibold flex items-center gap-2">
+              <span className="text-xl">✨</span> Notice posted successfully!
+            </p>
+          </div>
+        )}
+
+        <Button
           onClick={handleFileUpload}
           disabled={!isFormValid() || uploadStatus === "loading"}
-          className="w-full py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-lg"
+          className="w-full py-6 text-base font-bold bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300"
         >
           {uploadStatus === "loading" ? (
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Processing...
+            <div className="flex items-center gap-3">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Uploading notice...
             </div>
           ) : (
-            "Submit Notice"
+            <div className="flex items-center justify-center gap-2">
+              <Upload className="w-5 h-5" />
+              Post Notice
+            </div>
           )}
-        </button>
+        </Button>
       </div>
-
-      {/* Error Message */}
-      {errorMessage && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
-          <p className="text-sm">{errorMessage}</p>
-        </div>
-      )}
-
-      {/* Success Message */}
-      {uploadStatus === "success" && (
-        <div className="bg-green-50 border border-green-200 text-green-700 mt-5 px-4 py-3 rounded-xl">
-          <p className="text-sm">Notice uploaded successfully! 🎉</p>
-        </div>
-      )}
-    </>
+    </div>
   );
 }

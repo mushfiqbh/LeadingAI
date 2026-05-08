@@ -46,7 +46,7 @@ export default function Header() {
 
           {user && (
             <div className="flex items-center gap-5">
-              {loading ? (
+              {/* {loading ? (
                 <p className="text-xs text-gray-500 animate-pulse">
                   Loading...
                 </p>
@@ -63,7 +63,7 @@ export default function Header() {
                     AI Credits
                   </button>
                 )
-              )}
+              )} */}
 
               <div className="relative">
                 <button
