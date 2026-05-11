@@ -36,12 +36,12 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
         onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-white text-black/80 rounded-2xl shadow-xl overflow-hidden scale-100 opacity-100 transition-all duration-300"
+        className="relative w-full max-w-md bg-[#0f0f0f] text-gray-100 border border-white/10 rounded-2xl shadow-2xl overflow-hidden scale-100 opacity-100 transition-all duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors z-10"
+          className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-300 rounded-full hover:bg-white/5 transition-colors z-10"
         >
           <X size={20} />
         </button>

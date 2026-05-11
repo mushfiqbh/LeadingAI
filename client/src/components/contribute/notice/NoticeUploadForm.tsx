@@ -97,8 +97,8 @@ export default function NoticeUploadForm({
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-orange-50/50 via-amber-50/50 to-yellow-50/50 rounded-2xl p-4">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-200/20 to-amber-200/20 rounded-full blur-3xl"></div>
+      <div className="relative overflow-hidden bg-linear-to-br from-orange-50/50 via-amber-50/50 to-yellow-50/50 rounded-2xl p-4">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-orange-200/20 to-amber-200/20 rounded-full blur-3xl"></div>
         <div className="relative">
           <h3 className="text-lg font-bold text-gray-900">
             Upload University Notice
@@ -254,7 +254,7 @@ export default function NoticeUploadForm({
         <Button
           onClick={handleFileUpload}
           disabled={!isFormValid() || uploadStatus === "loading"}
-          className="w-full py-6 text-base font-bold bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300"
+          className="w-full py-6 text-base font-bold bg-linear-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300"
         >
           {uploadStatus === "loading" ? (
             <div className="flex items-center gap-3">

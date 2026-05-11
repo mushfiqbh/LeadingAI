@@ -193,11 +193,11 @@ export default function Page() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen bg-linear-to-br from-zinc-950 via-zinc-900 to-zinc-950">
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-white/50 backdrop-blur-sm border-b border-gray-200/50">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-green-400/10 to-blue-400/10 rounded-full blur-3xl"></div>
+        <div className="relative overflow-hidden bg-zinc-900/50 backdrop-blur-sm border-b border-zinc-800/50">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-linear-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-linear-to-tr from-green-500/5 to-blue-500/5 rounded-full blur-3xl"></div>
 
           <div className="relative flex flex-col items-center p-6">
             <div className="relative group">
@@ -208,14 +208,14 @@ export default function Page() {
                   width={120}
                   height={120}
                   alt="Profile Picture"
-                  className="rounded-3xl w-30 h-30 object-cover shadow-2xl ring-4 ring-white group-hover:scale-105 transition-transform duration-300"
+                  className="rounded-3xl w-30 h-30 object-cover shadow-2xl ring-4 ring-zinc-800 group-hover:scale-105 transition-transform duration-300"
                 />
               ) : (
-                <div className="w-30 h-30 rounded-3xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-2xl ring-4 ring-white group-hover:scale-105 transition-transform duration-300">
+                <div className="w-30 h-30 rounded-3xl bg-linear-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-2xl ring-4 ring-zinc-800 group-hover:scale-105 transition-transform duration-300">
                   <CircleUser className="w-16 h-16 text-white" />
                 </div>
               )}
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-zinc-900 flex items-center justify-center">
                 {userProfile?.emailVerified ? (
                   <svg
                     className="w-4 h-4 text-white"
@@ -245,11 +245,11 @@ export default function Page() {
             </div>
 
             <div className="text-center mt-6">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent mb-2">
                 {userProfile?.fullName || "Complete Your Profile"}
               </h1>
-              <p className="text-lg text-gray-600 mb-1">{userProfile?.email}</p>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/80 rounded-full border border-gray-200/50">
+              <p className="text-lg text-zinc-400 mb-1">{userProfile?.email}</p>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-800/80 rounded-full border border-zinc-700/50">
                 <div
                   className={`w-2 h-2 rounded-full ${
                     userProfile?.emailVerified
@@ -257,7 +257,7 @@ export default function Page() {
                       : "bg-orange-500"
                   }`}
                 ></div>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-zinc-300">
                   {userProfile?.emailVerified
                     ? "Email verified"
                     : "Email verification pending"}
@@ -268,7 +268,7 @@ export default function Page() {
         </div>
 
         {/* Status Messages */}
-        <div className="w-fit mx-auto rounded-xl mb-6 font-medium text-green-500">
+        <div className="w-fit mx-auto rounded-xl mt-2 mb-4 font-medium text-green-400">
           {saveStatus === "saved"
             ? "Profile saved successfully!"
             : saveStatus === "saving"
@@ -278,8 +278,8 @@ export default function Page() {
 
         {/* Form Section */}
         <div className="max-w-2xl mx-auto px-6 pb-20">
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/50 p-4">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          <div className="bg-zinc-800/80 backdrop-blur-sm rounded-3xl shadow-xl border border-zinc-700/50 p-4">
+            <h2 className="text-2xl font-bold text-zinc-100 mb-6 text-center">
               Personal Information
             </h2>
 
@@ -292,7 +292,7 @@ export default function Page() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-zinc-300 mb-2">
                     Gender
                   </label>
                   <select
@@ -300,7 +300,7 @@ export default function Page() {
                     onChange={(e) =>
                       setFormData({ ...formData, gender: e.target.value })
                     }
-                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
+                    className="w-full border-2 border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-zinc-700/50 text-zinc-100"
                   >
                     <option value="">Select Gender</option>
                     {["Male", "Female", "Other"].map((item, index) => {
@@ -314,7 +314,7 @@ export default function Page() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-zinc-300 mb-2">
                     Religion
                   </label>
                   <select
@@ -322,7 +322,7 @@ export default function Page() {
                     onChange={(e) =>
                       setFormData({ ...formData, religion: e.target.value })
                     }
-                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
+                    className="w-full border-2 border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-zinc-700/50 text-zinc-100"
                   >
                     <option value="">Select Religion</option>
                     {["Islam", "Hindu", "Christian", "Buddhism", "Other"].map(
@@ -339,12 +339,12 @@ export default function Page() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">
                   Birth Date
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="block text-xs text-zinc-400 mb-1">
                       Year
                     </label>
                     <select
@@ -361,7 +361,7 @@ export default function Page() {
                         );
                         setFormData({ ...formData, birthdate: formatted });
                       }}
-                      className="w-full border-2 border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
+                      className="w-full border-2 border-zinc-700 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-zinc-700/50 text-zinc-100"
                     >
                       <option value="">YYYY</option>
                       {Array.from({ length: 80 }, (_, i) => {
@@ -376,7 +376,7 @@ export default function Page() {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="block text-xs text-zinc-400 mb-1">
                       Month
                     </label>
                     <select
@@ -393,7 +393,7 @@ export default function Page() {
                         );
                         setFormData({ ...formData, birthdate: formatted });
                       }}
-                      className="w-full border-2 border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
+                      className="w-full border-2 border-zinc-700 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-zinc-700/50 text-zinc-100"
                     >
                       <option value="">MM</option>
                       {Array.from({ length: 12 }, (_, i) => {
@@ -422,7 +422,7 @@ export default function Page() {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="block text-xs text-zinc-400 mb-1">
                       Day
                     </label>
                     <select
@@ -436,7 +436,7 @@ export default function Page() {
                         );
                         setFormData({ ...formData, birthdate: formatted });
                       }}
-                      className="w-full border-2 border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
+                      className="w-full border-2 border-zinc-700 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-zinc-700/50 text-zinc-100"
                     >
                       <option value="">DD</option>
                       {Array.from({ length: 31 }, (_, i) => {
@@ -451,16 +451,16 @@ export default function Page() {
                   </div>
                 </div>
                 {formData.birthdate && (
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-zinc-400 mt-2">
                     Selected: {formData.birthdate}
                   </p>
                 )}
               </div>
 
-              <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-200/50">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <div className="bg-blue-900/20 rounded-2xl p-6 border border-blue-800/50">
+                <h3 className="text-lg font-semibold text-zinc-100 mb-4 flex items-center gap-2">
                   <svg
-                    className="w-5 h-5 text-blue-600"
+                    className="w-5 h-5 text-blue-400"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -496,7 +496,7 @@ export default function Page() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-zinc-300 mb-2">
                       Department
                     </label>
                     <select
@@ -504,7 +504,7 @@ export default function Page() {
                       onChange={(e) =>
                         setFormData({ ...formData, department: e.target.value })
                       }
-                      className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
+                      className="w-full border-2 border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-zinc-700/50 text-zinc-100"
                     >
                       {departments.map((item, index) => (
                         <option key={index} value={item.dept}>
@@ -517,10 +517,10 @@ export default function Page() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-zinc-300 mb-2">
                   About You
                 </label>
-                <p className="text-xs text-gray-500 mb-3">
+                <p className="text-xs text-zinc-400 mb-3">
                   Share information about yourself that the AI can use to
                   provide more personalized assistance
                 </p>
@@ -530,7 +530,7 @@ export default function Page() {
                   onChange={(e) =>
                     setFormData({ ...formData, aboutme: e.target.value })
                   }
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50 resize-none"
+                  className="w-full border-2 border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-zinc-700/50 text-zinc-100 placeholder-zinc-500 resize-none"
                   rows={4}
                 />
               </div>
@@ -554,14 +554,14 @@ function Input({
 }) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <label className="block text-sm font-semibold text-zinc-300 mb-2">
         {label}
       </label>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50"
+        className="w-full border-2 border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-zinc-700/50 text-zinc-100 placeholder-zinc-500"
       />
     </div>
   );

@@ -41,12 +41,12 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       components={{
         // Headings
         h1: ({ children }) => (
-          <h1 className="text-2xl font-bold mb-4 mt-6 first:mt-0 text-gray-900 border-b border-gray-200 pb-2">
+          <h1 className="text-2xl font-bold mb-4 mt-6 first:mt-0 text-gray-200 border-b border-gray-200 pb-2">
             {children}
           </h1>
         ),
         h2: ({ children }) => (
-          <h2 className="text-xl font-bold mb-3 mt-5 first:mt-0 text-gray-900">
+          <h2 className="text-xl font-bold mb-3 mt-5 first:mt-0 text-gray-200">
             {children}
           </h2>
         ),
@@ -164,7 +164,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
           <tr className="hover:bg-gray-50 transition-colors">{children}</tr>
         ),
         th: ({ children }) => (
-          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b border-gray-200">
+          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-200 border-b border-gray-200">
             {children}
           </th>
         ),
@@ -178,7 +178,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 m-2 text-sm font-medium text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-105 active:scale-95 no-underline"
+            className="inline-flex items-center gap-2 px-4 py-2 m-1.5 text-sm font-semibold text-blue-600 bg-blue-50/50 hover:bg-blue-600 hover:text-white border border-blue-200/50 hover:border-blue-600 rounded-xl transition-all duration-300 shadow-sm hover:shadow-blue-500/25 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20 dark:hover:bg-blue-600 dark:hover:text-white no-underline group"
           >
             {children}
             <svg
@@ -202,7 +202,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
 
         // Strong and emphasis
         strong: ({ children }) => (
-          <strong className="font-bold text-gray-900">{children}</strong>
+          <strong className="font-bold text-gray-200">{children}</strong>
         ),
         em: ({ children }) => (
           <em className="italic text-gray-800">{children}</em>

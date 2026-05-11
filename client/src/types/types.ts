@@ -101,5 +101,23 @@ export interface Routine extends RoutineBase {
   timeSlots?: string[];
   schedules?: ClassSchedule[];
   createdAt?: Date | Timestamp;
-  updatedAt?: Date | Timestamp; 
+  updatedAt?: Date | Timestamp;
+}
+
+export interface Note {
+  id: string;
+  content: string;
+  [key: string]: unknown;
+  source?: string;
+  createdAt?: Date | Timestamp;
+}
+
+// Type definitions
+export interface Document {
+  id: string;
+  file_name: string;
+  mime_type: string;
+  course_code?: string;
+  category?: string;
+  description?: string;
 }

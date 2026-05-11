@@ -55,7 +55,7 @@ const Autocomplete = <T,>({
 
   return (
     <div className="relative w-full" ref={wrapperRef}>
-      <label className="block text-sm font-medium text-zinc-700 mb-1">
+      <label className="block text-sm font-medium text-zinc-300 mb-1">
         Select {label}
       </label>
       <div className="relative">
@@ -88,10 +88,10 @@ const Autocomplete = <T,>({
       </div>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-zinc-200 rounded-xl shadow-lg max-h-60 overflow-auto">
+        <div className="absolute z-10 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-auto">
           <div className="flex">            
             {selectedItem && (<div
-              className="border-t border-zinc-100 px-4 py-2 hover:bg-zinc-50 cursor-pointer text-blue-600 flex items-center gap-2 text-sm font-medium"
+              className="border-t border-zinc-700 px-4 py-2 hover:bg-zinc-700 cursor-pointer text-blue-400 flex items-center gap-2 text-sm font-medium"
               onClick={() => {
                 onEdit?.(selectedItem);
                 setIsOpen(false);
@@ -102,7 +102,7 @@ const Autocomplete = <T,>({
             </div>)}
 
             <div
-              className="border-t border-zinc-100 px-4 py-2 hover:bg-zinc-50 cursor-pointer text-blue-600 flex items-center gap-2 text-sm font-medium"
+              className="border-t border-zinc-700 px-4 py-2 hover:bg-zinc-700 cursor-pointer text-blue-400 flex items-center gap-2 text-sm font-medium"
               onClick={() => {
                 onCreateNew();
                 setIsOpen(false);
@@ -113,7 +113,7 @@ const Autocomplete = <T,>({
             </div>
 
             {selectedItem && (<div
-              className="border-t border-zinc-100 px-4 py-2 hover:bg-zinc-50 cursor-pointer text-red-600 flex items-center gap-2 text-sm font-medium"
+              className="border-t border-zinc-700 px-4 py-2 hover:bg-zinc-700 cursor-pointer text-red-400 flex items-center gap-2 text-sm font-medium"
               onClick={() => {
                 onSelect(null);
                 setIsOpen(false);
@@ -127,7 +127,7 @@ const Autocomplete = <T,>({
             items.slice(0, 10).map((item, index) => (
               <div
                 key={index}
-                className="px-4 py-2 hover:bg-zinc-50 cursor-pointer text-zinc-900 text-sm flex justify-between items-center group"
+                className="px-4 py-2 hover:bg-zinc-700 cursor-pointer text-zinc-100 text-sm flex justify-between items-center group"
               >
                 <div 
                   className="flex-1"

@@ -79,8 +79,8 @@ export default function DriveShare() {
   return (
     <div className="w-full mx-auto space-y-6">
       {/* Header Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-green-50/50 to-teal-50/50 rounded-2xl p-4">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-200/20 to-emerald-200/20 rounded-full blur-3xl"></div>
+      <div className="relative overflow-hidden bg-linear-to-br from-emerald-50/50 via-green-50/50 to-teal-50/50 rounded-2xl p-4">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-green-200/20 to-emerald-200/20 rounded-full blur-3xl"></div>
         <div className="relative">
           <h3 className="text-lg font-bold text-gray-900">
             Share Drive Folder
@@ -150,7 +150,7 @@ export default function DriveShare() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-10 text-sm font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
+          className="w-full h-10 text-sm font-semibold bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
         >
           {loading ? (
             <div className="flex items-center justify-center gap-2">
@@ -193,7 +193,7 @@ export default function DriveShare() {
                   <button
                     onClick={() => handleDelete(link.id)}
                     disabled={deletingId === link.id}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all disabled:opacity-50 flex-shrink-0"
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all disabled:opacity-50 shrink-0"
                     title="Delete"
                   >
                     {deletingId === link.id ? (
@@ -208,7 +208,7 @@ export default function DriveShare() {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-lg transition-all duration-200 no-underline"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-lg transition-all duration-200 no-underline"
                   >
                     <FolderPlus className="w-3.5 h-3.5" />
                     Open

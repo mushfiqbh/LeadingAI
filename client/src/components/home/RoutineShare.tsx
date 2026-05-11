@@ -138,7 +138,7 @@ export default function RoutineShare() {
         <Button
           onClick={handleSubmit}
           disabled={!isFormValid() || uploadStatus === "loading"}
-          className="w-full h-10 text-sm font-semibold bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700 transition-all duration-200"
+          className="w-full h-10 text-sm font-semibold bg-linear-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700 transition-all duration-200"
         >
           {uploadStatus === "loading" ? (
             <div className="flex items-center gap-2">

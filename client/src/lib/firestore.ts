@@ -16,7 +16,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 import { User } from "firebase/auth";
-import { Link, Notice, Routine, RoutineBase, UserProfile } from "@/types/types";
+import { Link, Note, Notice, Routine, RoutineBase, UserProfile } from "@/types/types";
 
 export const getUserProfileFS = async (uid: string) => {
   if (!uid) {
@@ -287,5 +287,55 @@ export const getLatestClassRoutine = async (department: string) => {
   } catch (error) {
     console.error("Error fetching latest routine:", error);
     return null;
+  }
+};
+
+/**
+ * Create a new note for a user
+ */
+export const createNoteFS = async (uid: string, content: string, source?: string) => {
+  if (!uid) return null;
+  try {
+    const notesRef = collection(db, "users", uid, "notes");
+    const docRef = await addDoc(notesRef, {
+      content,
+      source: source || "Chat",
+      createdAt: serverTimestamp(),
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating note:", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch all notes for a user
+ */
+export const getNotesFS = async (uid: string): Promise<Note[]> => {
+  if (!uid) return [];
+  try {
+    const notesRef = collection(db, "users", uid, "notes");
+    const q = query(notesRef, orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Note));
+  } catch (error) {
+    console.error("Error fetching notes:", error);
+    return [];
+  }
+};
+
+/**
+ * Delete a note
+ */
+export const deleteNoteFS = async (uid: string, noteId: string) => {
+  if (!uid || !noteId) return false;
+  try {
+    const noteRef = doc(db, "users", uid, "notes", noteId);
+    await deleteDoc(noteRef);
+    return true;
+  } catch (error) {
+    console.error("Error deleting note:", error);
+    return false;
   }
 };
