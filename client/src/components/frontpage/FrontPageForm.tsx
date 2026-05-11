@@ -370,15 +370,11 @@ export default function FrontPageForm() {
     return (
       <div className="max-w-3xl mx-auto p-6 space-y-8">
         <div className="flex flex-col items-center gap-4">
-          <div className="text-center space-y-2 mt-5">
-            <Skeleton className="h-8 w-48 mx-auto" />
-            <Skeleton className="h-4 w-64 mx-auto" />
-          </div>
           <Skeleton className="h-10 w-64 rounded-full" />
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm space-y-6">
-          <div className="p-1 bg-zinc-100 rounded-xl flex w-full gap-1">
+        <div className="bg-zinc-800 p-6 rounded-2xl shadow-sm space-y-6">
+          <div className="p-1 bg-zinc-700 rounded-xl flex w-full gap-1">
             <Skeleton className="h-9 flex-1 rounded-lg" />
             <Skeleton className="h-9 flex-1 rounded-lg" />
           </div>
@@ -413,17 +409,17 @@ export default function FrontPageForm() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-8 bg-white">
+    <div className="max-w-3xl min-h-screen mx-auto p-6 space-y-8 bg-zinc-900">
       <div className="space-y-4">
-        <h4 className="text-2xl text-center text-zinc-200 font-semibold mb-4">Frontpage Generator</h4>
+        <h4 className="text-2xl text-center text-white font-semibold mb-4">Frontpage Generator</h4>
 
         {/* Type Selection */}
-        <div className="p-1 bg-zinc-100 rounded-xl inline-flex w-full">
+        <div className="p-1 bg-zinc-800 rounded-xl inline-flex w-full">
           <button
             className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
               type === "assignment"
-                ? "bg-white text-black shadow-sm"
-                : "text-zinc-500 hover:text-zinc-700"
+                ? "bg-zinc-700 text-white shadow-sm"
+                : "text-zinc-400 hover:text-zinc-300"
             }`}
             onClick={() => setType("assignment")}
           >
@@ -432,8 +428,8 @@ export default function FrontPageForm() {
           <button
             className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
               type === "labReport"
-                ? "bg-white text-black shadow-sm"
-                : "text-zinc-500 hover:text-zinc-700"
+                ? "bg-zinc-700 text-white shadow-sm"
+                : "text-zinc-400 hover:text-zinc-300"
             }`}
             onClick={() => setType("labReport")}
           >
@@ -444,7 +440,7 @@ export default function FrontPageForm() {
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-1 md:col-span-2">
-            <label className="text-sm font-medium text-zinc-700">Title</label>
+            <label className="text-sm font-medium text-zinc-300">Title</label>
             <Input
               placeholder={
                 type === "assignment" ? "Assignment Title" : "Experiment Name"
@@ -456,18 +452,18 @@ export default function FrontPageForm() {
           </div>
           <div className="space-y-1">
             <div className="flex justify-between items-center">
-              <label className="text-sm font-medium text-zinc-700">Date</label>
+              <label className="text-sm font-medium text-zinc-300">Date</label>
               <div className="flex items-center gap-4">
                 <button
                   type="button"
-                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-xs text-blue-400 hover:text-blue-300 font-medium"
                   onClick={() => setDate(new Date())}
                 >
                   Today
                 </button>
                 <button
                   type="button"
-                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-xs text-blue-400 hover:text-blue-300 font-medium"
                   onClick={() =>
                     setDate(
                       new Date(new Date().setDate(new Date().getDate() + 1)),
@@ -552,7 +548,7 @@ export default function FrontPageForm() {
                   </div>
                 </div>
                 {item.id && suggestedTeacherIds.includes(item.id) && (
-                  <span className="flex-shrink-0 ml-2 bg-green-100 text-green-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider border border-green-400">
+                  <span className="shrink-0 ml-2 bg-green-100 text-green-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider border border-green-400">
                     Suggested
                   </span>
                 )}
@@ -563,17 +559,17 @@ export default function FrontPageForm() {
 
         {/* Selected Students List */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-medium text-zinc-400">
+          <div className="flex items-center gap-2 text-sm font-medium text-zinc-300">
             <Users className="h-4 w-4" />
             Selected Students ({selectedStudents.length})
           </div>
 
           {selectedStudents.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-black/80">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-zinc-100">
               {selectedStudents.map((student: Student) => (
                 <div
                   key={student.studentId}
-                  className="flex items-center justify-between p-3 bg-green-50 border border-green-300 rounded-xl"
+                  className="flex items-center justify-between p-3 bg-green-900/30 border border-green-700 rounded-xl"
                 >
                   <div className="min-w-0">
                     <div className="text-sm font-bold truncate">
@@ -589,7 +585,7 @@ export default function FrontPageForm() {
                       onClick={() =>
                         handleEditStudent(student)
                       }
-                      className="text-sm text-blue-600 hover:text-blue-800 font-medium mr-4"
+                      className="text-sm text-blue-400 hover:text-blue-300 font-medium mr-4"
                     >
                       Edit
                     </button>
@@ -598,7 +594,7 @@ export default function FrontPageForm() {
                       onClick={() =>
                         handleRemoveStudentFromList(student.studentId)
                       }
-                      className="p-2 hover:bg-zinc-200 rounded-lg text-zinc-400 hover:text-zinc-600 transition-colors"
+                      className="p-2 hover:bg-zinc-700 rounded-lg text-zinc-400 hover:text-zinc-200 transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -638,7 +634,7 @@ export default function FrontPageForm() {
         />
 
         {/* Group Selection */}
-        <div className="flex flex-wrap gap-4 items-center py-2 text-black/80">
+        <div className="flex flex-wrap gap-4 items-center py-2 text-zinc-100">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
@@ -663,7 +659,7 @@ export default function FrontPageForm() {
 
         {isGroupFrontPage && (
           <div className="space-y-1 pb-2">
-            <label className="text-sm font-medium text-zinc-700">Group Name / Number</label>
+            <label className="text-sm font-medium text-zinc-300">Group Name / Number</label>
             <Input
               placeholder="e.g. Group A / The Innovators"
               value={groupTitle}

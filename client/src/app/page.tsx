@@ -4,10 +4,9 @@ import { AuthContext, useAuth } from "@/context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { logout } from "@/lib/authFunctions";
 import VerifyEmail from "@/components/auth/VerifyEmail";
-import DailyHub from "@/components/home/DailyHub";
-import Header from "@/components/general/Header";
 import { Modal } from "@/components/ui/Modal";
 import AuthForm from "@/components/auth/AuthForm";
+import Chat from "@/components/chat/Chat";
 
 export default function Page() {
   const [showVerifyEmail, setShowVerifyEmail] = useState(false);
@@ -40,9 +39,8 @@ export default function Page() {
 
   // If user is logged in and email is verified
   return (
-    <main className="w-full bg-white text-black/80 mt-[40px]">
-      <Header />
-      <DailyHub />
+    <main className="w-full bg-white text-black/80">      
+      <Chat />
       
       <Modal
         isOpen={isAuthModalOpen}

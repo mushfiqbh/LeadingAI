@@ -3,6 +3,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --chat-sidebar: #f8fafc;
+  --chat-bg: #ffffff;
+  --chat-text: #171717;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --chat-sidebar: #1e1e1e;
+  --chat-bg: #121212;
+  --chat-text: #e5e7eb;
 }
 
 body {

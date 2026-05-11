@@ -11,10 +11,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const variants = {
       default: "bg-black text-white hover:bg-zinc-800",
       outline:
-        "border border-zinc-300 bg-white text-black hover:bg-zinc-100",
+        "border border-zinc-600 bg-zinc-900 text-zinc-100 hover:bg-zinc-800",
       success: "bg-green-600 text-white hover:bg-green-700",
       ghost:
-        "bg-transparent hover:bg-zinc-100 text-black",
+        "bg-transparent hover:bg-zinc-800 text-zinc-100",
     };
 
     return (

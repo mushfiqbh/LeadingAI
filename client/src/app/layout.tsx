@@ -4,7 +4,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
-  title: "Leading AI",
+  title: "Leading AI - Alpha Version",
   description: "Frontpage, Routine, Notice",
 };
 

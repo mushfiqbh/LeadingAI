@@ -1,6 +1,6 @@
 import openaiClient from "./openaiClient";
 import { tools } from "../mcp/tools";
-import { ChatCompletionMessageParam } from "openai/resources/index";
+import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam } from "openai/resources/index";
 import { getResult } from "../mcp/resultMCP";
 import { getUnifiedSystemPrompt, getNoticeSystemPrompt } from "./systemPrompt";
 import { getNotice } from "../mcp/noticeMCP";
@@ -9,8 +9,9 @@ import { getLinks } from "../mcp/driveMCP";
 import { countTokens } from "../utils/countTokens";
 import { TiktokenModel } from "tiktoken";
 import { FirebaseAdminService } from "../services/firebaseAdmin";
+import { VectorStoreService } from "../services/vectorStoreService";
 
-const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4.1-nano";
+const MODEL = process.env.OPENROUTER_MODEL!;
 
 export async function* runAgentStream(
   userId: string,
@@ -19,10 +20,59 @@ export async function* runAgentStream(
 ) {
   yield "__thinking__";
 
-  const systemPrompt: ChatCompletionMessageParam = {
+  const uniqueSources = new Map<string, string>();
+
+  let systemContent = getUnifiedSystemPrompt();
+  const systemPrompt: ChatCompletionSystemMessageParam = {
     role: "system",
-    content: getUnifiedSystemPrompt(),
+    content: systemContent,
   };
+
+  const lastMessage = messages[messages.length - 1];
+  const query = typeof lastMessage.content === "string" ? lastMessage.content : "";
+
+  // === RAG: Retrieve relevant documents before tool check ===
+  if (query) {
+    try {
+      const searchResults = await VectorStoreService.search(query);
+      if (searchResults && searchResults.length > 0) {
+        console.log("🔍 First search result keys:", searchResults[0] ? Object.keys(searchResults[0]) : "None");
+        console.log("🔍 First search result metadata:", searchResults[0]?.metadata);
+
+        const context = searchResults
+          .map((res: any, index: number) => {
+            const metadata = typeof res.metadata === "string" ? JSON.parse(res.metadata) : res.metadata;
+            const driveId = metadata?.drive_file_id || res.drive_file_id;
+            const sourceName = metadata?.source || res.file_name || "Unknown";
+            
+            const sourceLink = driveId ? `https://drive.google.com/file/d/${driveId}/view` : null;
+            let chunkInfo = `Chunk ${index + 1}:\n${res.chunk_text}\nSource: ${sourceName}`;
+            if (sourceLink) {
+              chunkInfo += `\nLink: ${sourceLink}`;
+            }
+            return chunkInfo;
+          })
+          .join("\n\n");
+        
+        searchResults.forEach((res: any) => {
+          const metadata = typeof res.metadata === "string" ? JSON.parse(res.metadata) : res.metadata;
+          const driveId = metadata?.drive_file_id || res.drive_file_id;
+          const name = metadata?.source || res.file_name;
+          
+          if (driveId && name) {
+            uniqueSources.set(name, `https://drive.google.com/file/d/${driveId}/view`);
+          }
+        });
+
+        console.log(`📡 RAG Context built with ${searchResults.length} chunks. Unique Sources: ${uniqueSources.size}`);
+
+        systemContent += `\n\n### DOCUMENT CONTEXT:\n${context}\n\nINSTRUCTION: Use the above DOCUMENT CONTEXT to answer the user's question if relevant.`;
+        systemPrompt.content = systemContent;
+      }
+    } catch (error) {
+      console.error("Error during pre-retrieval search:", error);
+    }
+  }
 
   // === Check for tool usage ===
   const toolCheck = await openaiClient.chat.completions.create({
@@ -46,7 +96,8 @@ export async function* runAgentStream(
     } else if (toolCall.function.name === "get_notice") {
       mcpResult = await getNotice();
       if (mcpResult) {
-        systemPrompt.content += "\n\n" + getNoticeSystemPrompt();
+      systemContent += "\n\n" + getNoticeSystemPrompt();
+      systemPrompt.content = systemContent;
       }
     } else if (toolCall.function.name === "get_routine") {
       mcpResult = await getRoutine(aiMessageId, args);
@@ -59,21 +110,25 @@ export async function* runAgentStream(
       mcpResult = { error: `Unknown tool: ${toolCall.function.name}` };
     }
 
+    const toolMessages: ChatCompletionMessageParam[] = [
+      systemPrompt,
+      ...messages,
+      {
+        role: "assistant",
+        tool_calls: [toolCall],
+      },
+      {
+        role: "tool",
+        tool_call_id: toolCall.id,
+        content: JSON.stringify({ result: mcpResult }),
+      },
+    ];
+
+    // Remove final reminder as we are attaching sources by code
+
     const stream = await openaiClient.chat.completions.create({
       model: MODEL,
-      messages: [
-        systemPrompt,
-        ...messages,
-        {
-          role: "assistant",
-          tool_calls: [toolCall],
-        },
-        {
-          role: "tool",
-          tool_call_id: toolCall.id,
-          content: JSON.stringify({ result: mcpResult }),
-        },
-      ],
+      messages: toolMessages,
       stream: true,
     });
 
@@ -85,9 +140,13 @@ export async function* runAgentStream(
     }
   } else {
     // === No tool, direct stream ===
+    const finalMessages: ChatCompletionMessageParam[] = [systemPrompt, ...messages];
+    
+    // Remove final reminder as we are attaching sources by code
+
     const stream = await openaiClient.chat.completions.create({
       model: MODEL,
-      messages: [systemPrompt, ...messages],
+      messages: finalMessages,
       stream: true,
     });
 
@@ -97,6 +156,15 @@ export async function* runAgentStream(
         yield delta;
       }
     }
+  }
+
+  // === Attach Sources by Code ===
+  if (uniqueSources.size > 0) {
+    let sourcesMarkdown = "\n\n---\n**Sources:**\n";
+    uniqueSources.forEach((link, name) => {
+      sourcesMarkdown += `- [${name}](${link})\n`;
+    });
+    yield sourcesMarkdown;
   }
 
   // === Check token limits ===

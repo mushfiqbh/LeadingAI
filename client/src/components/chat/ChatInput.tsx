@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ImageUp, Send, X } from "lucide-react";
 import { ChatMessage } from "../../types/types";
@@ -9,14 +9,28 @@ import { useAuth } from "@/context/AuthContext";
 interface ChatInputProps {
   onSendMessage: (messages: ChatMessage) => void;
   isLoading: boolean;
+  inputValue?: string;
+  onInputChange?: (value: string) => void;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   isLoading,
+  inputValue,
+  onInputChange,
 }) => {
   const { userProfile, setShowManager } = useAuth();
-  const [input, setInput] = useState("");
+  const [internalInput, setInternalInput] = useState("");
+  
+  const input = inputValue !== undefined ? inputValue : internalInput;
+  const setInput = useCallback((value: string) => {
+    if (onInputChange) {
+      onInputChange(value);
+    } else {
+      setInternalInput(value);
+    }
+  }, [onInputChange]);
+
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -50,7 +64,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         // But for now, focusing is key.
       }, 0);
     }
-  }, []);
+  }, [setInput]);
 
   // Save input to session storage whenever it changes
   const handleInputChange = (value: string) => {
@@ -168,18 +182,18 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-   <div className="bg-white/90 backdrop-blur p-4 border-t border-gray-200">
+   <div className="bg-transparent p-0">
   {/* Suggested Messages */}
   {showSuggestions && input.trim() === "" && !image && (
-    <div className="mb-3">
-      <div className="flex gap-2 overflow-x-auto scrollbar-hidden pb-1">
+    <div className="mb-4">
+      <div className="flex gap-2 overflow-x-auto scrollbar-hidden pb-1 px-1">
         {suggestions.map((suggestion, index) => (
           <button
             key={index}
             onClick={() => handleSuggestionClick(suggestion)}
             type="button"
-            className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-full border border-gray-200 whitespace-nowrap
-                       hover:bg-gray-200 transition-colors duration-150"
+            className="px-4 py-1.5 text-xs bg-[#1a1a1a] text-gray-400 rounded-full border border-white/5 whitespace-nowrap
+                       hover:bg-[#252525] hover:text-white transition-all duration-150"
           >
             {suggestion}
           </button>
@@ -190,23 +204,23 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   {/* Image Preview */}
   {imagePreview && (
-    <div className="mb-3">
-      <div className="relative inline-block max-w-xs">
+    <div className="mb-3 px-2">
+      <div className="relative inline-block">
         <Image
-          width={200}
-          height={150}
+          width={120}
+          height={80}
           src={imagePreview}
           alt="Preview"
-          className="rounded-lg border border-gray-200"
+          className="rounded-lg border border-white/10 opacity-80"
         />
         <button
           onClick={removeImage}
           type="button"
           title="Remove image"
-          className="absolute -top-2 -right-2 bg-white text-gray-500 rounded-full p-1 border border-gray-200
-                     hover:text-red-500 transition-colors"
+          className="absolute -top-1.5 -right-1.5 bg-[#1a1a1a] text-gray-400 rounded-full p-1 border border-white/10
+                     hover:text-red-400 transition-colors shadow-lg"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3 h-3" />
         </button>
       </div>
     </div>
@@ -215,10 +229,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   {/* Input Form */}
   <form
     onSubmit={handleSubmit}
-    className="flex items-end gap-2 rounded-2xl bg-gray-50 p-2 border border-gray-200 focus-within:border-blue-400 transition-colors"
+    className="relative flex items-end gap-1 px-1.5 py-1.5 sm:px-2 sm:py-2 bg-[#1a1a1a] border border-white/10 rounded-3xl sm:rounded-[28px] shadow-2xl focus-within:border-blue-500/50 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all group"
   >
     {/* Image Upload */}
-    <label className="p-2 text-gray-400 hover:text-blue-500 cursor-pointer transition-colors">
+    <label className="p-2.5 sm:p-3 text-gray-500 hover:text-gray-200 cursor-pointer transition-colors hover:bg-white/5 rounded-full shrink-0">
       <input
         type="file"
         accept="image/*"
@@ -226,7 +240,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         className="hidden"
         disabled={isLoading}
       />
-      <ImageUp className="w-5 h-5" />
+      <ImageUp className="w-4.5 h-4.5 sm:w-5 sm:h-5 transition-transform group-hover:scale-105" />
     </label>
 
     {/* Text Input */}
@@ -235,12 +249,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       value={input}
       onChange={(e) => handleInputChange(e.target.value)}
       onKeyDown={handleKeyDown}
-      placeholder="Prompt here..."
+      placeholder="Start typing..."
       rows={1}
       disabled={isLoading}
-      className="flex-1 px-4 py-3 text-gray-900 bg-white border border-gray-200 rounded-xl resize-none
-                 focus:outline-none focus:ring-2 focus:ring-blue-500/20 min-h-[48px] max-h-[160px]
-                 placeholder-gray-400 transition"
+      className="flex-1 px-1 sm:px-2 py-2 sm:py-2.5 text-gray-200 bg-transparent border-none rounded-xl resize-none
+                 focus:outline-none focus:ring-0 min-h-10 max-h-30 sm:max-h-40
+                 placeholder-gray-600 transition text-sm sm:text-[15px] leading-relaxed"
     />
 
     {/* Send Button */}
@@ -248,13 +262,16 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       type="submit"
       disabled={isLoading || (!input.trim() && !image)}
       title="Send message"
-      className="w-11 h-11 flex items-center justify-center rounded-xl bg-blue-600 text-white
-                 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all shrink-0 ${
+        (input.trim() || image) && !isLoading
+          ? "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-500/20"
+          : "bg-white/5 text-gray-600"
+      }`}
     >
       {isLoading ? (
-        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
       ) : (
-        <Send className="w-5 h-5" />
+        <Send className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${(input.trim() || image) ? "-mr-px sm:-mr-0.5px -mt-px" : ""}`} />
       )}
     </button>
   </form>

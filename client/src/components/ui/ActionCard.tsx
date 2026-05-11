@@ -1,4 +1,4 @@
-import { LucideIcon, ArrowRight } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 interface ActionCardProps {
   title: string;
@@ -11,20 +11,17 @@ interface ActionCardProps {
 
 const ActionCard: React.FC<ActionCardProps> = ({
   title,
-  description,
   onClick,
   icon: Icon,
-  color = "blue",
-  cta = "Open",
 }) => {
   return (
     <div
       onClick={onClick}
-      className="group relative cursor-pointer w-full min-h-[160px] rounded-2xl"
+      className="group relative cursor-pointer w-full min-h-40 rounded-2xl"
     >
       {/* Gradient Glow Border */}
       <div
-        className={`absolute -inset-[1px] rounded-2xl bg-gradient-to-br opacity-60 blur-md group-hover:opacity-100 transition`}
+        className={`absolute -inset-px rounded-2xl bg-linear-to-br opacity-60 blur-md group-hover:opacity-100 transition`}
       />
 
       {/* Glass Card */}

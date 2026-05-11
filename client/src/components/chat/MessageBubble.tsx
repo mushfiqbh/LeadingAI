@@ -3,11 +3,13 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Copy, Check, X } from "lucide-react";
+import { Copy, Check, X, Plus } from "lucide-react";
 import { Message } from "../../types/types";
 import MarkdownRenderer from "./MarkdownRenderer";
 import { TypingIndicator } from "./TypingIndicator";
 import { formatTime } from "@/utils/formatFirebaseTimestamp";
+import { useAuth } from "@/context/AuthContext";
+import { createNoteFS } from "@/lib/firestore";
 
 interface MessageBubbleProps {
   message: Message;
@@ -20,7 +22,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   isStreaming = false,
   statusMessage = "",
 }) => {
+  const { user } = useAuth();
   const [copied, setCopied] = React.useState(false);
+  const [savingNote, setSavingNote] = React.useState(false);
+  const [savedNote, setSavedNote] = React.useState(false);
   const isUser = message.role === "user";
 
   const handleCopy = async (text: string) => {
@@ -33,6 +38,20 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     }
   };
 
+  const handleSaveToNote = async () => {
+    if (!user || !message.content.text) return;
+    setSavingNote(true);
+    try {
+      await createNoteFS(user.uid, message.content.text);
+      setSavedNote(true);
+      setTimeout(() => setSavedNote(false), 3000);
+    } catch (err) {
+      console.error("Failed to save note:", err);
+    } finally {
+      setSavingNote(false);
+    }
+  };
+
   if (
     !message.content.text &&
     !statusMessage &&
@@ -42,29 +61,27 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     return null;
 
   return (
-    <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex gap-2 sm:gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`overflow-x-auto max-w-4xl ${isUser ? "order-first" : ""}`}
+        className={`overflow-x-auto max-w-full sm:max-w-4xl ${isUser ? "order-first" : ""}`}
       >
         <div
-          className={`flex flex-col rounded-2xl px-3 py-1 ${
+          className={`flex flex-col rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 ${
             isUser
-              ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg"
-              : "bg-white/90 backdrop-blur-sm text-gray-900 border border-gray-200/50 shadow-lg"
+              ? "bg-blue-600/10 text-blue-50 border border-blue-500/20"
+              : "bg-white/5 backdrop-blur-sm text-gray-200 border border-white/10"
           }`}
         >
-          <div className="mb-2 last:mb-0">
+          <div className="mb-1 sm:mb-2 last:mb-0">
             <div
-              className={`prose prose-sm max-w-none ${
-                isUser ? "prose-invert" : ""
-              }`}
+              className={`prose prose-sm max-w-none prose-invert`}
             >
               {isUser ? (
-                <div className="whitespace-pre-wrap break-words leading-relaxed">
+                <div className="whitespace-pre-wrap wrap-break-words leading-relaxed text-sm sm:text-[15px]">
                   {message.content.text}
                 </div>
               ) : (
-                <div className="relative">
+                <div className="relative text-sm sm:text-[15px]">
                   {
                     // FIX: Show TypingIndicator only when a status exists AND there's no text or image yet.
                     statusMessage &&
@@ -73,11 +90,33 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                       <TypingIndicator statusMessage={statusMessage} />
                     ) : message.content.text ? (
                       // Render text if it exists.
-                      <div>
+                      <div className="space-y-3 sm:space-y-4">
                         <MarkdownRenderer content={message.content.text} />
                         {isStreaming && (
-                          <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse" />
+                          <span className="inline-block w-1.5 h-4 bg-blue-500/80 ml-1 animate-pulse rounded-full align-middle" />
                         )}
+                        
+                        <div className="flex items-center gap-3 sm:gap-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/5">
+                          <button 
+                            onClick={handleSaveToNote}
+                            disabled={savingNote || savedNote}
+                            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-xs transition-all ${
+                              savedNote 
+                                ? "bg-green-500/20 text-green-400" 
+                                : "bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white"
+                            }`}
+                          >
+                            {savedNote ? (
+                              <><Check className="w-3 h-3" /> Saved</>
+                            ) : (
+                              <><Plus className="w-3 h-3" /> {savingNote ? "Saving..." : "Save to note"}</>
+                            )}
+                          </button>
+                          <div className="flex items-center gap-2 sm:gap-3 text-gray-500">
+                            <Check className="w-3.5 h-3.5 hover:text-white cursor-pointer transition-colors" />
+                            <X className="w-3.5 h-3.5 hover:text-white cursor-pointer transition-colors" />
+                          </div>
+                        </div>
                       </div>
                     ) : null // Render nothing if there's no text (e.g., for an image-only message).
                   }
@@ -89,18 +128,18 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             {message.content.uploadStatus &&
               message.content.uploadStatus !== "none" &&
               !message.content.imageUrl && (
-                <div className="mt-4 h-[120px] w-[180px] flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl bg-gray-50/50">
+                <div className="mt-4 h-30 w-45 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50/50 dark:bg-white/5">
                   {message.content.uploadStatus === "pending" && (
-                    <div className="text-center text-gray-600">
-                      <div className="animate-spin w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+                    <div className="text-center text-gray-600 dark:text-gray-400">
+                      <div className="animate-spin w-8 h-8 border-3 border-blue-500 dark:border-blue-400 border-t-transparent rounded-full mx-auto mb-3"></div>
                       <div className="text-sm font-medium">
                         Uploading image...
                       </div>
                     </div>
                   )}
                   {message.content.uploadStatus === "sent" && (
-                    <div className="text-center text-blue-600">
-                      <div className="animate-pulse w-8 h-8 border-3 border-blue-500 rounded-full mx-auto mb-3"></div>
+                    <div className="text-center text-blue-600 dark:text-blue-400">
+                      <div className="animate-pulse w-8 h-8 border-3 border-blue-500 dark:border-blue-400 rounded-full mx-auto mb-3"></div>
                       <div className="text-sm font-medium">
                         Processing image...
                       </div>
@@ -136,7 +175,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   message.content.imageUrl.split("upload/")[1]
                 }`}
               >
-                <div className="my-2 h-[180px] w-[180px] border border-gray-200 rounded-xl overflow-hidden bg-gray-50 shadow-sm transition-transform hover:scale-105">
+                <div className="my-2 h-45 w-45 border border-gray-200 rounded-xl overflow-hidden bg-gray-50 shadow-sm transition-transform hover:scale-105">
                   <Image
                     width={300}
                     height={300}
