@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.status(200).json({
     live: true,
-    version: "4.2.0",
+    version: "4.2.2",
     message: "Server is running",
   });
 });

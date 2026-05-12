@@ -1,6 +1,6 @@
-import { initializeApp, applicationDefault, getApps } from "firebase-admin/app";
+import { initializeApp, getApps, cert } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { RoutineData, FlatSchedule } from "../types/types";
+import { RoutineData } from "../types/types";
 
 // Initialize Firebase Admin SDK
 let isFirebaseInitialized = false;
@@ -10,18 +10,19 @@ if (apps.length === 0) {
   // Firebase Admin SDK initialization
 
   try {
-    // Check if GOOGLE_APPLICATION_CREDENTIALS is set (should be a file path)
-    if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      // applicationDefault() will automatically read from the file path
+    const gcpCredentials = process.env.GCP_CREDENTIALS_JSON;
+    if (gcpCredentials) {
+      const serviceAccount = JSON.parse(gcpCredentials);
+
       initializeApp({
-        credential: applicationDefault(),
+        credential: cert(serviceAccount),
         projectId: process.env.FIREBASE_PROJECT_ID,
       });
 
       isFirebaseInitialized = true;
     } else {
       console.error(
-        "📋 Please set GOOGLE_APPLICATION_CREDENTIALS to the path of your service account key file"
+        "📋 Please set GCP_CREDENTIALS_JSON environment variable"
       );
       throw new Error("Firebase credentials not configured");
     }
