@@ -78,15 +78,43 @@ export class DriveDownloadService {
         const dest = fs.createWriteStream(filePath);
 
         try {
-          const response = await drive.files.get(
-            {
-              fileId: file.id,
-              alt: "media",
-            },
-            {
-              responseType: "stream",
+          const isExportable = file.mimeType?.startsWith("application/vnd.google-apps");
+          let response;
+
+          if (isExportable) {
+            // Google Docs, Sheets, and Slides require the export method
+            console.log(`📁 Exporting Google-type file: ${file.name}`);
+            
+            // Map types to export formats
+            let exportMimeType = "application/pdf";
+            if (file.mimeType === "application/vnd.google-apps.spreadsheet") {
+              exportMimeType = "text/csv";
             }
-          );
+
+            response = await drive.files.export(
+              {
+                fileId: file.id,
+                mimeType: exportMimeType,
+              },
+              {
+                responseType: "stream",
+              }
+            );
+
+            // If we exported to a different format, we should probably update the filename extension
+            // But for now, we'll keep the original logic and just ensure it downloads
+          } else {
+            // Binary files (PDF, images, zip, etc.) use the get method with alt=media
+            response = await drive.files.get(
+              {
+                fileId: file.id,
+                alt: "media",
+              },
+              {
+                responseType: "stream",
+              }
+            );
+          }
 
           await new Promise<void>((resolve, reject) => {
             (response.data as any)
