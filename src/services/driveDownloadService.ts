@@ -14,7 +14,34 @@ export class DriveDownloadService {
   });
 
   /**
-   * Downloads files from a specific Google Drive folder and saves metadata to Supabase
+   * Recursively gets all files from a folder and its subfolders
+   */
+  private static async getAllFilesRecursively(drive: any, folderId: string): Promise<any[]> {
+    let allFiles: any[] = [];
+    
+    // Get files and subfolders inside current folder
+    const res = await drive.files.list({
+      q: `'${folderId}' in parents and trashed=false`,
+      fields: "files(id, name, mimeType, createdTime, size, modifiedTime, md5Checksum)",
+    });
+
+    const files = res.data.files || [];
+
+    for (const file of files) {
+      if (file.mimeType === "application/vnd.google-apps.folder") {
+        // Recursively fetch files from subfolder
+        const subFiles = await this.getAllFilesRecursively(drive, file.id);
+        allFiles = allFiles.concat(subFiles);
+      } else {
+        allFiles.push(file);
+      }
+    }
+
+    return allFiles;
+  }
+
+  /**
+   * Downloads files from a specific Google Drive folder (recursively) and saves metadata to Supabase
    */
   static async downloadFilesFromFolder() {
     try {
@@ -25,18 +52,13 @@ export class DriveDownloadService {
         throw new Error("DRIVE_FOLDER_ID is not defined in environment variables");
       }
 
-      console.log(`📂 Starting download from folder: ${folderId}`);
+      console.log(`📂 Starting recursive download from folder: ${folderId}`);
 
-      // Get files inside folder
-      const res = await drive.files.list({
-        q: `'${folderId}' in parents and trashed=false`,
-        fields: "files(id, name, mimeType, createdTime, size, modifiedTime, md5Checksum)",
-      });
-
-      const files = res.data.files;
+      // Get all files recursively
+      const files = await this.getAllFilesRecursively(drive, folderId);
 
       if (!files || !files.length) {
-        console.log("Empty folder. No files found.");
+        console.log("No files found in folder or subfolders.");
         return { success: true, count: 0 };
       }
 
@@ -78,7 +100,18 @@ export class DriveDownloadService {
         const dest = fs.createWriteStream(filePath);
 
         try {
-          const isExportable = file.mimeType?.startsWith("application/vnd.google-apps");
+          // Check if it's a Google Workspace file that needs exporting
+          // These include: Docs, Sheets, Slides, Forms, Drawings, Shortcuts, Folders
+          const isGoogleType = file.mimeType?.startsWith("application/vnd.google-apps");
+          
+          // Only these types support the export method
+          const isExportable = isGoogleType && [
+            "application/vnd.google-apps.document",
+            "application/vnd.google-apps.spreadsheet",
+            "application/vnd.google-apps.presentation",
+            "application/vnd.google-apps.drawing"
+          ].includes(file.mimeType!);
+
           let response;
 
           if (isExportable) {
@@ -100,11 +133,14 @@ export class DriveDownloadService {
                 responseType: "stream",
               }
             );
-
-            // If we exported to a different format, we should probably update the filename extension
-            // But for now, we'll keep the original logic and just ensure it downloads
+          } else if (file.mimeType === "application/vnd.google-apps.folder") {
+            console.log(`📂 Skipping folder in download loop: ${file.name}`);
+            continue;
+          } else if (file.mimeType === "application/vnd.google-apps.shortcut") {
+            console.log(`🔗 Skipping shortcut: ${file.name}`);
+            continue;
           } else {
-            // Binary files (PDF, images, zip, etc.) use the get method with alt=media
+            // Binary files (PDF, images, zip, etc.) or other Google Apps types that don't support export
             response = await drive.files.get(
               {
                 fileId: file.id,

@@ -7,19 +7,26 @@ import fs from "fs";
 import uploadRouter from "./routes/uploadRouter";
 import driveRouter from "./routes/driveRouter";
 import workerRouter from "./routes/workerRouter";
-// Initialize Firebase Admin (this will run the initialization code)
-import "./services/firebaseAdmin";
 import { generateRoutineImage } from "./controllers/generateController";
 
-if (
-  process.env.GCP_CREDENTIALS_JSON &&
-  process.env.GOOGLE_APPLICATION_CREDENTIALS
-) {
-  fs.writeFileSync(
-    process.env.GOOGLE_APPLICATION_CREDENTIALS,
-    process.env.GCP_CREDENTIALS_JSON
-  );
+// Write GCP credentials to file if provided in environment variables
+if (process.env.GCP_CREDENTIALS_JSON && process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    try {
+        fs.writeFileSync(
+            process.env.GOOGLE_APPLICATION_CREDENTIALS,
+            process.env.GCP_CREDENTIALS_JSON
+        );
+        console.log("✅ Credentials file written successfully");
+    } catch (err) {
+        console.error("❌ Failed to write credentials file", err);
+        process.exit(1);
+    }
 }
+
+async function initFirebaseAdmin() {
+  await import("./services/firebaseAdmin");
+}
+initFirebaseAdmin();
 
 // app config
 const app = express();
@@ -34,7 +41,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.status(200).json({
     live: true,
-    version: "4.2.2",
+    version: "4.3.0",
     message: "Server is running",
   });
 });
