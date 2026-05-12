@@ -1,3 +1,9 @@
 {
-    "postman.settings.dotenv-detection-notification-visibility": false
+    "postman.settings.dotenv-detection-notification-visibility": false,
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/f6464555-5e08-485d-93d8-fd67b8839e32/resourceGroups/LeadingAI_group/providers/Microsoft.Web/sites/LeadingAI",
+    "appService.deploySubpath": "."
 }
