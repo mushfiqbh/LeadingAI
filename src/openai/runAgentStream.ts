@@ -162,7 +162,7 @@ export async function* runAgentStream(
   if (uniqueSources.size > 0) {
     let sourcesMarkdown = "\n\n---\n**Sources:**\n";
     uniqueSources.forEach((link, name) => {
-      sourcesMarkdown += `- [${name}](${link})\n`;
+      sourcesMarkdown += `[${name}](${link})\n`;
     });
     yield sourcesMarkdown;
   }

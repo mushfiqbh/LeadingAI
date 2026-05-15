@@ -15,6 +15,7 @@ src/services/serviceAccountKey.json
 
 # testing
 /coverage
+/downloads
 
 # next.js
 /.next/
