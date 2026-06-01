@@ -7,7 +7,6 @@ import { useFrontPageStore } from "@/store/useFrontPageStore";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { Course, Teacher, Student } from "@/types/frontPage";
 import refineDepartmentName from "@/utils/refineDepartmentName";
 import Autocomplete from "./Autocomplete";
@@ -366,48 +365,6 @@ export default function FrontPageForm() {
     }
   };
 
-  if (loading && courses.length === 0) {
-    return (
-      <div className="max-w-3xl mx-auto p-6 space-y-8">
-        <div className="flex flex-col items-center gap-4">
-          <Skeleton className="h-10 w-64 rounded-full" />
-        </div>
-
-        <div className="bg-zinc-800 p-6 rounded-2xl shadow-sm space-y-6">
-          <div className="p-1 bg-zinc-700 rounded-xl flex w-full gap-1">
-            <Skeleton className="h-9 flex-1 rounded-lg" />
-            <Skeleton className="h-9 flex-1 rounded-lg" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            ))}
-          </div>
-
-          <div className="flex gap-4">
-            <Skeleton className="h-12 flex-1 rounded-xl" />
-            <Skeleton className="h-12 w-24 rounded-xl" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-3xl min-h-screen mx-auto p-6 space-y-8 bg-zinc-900">
       <div className="space-y-4">
@@ -492,6 +449,7 @@ export default function FrontPageForm() {
             onSelect={setCourse}
             onEdit={handleEditCourse}
             selectedItem={selectedCourse || undefined}
+            isLoading={loading && courses.length === 0}
             onCreateNew={() => {
               setNewCourse({ code: "", title: "" });
               setIsCourseModalOpen(true);
@@ -518,6 +476,7 @@ export default function FrontPageForm() {
             onSelect={setTeacher}
             onEdit={handleEditTeacher}
             selectedItem={selectedTeacher || undefined}
+            isLoading={loading && teachers.length === 0}
             onCreateNew={() => {
               setNewTeacher({
                 code: "",
@@ -612,6 +571,7 @@ export default function FrontPageForm() {
           onSearch={setStudentQuery}
           onSelect={handleAddStudentToList}
           onEdit={handleEditStudent}
+          isLoading={loading && students.length === 0}
           onCreateNew={() => {
             setNewStudent({
               studentId: "",

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/Input";
 import { Plus, Edit2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 interface AutocompleteProps<T> {
   label: string;
@@ -13,6 +14,7 @@ interface AutocompleteProps<T> {
   placeholder?: string;
   value?: string; // Display value
   selectedItem?: T; // The actual selected object
+  isLoading?: boolean;
 }
 
 const Autocomplete = <T,>({
@@ -26,6 +28,7 @@ const Autocomplete = <T,>({
   placeholder,
   value,
   selectedItem,
+  isLoading,
 }: AutocompleteProps<T>) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(value || "");
@@ -55,37 +58,46 @@ const Autocomplete = <T,>({
 
   return (
     <div className="relative w-full" ref={wrapperRef}>
-      <label className="block text-sm font-medium text-zinc-300 mb-1">
-        Select {label}
-      </label>
-      <div className="relative">
-        <Input
-          value={searchQuery}
-          onChange={(e) => {
-            const val = e.target.value;
-            setSearchQuery(val);
-            setIsOpen(true);
-            if (val === "") {
-              onSelect(null);
-            }
-          }}
-          onFocus={() => setIsOpen(true)}
-          placeholder={placeholder}
-          className="pr-10 "
-        />
-        {!selectedItem && (
-          <button
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-blue-600 transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              onCreateNew();
-            }}
-            type="button"
-          >
-            <Plus className="h-4 w-4 text-blue-600" />
-          </button>
-        )}
-      </div>
+      {isLoading ? (
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+      ) : (
+        <>
+          <label className="block text-sm font-medium text-zinc-300 mb-1">
+            Select {label}
+          </label>
+          <div className="relative">
+            <Input
+              value={searchQuery}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearchQuery(val);
+                setIsOpen(true);
+                if (val === "") {
+                  onSelect(null);
+                }
+              }}
+              onFocus={() => setIsOpen(true)}
+              placeholder={placeholder}
+              className="pr-10 "
+            />
+            {!selectedItem && (
+              <button
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-blue-600 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onCreateNew();
+                }}
+                type="button"
+              >
+                <Plus className="h-4 w-4 text-blue-600" />
+              </button>
+            )}
+          </div>
+        </>
+      )}
 
       {isOpen && (
         <div className="absolute z-10 w-full mt-1 bg-zinc-800 border border-zinc-700 rounded-xl shadow-lg max-h-60 overflow-auto">
