@@ -10,8 +10,8 @@ import { Modal } from "@/components/ui/Modal";
 import { Course, Teacher, Student } from "@/types/frontPage";
 import refineDepartmentName from "@/utils/refineDepartmentName";
 import Autocomplete from "./Autocomplete";
-import generateAssignment from "./generateAssignment";
-import generateLabReport from "./generateLabReport";
+import generateAssignment from "@/lib/generateAssignment";
+import generateLabReport from "@/lib/generateLabReport";
 
 export default function FrontPageForm() {
   const {
@@ -216,6 +216,7 @@ export default function FrontPageForm() {
           date,
           course: selectedCourse,
           teacher: selectedTeacher,
+          groupTitle,
           student: {
             id: student.studentId,
             name: student.name,
@@ -366,12 +367,12 @@ export default function FrontPageForm() {
   };
 
   return (
-    <div className="max-w-3xl min-h-screen mx-auto p-6 space-y-8 bg-zinc-900">
+    <div className="max-w-3xl min-h-screen mx-auto p-6 pb-14 space-y-8 bg-zinc-800">
       <div className="space-y-4">
         <h4 className="text-2xl text-center text-white font-semibold mb-4">Frontpage Generator</h4>
 
         {/* Type Selection */}
-        <div className="p-1 bg-zinc-800 rounded-xl inline-flex w-full">
+        <div className="p-1 bg-zinc-900 rounded-xl inline-flex w-full">
           <button
             className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
               type === "assignment"
@@ -617,16 +618,14 @@ export default function FrontPageForm() {
           </label>
         </div>
 
-        {isGroupFrontPage && (
-          <div className="space-y-1 pb-2">
-            <label className="text-sm font-medium text-zinc-300">Group Name / Number</label>
-            <Input
-              placeholder="e.g. Group A / The Innovators"
-              value={groupTitle}
-              onChange={(e) => setGroupTitle(e.target.value)}
-            />
-          </div>
-        )}
+        <div className="space-y-1 pb-2">
+          <label className="text-sm font-medium text-zinc-300">Group Name Label (Optional)</label>
+          <Input
+            placeholder="e.g. Group Name: The Innovators"
+            value={groupTitle}
+            onChange={(e) => setGroupTitle(e.target.value)}
+          />
+        </div>
 
         <p id="message" className="text-xs text-red-500">{message}</p>
 
@@ -642,6 +641,7 @@ export default function FrontPageForm() {
           </Button>
 
           <Button
+            variant="info"
             className="px-4 py-3 text-lg"
             onClick={handleGenerateBulk}
             disabled={

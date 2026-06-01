@@ -113,23 +113,25 @@ const generateLabReport = (data: FrontPageData, existingDoc?: jsPDF) => {
   );
 
   const studentInfo = [
-    ["Name", data.student.name],
-    ["ID", data.student.id],
-    ["Batch", data.student.batch],
-    ["Section", data.student.section],
+    ["", data.student.name],
+    ["ID:", data.student.id],
+    ["Batch:", data.student.batch],
+    ["Section:", data.student.section],
   ];
 
   const submittedByTitleY = yPosition + courseInfoEnd * rowHeight + 3 * rowHeight + 50;
 
+  let groupTitleOffset = 0;
+  if (data.groupTitle) {
+    doc.setFont("Times New Roman", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor("#3c78d8");
+    doc.text(data.groupTitle, pageWidth / 2, submittedByTitleY + 12, { align: "center" });
+    groupTitleOffset = 10;
+  }
+
   if (data.isGroup) {
     doc.setTextColor("#3c78d8");
-
-    // Group Title
-    if (data.groupTitle) {
-      doc.setFont("Times New Roman", "bold");
-      doc.setFontSize(14);
-      doc.text(data.groupTitle, pageWidth / 2, submittedByTitleY + 12, { align: "center" });
-    }
 
     doc.setTextColor("black");
     const startY = submittedByTitleY + (data.groupTitle ? 15 : 10);
@@ -178,27 +180,28 @@ const generateLabReport = (data: FrontPageData, existingDoc?: jsPDF) => {
       { align: "center" }
     );
   } else {
-    const tableWidth = 96;
-    const labelWidth = 30;
-    const tableStartX = (pageWidth - tableWidth) / 2;
-    const tableTopY = submittedByTitleY + 7;
+    const tableTopY = submittedByTitleY + 7 + groupTitleOffset;
 
     doc.setFont("Times New Roman", "normal");
-    doc.setFontSize(12);
     doc.setTextColor("black");
+
     studentInfo.forEach((row, index) => {
       const y = tableTopY + (index + 1) * rowHeight - 2;
-      const rowY = tableTopY + index * rowHeight;
-
-      // Draw table cell borders
-      doc.rect(tableStartX, rowY, tableWidth, rowHeight);
-      doc.line(tableStartX + labelWidth, rowY, tableStartX + labelWidth, rowY + rowHeight);
+      const combinedText = `${row[0]} ${row[1]}`;
 
       doc.setFont("Times New Roman", "bold");
-      doc.text(row[0], tableStartX + 2, y);
+      const labelWidth = doc.getTextWidth(row[0] + " ");
+      const totalWidth = doc.getTextWidth(combinedText);
+      const startX = (pageWidth - totalWidth) / 2;
 
+      doc.text(row[0], startX, y);
       doc.setFont("Times New Roman", "normal");
-      doc.text(row[1], tableStartX + labelWidth + 2, y);
+
+      if(index === 0) {
+        doc.setFontSize(15);
+      }
+      doc.text(row[1], startX + labelWidth, y);      
+      doc.setFontSize(14);
     });
 
     // Submission Date
