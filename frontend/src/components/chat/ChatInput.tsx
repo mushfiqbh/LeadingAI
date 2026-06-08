@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useContext } from "react";
 import Image from "next/image";
 import { ImageUp, Send, X } from "lucide-react";
 import { ChatMessage } from "../../types/types";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, AuthContext } from "@/context/AuthContext";
 
 interface ChatInputProps {
   onSendMessage: (messages: ChatMessage) => void;
@@ -19,7 +19,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   inputValue,
   onInputChange,
 }) => {
-  const { userProfile, setShowManager } = useAuth();
+  const { user, userProfile, setShowManager } = useAuth();
+  const { setIsAuthModalOpen } = useContext(AuthContext);
   const [internalInput, setInternalInput] = useState("");
   
   const input = inputValue !== undefined ? inputValue : internalInput;
@@ -58,10 +59,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       setTimeout(() => {
         adjustTextareaHeight();
         textareaRef.current?.focus();
-        // Clear session storage so it doesn't persist if they leave and come back cleanly? 
-        // Or keep it? The prompt implies "typing... opens chat". 
-        // If they navigate back and forth, maybe clear it?
-        // But for now, focusing is key.
       }, 0);
     }
   }, [setInput]);
@@ -113,6 +110,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      setIsAuthModalOpen(true);
+      return;
+    }
 
     if (!input.trim() && !image) return;
 

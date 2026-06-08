@@ -109,7 +109,7 @@ export default function CreateAccountForm({
         <p className="text-green-400 text-xs bg-green-400/10 p-2 rounded-lg">{successMessage}</p>
       )}
 
-      <Button type="submit" className="w-full mt-4 bg-white text-black hover:bg-gray-200" disabled={loading}>
+      <Button type="submit" className="w-full mt-4 bg-blue-600 bg-blue-600 hover:bg-gray-200" disabled={loading}>
         {loading ? (
           <Loader2 className="animate-spin" size={16} />
         ) : (
