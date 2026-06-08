@@ -159,7 +159,7 @@ export default function LoginForm({
 
         {error && <p className="text-red-400 text-xs bg-red-400/10 p-2 rounded-lg">{error}</p>}
 
-        <Button type="submit" className="w-full mt-4 bg-white text-black hover:bg-gray-200" disabled={loading}>
+        <Button type="submit" className="w-full mt-4 text-black bg-blue-600 hover:bg-gray-200" disabled={loading}>
           {loading ? <Loader2 className="animate-spin" size={16} /> : "Login"}
         </Button>
       </form>

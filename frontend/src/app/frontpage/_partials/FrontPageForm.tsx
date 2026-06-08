@@ -7,12 +7,11 @@ import { useFrontPageStore } from "@/store/useFrontPageStore";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { Course, Teacher, Student } from "@/types/frontPage";
 import refineDepartmentName from "@/utils/refineDepartmentName";
 import Autocomplete from "./Autocomplete";
-import generateAssignment from "./generateAssignment";
-import generateLabReport from "./generateLabReport";
+import generateAssignment from "@/lib/generateAssignment";
+import generateLabReport from "@/lib/generateLabReport";
 
 export default function FrontPageForm() {
   const {
@@ -217,6 +216,7 @@ export default function FrontPageForm() {
           date,
           course: selectedCourse,
           teacher: selectedTeacher,
+          groupTitle,
           student: {
             id: student.studentId,
             name: student.name,
@@ -366,55 +366,13 @@ export default function FrontPageForm() {
     }
   };
 
-  if (loading && courses.length === 0) {
-    return (
-      <div className="max-w-3xl mx-auto p-6 space-y-8">
-        <div className="flex flex-col items-center gap-4">
-          <Skeleton className="h-10 w-64 rounded-full" />
-        </div>
-
-        <div className="bg-zinc-800 p-6 rounded-2xl shadow-sm space-y-6">
-          <div className="p-1 bg-zinc-700 rounded-xl flex w-full gap-1">
-            <Skeleton className="h-9 flex-1 rounded-lg" />
-            <Skeleton className="h-9 flex-1 rounded-lg" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            ))}
-          </div>
-
-          <div className="flex gap-4">
-            <Skeleton className="h-12 flex-1 rounded-xl" />
-            <Skeleton className="h-12 w-24 rounded-xl" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-3xl min-h-screen mx-auto p-6 space-y-8 bg-zinc-900">
+    <div className="max-w-3xl min-h-screen mx-auto p-6 pb-14 space-y-8 bg-zinc-800">
       <div className="space-y-4">
         <h4 className="text-2xl text-center text-white font-semibold mb-4">Frontpage Generator</h4>
 
         {/* Type Selection */}
-        <div className="p-1 bg-zinc-800 rounded-xl inline-flex w-full">
+        <div className="p-1 bg-zinc-900 rounded-xl inline-flex w-full">
           <button
             className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
               type === "assignment"
@@ -492,6 +450,7 @@ export default function FrontPageForm() {
             onSelect={setCourse}
             onEdit={handleEditCourse}
             selectedItem={selectedCourse || undefined}
+            isLoading={loading && courses.length === 0}
             onCreateNew={() => {
               setNewCourse({ code: "", title: "" });
               setIsCourseModalOpen(true);
@@ -518,6 +477,7 @@ export default function FrontPageForm() {
             onSelect={setTeacher}
             onEdit={handleEditTeacher}
             selectedItem={selectedTeacher || undefined}
+            isLoading={loading && teachers.length === 0}
             onCreateNew={() => {
               setNewTeacher({
                 code: "",
@@ -612,6 +572,7 @@ export default function FrontPageForm() {
           onSearch={setStudentQuery}
           onSelect={handleAddStudentToList}
           onEdit={handleEditStudent}
+          isLoading={loading && students.length === 0}
           onCreateNew={() => {
             setNewStudent({
               studentId: "",
@@ -657,16 +618,14 @@ export default function FrontPageForm() {
           </label>
         </div>
 
-        {isGroupFrontPage && (
-          <div className="space-y-1 pb-2">
-            <label className="text-sm font-medium text-zinc-300">Group Name / Number</label>
-            <Input
-              placeholder="e.g. Group A / The Innovators"
-              value={groupTitle}
-              onChange={(e) => setGroupTitle(e.target.value)}
-            />
-          </div>
-        )}
+        <div className="space-y-1 pb-2">
+          <label className="text-sm font-medium text-zinc-300">Group Name Label (Optional)</label>
+          <Input
+            placeholder="e.g. Group Name: The Innovators"
+            value={groupTitle}
+            onChange={(e) => setGroupTitle(e.target.value)}
+          />
+        </div>
 
         <p id="message" className="text-xs text-red-500">{message}</p>
 
@@ -682,6 +641,7 @@ export default function FrontPageForm() {
           </Button>
 
           <Button
+            variant="info"
             className="px-4 py-3 text-lg"
             onClick={handleGenerateBulk}
             disabled={

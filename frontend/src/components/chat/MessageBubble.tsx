@@ -112,10 +112,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                               <><Plus className="w-3 h-3" /> {savingNote ? "Saving..." : "Save to note"}</>
                             )}
                           </button>
-                          <div className="flex items-center gap-2 sm:gap-3 text-gray-500">
-                            <Check className="w-3.5 h-3.5 hover:text-white cursor-pointer transition-colors" />
-                            <X className="w-3.5 h-3.5 hover:text-white cursor-pointer transition-colors" />
-                          </div>
                         </div>
                       </div>
                     ) : null // Render nothing if there's no text (e.g., for an image-only message).

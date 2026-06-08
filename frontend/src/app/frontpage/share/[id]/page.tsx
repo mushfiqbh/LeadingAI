@@ -54,9 +54,8 @@ export default function SharedFrontPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 pb-20">
-      <div className="py-12">
-        <div className="max-w-3xl mx-auto px-6 mb-8">
+    <div className="min-h-screen bg-linear-to-br from-zinc-950 via-zinc-900 to-zinc-950">
+        <div className="max-w-3xl mx-auto m-6 px-6">
           <div className="bg-blue-900/30 border border-blue-700 rounded-2xl p-4 text-blue-300 text-sm flex items-center gap-3">
             <AlertCircle className="h-5 w-5 shrink-0" />
             <p>
@@ -65,7 +64,6 @@ export default function SharedFrontPage() {
           </div>
         </div>
         <FrontPageForm />
-      </div>
     </div>
   );
 }

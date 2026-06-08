@@ -39,7 +39,7 @@ export default function ResetPasswordForm({ onBack }: { onBack: () => void }) {
 
       {message && <p className="text-sm text-gray-400">{message}</p>}
 
-      <Button type="submit" className="w-full mt-2 bg-white text-black hover:bg-gray-200" disabled={loading}>
+      <Button type="submit" className="w-full mt-2 bg-blue-600 hover:bg-gray-200" disabled={loading}>
         {loading ? "Sending..." : "Send Reset Email"}
       </Button>
 
